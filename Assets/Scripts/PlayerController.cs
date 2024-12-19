@@ -7,37 +7,70 @@ public class PlayerController : MonoBehaviour
 	BoardManager m_board;
 	Vector2Int m_cellPos;
 
+	public float m_moveSpeed = 5f;
+
+	bool IsMoving { get; set; }
+	Vector3 MoveTarget { get; set; }
+
+	public void Init()
+	{
+		IsMoving = false;
+	}
+
 	public void Spawn(BoardManager a_boardManager, Vector2Int a_cellPos)
 	{
 		m_board = a_boardManager;
-		MoveTo(a_cellPos);
+		MoveTo(a_cellPos, true);
 	}
 
-	public void MoveTo(Vector2Int a_cellPos)
+	public void MoveTo(Vector2Int a_cellPos, bool instant = false)
 	{
 		m_cellPos = a_cellPos;
-		transform.position = m_board.CellPosToWorldPos(m_cellPos);
+
+		if (instant)
+		{
+			IsMoving = false;
+			transform.position = m_board.CellPosToWorldPos(m_cellPos);
+		}
+		else
+		{
+			IsMoving = true;
+			MoveTarget = m_board.CellPosToWorldPos(m_cellPos);
+		}
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		if (IsMoving && MoveTarget != null)
+		{
+			transform.position = Vector3.MoveTowards(transform.position, MoveTarget, m_moveSpeed * Time.deltaTime);
+			if (transform.position == MoveTarget)
+			{
+				IsMoving = false;
+				var cellData = m_board.GetCellData(m_cellPos);
+				if (cellData.m_containedObject != null)
+				{
+					cellData.m_containedObject.PlayerEntered();
+				}
+			}
+
+			return;
+		}
+
 		Vector2Int newCellTargetPos = m_cellPos; // put current first
 		bool hasMoved = false;
 
 		if (Input.GetKeyDown(KeyCode.W))
 		{
+			newCellTargetPos.x += 1;
 			newCellTargetPos.y += 1;
 			hasMoved = true;
 		}
 		else if (Input.GetKeyDown(KeyCode.S))
 		{
+			newCellTargetPos.x += 1;
 			newCellTargetPos.y -= 1;
-			hasMoved = true;
-		}
-		else if (Input.GetKeyDown(KeyCode.A))
-		{
-			newCellTargetPos.x -= 1;
 			hasMoved = true;
 		}
 		else if (Input.GetKeyDown(KeyCode.D))
