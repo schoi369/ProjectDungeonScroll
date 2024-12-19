@@ -1,29 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class BoardManager : MonoBehaviour
 {
 	public class CellData
 	{
-		public bool m_passable;
+		public GroundTile m_groundTile;
 		public CellObject m_containedObject;
+
+		public bool Passable
+		{
+			get
+			{
+				bool result = true;
+				result &= m_groundTile.m_passable;
+				return result;
+			}
+		}
+
+		public void CleanUp()
+		{
+			if (m_groundTile)
+			{
+				Destroy(m_groundTile.gameObject);
+			}
+
+			if (m_containedObject)
+			{
+				Destroy(m_containedObject.gameObject);
+			}
+
+			m_groundTile = null;
+			m_containedObject = null;
+		}
 	}
 
+	public Transform m_boardHolder;
+
 	CellData[,] m_boardData;
-	public Tilemap m_tilemap;
-	public Grid m_grid;
-	public List<Vector2Int> m_emptyCellsList;
+	public List<Vector2Int> m_emptyCellPositionList;
 
 	public int m_width;
 	public int m_height;
-	public Tile m_groundTile;
-	public Tile m_blockingTile;
+	public float m_cellSize = 1f;
+
+	public GroundTile m_prefabGroundTile;
 
 	public void Init()
 	{
-		m_emptyCellsList = new List<Vector2Int>();
+		m_emptyCellPositionList = new List<Vector2Int>();
 
 		m_boardData = new CellData[m_width, m_height];
 
@@ -31,26 +57,14 @@ public class BoardManager : MonoBehaviour
 		{
 			for (int x = 0; x < m_width; x++)
 			{
-				Tile currentTile;
-				m_boardData[x, y] = new CellData();
+				var cellPos = new Vector2Int(x, y);
 
-				if (x == 0 || y == 0 || x == m_width - 1 || y == m_height - 1)
-				{
-					currentTile = m_blockingTile;
-					m_boardData[x, y].m_passable = false;
-				}
-				else
-				{
-					currentTile = m_groundTile;
-					m_boardData[x, y].m_passable = true;
-					m_emptyCellsList.Add(new Vector2Int(x, y));
-				}
-
-				SetCellTile(new Vector2Int(x, y), currentTile);
+				SetCellTile(cellPos, m_prefabGroundTile);
+				m_emptyCellPositionList.Add(cellPos);
 			}
 		}
 
-		m_emptyCellsList.Remove(new Vector2Int(1, 1)); // Player Cell Position
+		m_emptyCellPositionList.Remove(new Vector2Int(1, 1)); // Player Cell Position
 	}
 
 	public void Clean()
@@ -78,7 +92,7 @@ public class BoardManager : MonoBehaviour
 
 	public Vector3 CellPosToWorldPos(Vector2Int a_cellPos)
 	{
-		return m_grid.GetCellCenterWorld((Vector3Int) a_cellPos);
+		return m_cellSize * new Vector3(a_cellPos.x, a_cellPos.y, 0f);
 	}
 
 	public CellData GetCellData(Vector2Int a_cellPos)
@@ -91,13 +105,29 @@ public class BoardManager : MonoBehaviour
 		return m_boardData[a_cellPos.x, a_cellPos.y];
 	}
 
-	public void SetCellTile(Vector2Int a_cellPos, Tile tile)
+	public void SetCellTile(Vector2Int a_cellPos, GroundTile a_tile_prefab)
 	{
-		m_tilemap.SetTile(new Vector3Int(a_cellPos.x, a_cellPos.y, 0), tile);
-	}
+		CellData newCell;
+		CellData prevCell = m_boardData[a_cellPos.x, a_cellPos.y];
+		if (prevCell != null)
+		{
+			prevCell.CleanUp();
+			newCell = prevCell;
+		}
+		else
+		{
+			newCell = new();
+		}
 
-	public Tile GetCellTile(Vector2Int a_cellPos)
-	{
-		return m_tilemap.GetTile<Tile>(new Vector3Int(a_cellPos.x, a_cellPos.y, 0));
+		m_boardData[a_cellPos.x, a_cellPos.y] = newCell;
+
+		var targetCell = m_boardData[a_cellPos.x, a_cellPos.y];
+
+		if (a_tile_prefab)
+		{
+			GroundTile newTile = Instantiate(a_tile_prefab, m_boardHolder);
+			newTile.transform.position = CellPosToWorldPos(a_cellPos);
+			targetCell.m_groundTile = newTile;
+		}
 	}
 }
