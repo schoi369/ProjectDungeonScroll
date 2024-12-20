@@ -22,10 +22,10 @@ public class PlayerController : MonoBehaviour
 	public void Spawn(BoardManager a_boardManager, Vector2Int a_cellPos)
 	{
 		m_board = a_boardManager;
-		MoveTo(a_cellPos, true);
+		MoveTo(a_cellPos, instant: true);
 	}
 
-	public void MoveTo(Vector2Int a_cellPos, bool instant = false)
+	public void MoveTo(Vector2Int a_cellPos, BoardManager.FaceDirection a_direction = BoardManager.FaceDirection.NONE, bool instant = false)
 	{
 		var cellPosBeforeMove = m_cellPos;
 		m_cellPos = a_cellPos;
@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
 			MoveTarget = m_board.CellPosToWorldPos(m_cellPos);
 
 			// Attack based on cellPosBeforeMove
-			var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, cellPosBeforeMove);
+			var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, cellPosBeforeMove, a_direction);
 			foreach (var targetCellPos in cellPosList)
 			{
 				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
@@ -73,23 +73,25 @@ public class PlayerController : MonoBehaviour
 
 		Vector2Int newCellTargetPos = m_cellPos; // put current first
 		bool hasMoved = false;
+		BoardManager.FaceDirection direction = BoardManager.FaceDirection.NONE;
 
 		if (Input.GetKeyDown(KeyCode.W))
 		{
-			newCellTargetPos.x += 1;
 			newCellTargetPos.y += 1;
 			hasMoved = true;
+			direction = BoardManager.FaceDirection.UP;
 		}
 		else if (Input.GetKeyDown(KeyCode.S))
 		{
-			newCellTargetPos.x += 1;
 			newCellTargetPos.y -= 1;
 			hasMoved = true;
+			direction = BoardManager.FaceDirection.DOWN;
 		}
 		else if (Input.GetKeyDown(KeyCode.D))
 		{
 			newCellTargetPos.x += 1;
 			hasMoved = true;
+			direction = BoardManager.FaceDirection.RIGHT;
 		}
 
 		if (hasMoved)
@@ -101,11 +103,11 @@ public class PlayerController : MonoBehaviour
 				GameManager.Instance.TurnManager.Tick();
 				if (cellData.m_containedObject == null)
 				{
-					MoveTo(newCellTargetPos);
+					MoveTo(newCellTargetPos, direction);
 				}
 				else if (cellData.m_containedObject.PlayerWantsToEnter())
 				{
-					MoveTo(newCellTargetPos);
+					MoveTo(newCellTargetPos, direction);
 				}
 			}
 		}

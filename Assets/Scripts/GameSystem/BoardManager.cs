@@ -36,6 +36,15 @@ public class BoardManager : MonoBehaviour
 		}
 	}
 
+	public enum FaceDirection
+	{
+		NONE,
+		UP,
+		RIGHT,
+		DOWN,
+		LEFT,
+	}
+
 	public Transform m_boardHolder;
 
 	CellData[,] m_boardData;
@@ -131,7 +140,7 @@ public class BoardManager : MonoBehaviour
 		}
 	}
 
-	public List<Vector2Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector2Int a_center)
+	public List<Vector2Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector2Int a_center, FaceDirection a_direction)
 	{
 		List<Vector2Int> result = new();
 
@@ -141,8 +150,28 @@ public class BoardManager : MonoBehaviour
 			{
 				if (a_area.GetCell(x, y))
 				{
-					int offsetX = x - AttackAreaSO.Center;
-					int offsetY = y - AttackAreaSO.Center;
+					int offsetX = 0;
+					int offsetY = 0;
+
+					switch (a_direction)
+					{
+						case FaceDirection.UP:
+							offsetX = y - AttackAreaSO.Center;
+							offsetY = x - AttackAreaSO.Center;
+							break;
+						case FaceDirection.RIGHT:
+							offsetX = x - AttackAreaSO.Center;
+							offsetY = y - AttackAreaSO.Center;
+							break;
+						case FaceDirection.DOWN:
+							offsetX = AttackAreaSO.Center - y;
+							offsetY = AttackAreaSO.Center - x;
+							break;
+						case FaceDirection.LEFT:
+							offsetX = AttackAreaSO.Center - x;
+							offsetY = AttackAreaSO.Center - y;
+							break;
+					}
 
 					Vector2Int target = new(a_center.x + offsetX, a_center.y + offsetY);
 					if (GetCellData(target) != null)
