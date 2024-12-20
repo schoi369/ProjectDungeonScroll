@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 
 	BoardManager m_board;
 	Vector2Int m_cellPos;
+	public Vector2Int CellPos => m_cellPos;
 
 	public float m_moveSpeed = 5f;
 
@@ -42,6 +43,7 @@ public class PlayerController : MonoBehaviour
 	{
 		var cellPosBeforeMove = m_cellPos;
 		m_cellPos = a_cellPos;
+		Debug.Log(m_cellPos.x);
 
 		if (instant)
 		{
@@ -130,7 +132,6 @@ public class PlayerController : MonoBehaviour
 
 			if (cellData != null && cellData.Passable)
 			{
-				GameManager.Instance.TurnManager.Tick();
 				ChangeCurrentFoodAmount(-1);
 				if (cellData.m_containedObject == null)
 				{
@@ -140,6 +141,7 @@ public class PlayerController : MonoBehaviour
 				{
 					MoveTo(newCellTargetPos, direction);
 				}
+				GameManager.Instance.TurnManager.Tick();
 			}
 		}
 	}

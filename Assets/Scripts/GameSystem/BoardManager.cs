@@ -199,4 +199,19 @@ public class BoardManager : MonoBehaviour
 		data.m_containedObject = a_obj;
 		a_obj.Init(a_cellPos);
 	}
+
+	// TODO: Probably not optimized. Do it later.
+	public void RefreshGroundTiles()
+	{
+		Vector2Int playerCellPos = GameManager.Instance.m_player.CellPos;
+
+		for (int y = 0; y < m_height; y++)
+		{
+			for (int x = 0; x < playerCellPos.x - 1; x++)
+			{
+				var data = GetCellData(new Vector2Int(x, y));
+				data.m_groundTile.SetSpriteAlpha(.5f);
+			}
+		}
+	}
 }

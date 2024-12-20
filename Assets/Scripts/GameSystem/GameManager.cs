@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
 
 	void OnTurnHappen()
 	{
+		m_boardManager.RefreshGroundTiles();
 		Debug.Log("GameManager: OnTurnHappen");
 	}
 
