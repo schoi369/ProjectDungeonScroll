@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
 		m_boardManager.Clean();
 		m_boardManager.Init();
 
+		m_player.Init();
 		m_player.Spawn(m_boardManager, new Vector2Int(1, 1)); // Player Start Pos. Need Refactoring, directly set in multiple places.
 	}
 

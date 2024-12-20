@@ -13,12 +13,25 @@ public class PlayerController : MonoBehaviour
 
 	bool IsMoving { get; set; }
 	Vector3 MoveTarget { get; set; }
+
+	public int m_maxFoodAmount = 100;
+	int CurrentFoodAmount { get; set; }
 	
+	/// <summary>
+	/// Initialize
+	/// </summary>
 	public void Init()
 	{
 		IsMoving = false;
+		SetMaxFoodAmount(m_maxFoodAmount);
+		SetCurrentFoodAmount(m_maxFoodAmount);
 	}
 
+	/// <summary>
+	/// Board(Stage) related
+	/// </summary>
+	/// <param name="a_boardManager"></param>
+	/// <param name="a_cellPos"></param>
 	public void Spawn(BoardManager a_boardManager, Vector2Int a_cellPos)
 	{
 		m_board = a_boardManager;
@@ -50,6 +63,23 @@ public class PlayerController : MonoBehaviour
 				
 			}
 		}
+	}
+
+	void ChangeCurrentFoodAmount(int a_delta)
+	{
+		SetCurrentFoodAmount(CurrentFoodAmount + a_delta);
+	}
+
+	void SetCurrentFoodAmount(int a_amount)
+	{
+		CurrentFoodAmount = a_amount;
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentFoodAmountChanged, CurrentFoodAmount);
+	}
+
+	void SetMaxFoodAmount(int a_max)
+	{
+		m_maxFoodAmount = a_max;
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxFoodAmountChanged, m_maxFoodAmount);
 	}
 
 	// Update is called once per frame
@@ -101,6 +131,7 @@ public class PlayerController : MonoBehaviour
 			if (cellData != null && cellData.Passable)
 			{
 				GameManager.Instance.TurnManager.Tick();
+				ChangeCurrentFoodAmount(-1);
 				if (cellData.m_containedObject == null)
 				{
 					MoveTo(newCellTargetPos, direction);
