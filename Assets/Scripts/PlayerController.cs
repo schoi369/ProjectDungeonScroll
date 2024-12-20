@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+	public AttackAreaSO m_attackAreaSetting;
+
 	BoardManager m_board;
 	Vector2Int m_cellPos;
 
@@ -11,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
 	bool IsMoving { get; set; }
 	Vector3 MoveTarget { get; set; }
-
+	
 	public void Init()
 	{
 		IsMoving = false;
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
 	public void MoveTo(Vector2Int a_cellPos, bool instant = false)
 	{
+		var cellPosBeforeMove = m_cellPos;
 		m_cellPos = a_cellPos;
 
 		if (instant)
@@ -36,6 +39,16 @@ public class PlayerController : MonoBehaviour
 		{
 			IsMoving = true;
 			MoveTarget = m_board.CellPosToWorldPos(m_cellPos);
+
+			// Attack based on cellPosBeforeMove
+			var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, cellPosBeforeMove);
+			foreach (var targetCellPos in cellPosList)
+			{
+				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
+				AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
+				// TODO: Inflict Damage
+				
+			}
 		}
 	}
 

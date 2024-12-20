@@ -7,8 +7,9 @@ public class AttackAreaEditor : Editor
     public override void OnInspectorGUI()
     {
         var attackArea = (AttackAreaSO)target;
+        bool gridChanged = false; // Track changes to the grid
 
-        // Draw the fixed 15x15 grid
+        // Draw the fixed grid
         for (int y = 0; y < AttackAreaSO.GridSize; y++)
         {
             EditorGUILayout.BeginHorizontal();
@@ -23,15 +24,21 @@ public class AttackAreaEditor : Editor
                 }
                 else
                 {
-                    // Normal toggle for other cells
-                    attackArea.shape[x, y] = EditorGUILayout.Toggle(attackArea.shape[x, y], GUILayout.Width(20));
+                    // Editable cells
+                    bool currentValue = attackArea.GetCell(x, y);
+                    bool newValue = EditorGUILayout.Toggle(currentValue, GUILayout.Width(20));
+                    if (newValue != currentValue)
+                    {
+                        attackArea.SetCell(x, y, newValue);
+                        gridChanged = true;
+                    }
                 }
             }
             EditorGUILayout.EndHorizontal();
         }
 
-        // Apply changes
-        if (GUI.changed)
+        // Mark as dirty and save changes if needed
+        if (gridChanged)
         {
             EditorUtility.SetDirty(attackArea);
         }

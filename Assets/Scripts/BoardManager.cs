@@ -130,4 +130,29 @@ public class BoardManager : MonoBehaviour
 			targetCell.m_groundTile = newTile;
 		}
 	}
+
+	public List<Vector2Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector2Int a_center)
+	{
+		List<Vector2Int> result = new();
+
+		for (int y = 0; y < AttackAreaSO.GridSize; y++)
+		{
+			for (int x = 0; x < AttackAreaSO.GridSize; x++)
+			{
+				if (a_area.GetCell(x, y))
+				{
+					int offsetX = x - AttackAreaSO.Center;
+					int offsetY = y - AttackAreaSO.Center;
+
+					Vector2Int target = new(a_center.x + offsetX, a_center.y + offsetY);
+					if (GetCellData(target) != null)
+					{
+						result.Add(target);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
 }
