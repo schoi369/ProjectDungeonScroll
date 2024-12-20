@@ -9,7 +9,11 @@ public class CustomEventManager : MonoBehaviour
 	public enum CustomGameEvent
 	{
 		None = 0,
+		
+		// Game System
+		FloorChanged = 1,
 
+		// Player Info
 		PlayerMaxFoodAmountChanged = 100,
 		PlayerCurrentFoodAmountChanged = 101,
 	}

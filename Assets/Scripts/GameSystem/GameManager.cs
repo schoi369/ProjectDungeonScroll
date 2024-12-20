@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 
 	public TurnManager TurnManager { get; private set; }
 
+	int FloorCount { get; set; } = 0;
+
 	void Awake()
 	{
 		if (Instance != null)
@@ -32,15 +34,34 @@ public class GameManager : MonoBehaviour
 
 	public void StartNewGame()
 	{
+		SetFloorCount(1);
+
 		m_boardManager.Clean();
 		m_boardManager.Init();
 
-		m_player.Init();
+		m_player.Init(); // Only at StartNewGame, not at NewLevel().
+
 		m_player.Spawn(m_boardManager, new Vector2Int(1, 1)); // Player Start Pos. Need Refactoring, directly set in multiple places.
+	}
+
+	public void NewLevel()
+	{
+		FloorCount++;
+		SetFloorCount(FloorCount);
+
+		m_boardManager.Clean();
+		m_boardManager.Init();
+		m_player.Spawn(m_boardManager, new Vector2Int(1, 1));
 	}
 
 	void OnTurnHappen()
 	{
 		Debug.Log("GameManager: OnTurnHappen");
+	}
+
+	void SetFloorCount(int a_newCount)
+	{
+		FloorCount = a_newCount;
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.FloorChanged, FloorCount);
 	}
 }

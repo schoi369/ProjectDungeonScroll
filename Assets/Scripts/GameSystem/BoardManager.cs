@@ -55,6 +55,7 @@ public class BoardManager : MonoBehaviour
 	public float m_cellSize = 1f;
 
 	public GroundTile m_prefabGroundTile;
+	public COStairs m_prefabCOStairs;
 
 	public void Init()
 	{
@@ -73,7 +74,13 @@ public class BoardManager : MonoBehaviour
 			}
 		}
 
+		// Player
 		m_emptyCellPositionList.Remove(new Vector2Int(1, 1)); // Player Cell Position
+
+		// Exit
+		Vector2Int stairsCellPos = new Vector2Int(m_width - 1, m_height / 2);
+		AddObject(Instantiate(m_prefabCOStairs), stairsCellPos);
+		m_emptyCellPositionList.Remove(stairsCellPos);
 	}
 
 	public void Clean()
@@ -183,5 +190,13 @@ public class BoardManager : MonoBehaviour
 		}
 
 		return result;
+	}
+
+	void AddObject(CellObject a_obj, Vector2Int a_cellPos)
+	{
+		CellData data = m_boardData[a_cellPos.x, a_cellPos.y];
+		a_obj.transform.position = CellPosToWorldPos(a_cellPos);
+		data.m_containedObject = a_obj;
+		a_obj.Init(a_cellPos);
 	}
 }

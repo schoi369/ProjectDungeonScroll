@@ -5,20 +5,30 @@ using TMPro;
 
 public class UIPlayerInfo : MonoBehaviour
 {
+	// Floor
+	public TextMeshProUGUI m_floorCountText;
+
+	// Food Amount
 	public TextMeshProUGUI m_foodAmountText;
 	int CurrentFoodAmount { get; set; }
 	int MaxFoodAmount { get; set; }
 
 	private void OnEnable()
 	{
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.FloorChanged, OnFloorChanged);
+
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerCurrentFoodAmountChanged, OnCurrentFoodAmountChanged);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerMaxFoodAmountChanged, OnMaxFoodAmountChanged);
 	}
 
 	private void OnDisable()
 	{
-		CustomEventManager.Instance?.Unsubscribe(CustomEventManager.CustomGameEvent.PlayerCurrentFoodAmountChanged, OnCurrentFoodAmountChanged);
-		CustomEventManager.Instance?.Unsubscribe(CustomEventManager.CustomGameEvent.PlayerMaxFoodAmountChanged, OnMaxFoodAmountChanged);
+		CustomEventManager.Instance?.UnsubscribeAll(this);
+	}
+
+	void OnFloorChanged(object a_floorCount)
+	{
+		m_floorCountText.text = $"Floor: B{(int) a_floorCount}";
 	}
 
 	void OnCurrentFoodAmountChanged(object a_amount)
