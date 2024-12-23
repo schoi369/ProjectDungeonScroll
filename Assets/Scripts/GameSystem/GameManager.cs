@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
 
 	public void StartNewGame()
 	{
+		OverlayCanvas.Instance.ShowHideGameOverPanel(false);
+
 		SetFloorCount(1);
 
 		m_boardManager.Clean();

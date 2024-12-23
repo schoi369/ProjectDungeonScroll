@@ -18,12 +18,15 @@ public class PlayerController : MonoBehaviour
 	public int m_maxFoodAmount = 100;
 	int CurrentFoodAmount { get; set; }
 	
+	public bool IsGameOver { get; set; } = false;
+
 	/// <summary>
 	/// Initialize
 	/// </summary>
 	public void Init()
 	{
 		IsMoving = false;
+		IsGameOver = false;
 		SetMaxFoodAmount(m_maxFoodAmount);
 		SetCurrentFoodAmount(m_maxFoodAmount);
 	}
@@ -76,6 +79,11 @@ public class PlayerController : MonoBehaviour
 	{
 		CurrentFoodAmount = a_amount;
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentFoodAmountChanged, CurrentFoodAmount);
+
+		if (CurrentFoodAmount <= 0)
+		{
+			GameOver();
+		}
 	}
 
 	void SetMaxFoodAmount(int a_max)
@@ -84,9 +92,24 @@ public class PlayerController : MonoBehaviour
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxFoodAmountChanged, m_maxFoodAmount);
 	}
 
+	void GameOver()
+	{
+		IsGameOver = true;
+		OverlayCanvas.Instance.ShowHideGameOverPanel(true);
+	}
+
 	// Update is called once per frame
 	void Update()
 	{
+		if (IsGameOver)
+		{
+			if (Input.GetKeyDown(KeyCode.Space))
+			{
+				GameManager.Instance.StartNewGame();
+			}
+			return;
+		}
+
 		if (IsMoving && MoveTarget != null)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, MoveTarget, m_moveSpeed * Time.deltaTime);
