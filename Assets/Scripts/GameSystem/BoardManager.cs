@@ -36,7 +36,7 @@ public class BoardManager : MonoBehaviour
 		}
 	}
 
-	public enum FaceDirection
+	public enum Direction
 	{
 		NONE,
 		UP,
@@ -153,7 +153,7 @@ public class BoardManager : MonoBehaviour
 		}
 	}
 
-	public List<Vector2Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector2Int a_center, FaceDirection a_direction)
+	public List<Vector2Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector2Int a_center, Direction a_direction)
 	{
 		List<Vector2Int> result = new();
 
@@ -168,19 +168,19 @@ public class BoardManager : MonoBehaviour
 
 					switch (a_direction)
 					{
-						case FaceDirection.UP:
+						case Direction.UP:
 							offsetX = y - AttackAreaSO.Center;
 							offsetY = x - AttackAreaSO.Center;
 							break;
-						case FaceDirection.RIGHT:
+						case Direction.RIGHT:
 							offsetX = x - AttackAreaSO.Center;
 							offsetY = y - AttackAreaSO.Center;
 							break;
-						case FaceDirection.DOWN:
+						case Direction.DOWN:
 							offsetX = AttackAreaSO.Center - y;
 							offsetY = AttackAreaSO.Center - x;
 							break;
-						case FaceDirection.LEFT:
+						case Direction.LEFT:
 							offsetX = AttackAreaSO.Center - x;
 							offsetY = AttackAreaSO.Center - y;
 							break;

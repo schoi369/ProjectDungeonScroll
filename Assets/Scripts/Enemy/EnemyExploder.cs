@@ -35,7 +35,7 @@ public class EnemyExploder : CellObject
     void TurnHappened()
 	{
 		var board = GameManager.Instance.m_boardManager;
-		var cellPosList = GameManager.Instance.m_boardManager.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.FaceDirection.LEFT);
+		var cellPosList = GameManager.Instance.m_boardManager.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.Direction.LEFT);
 
 		Counter++;
 		int remainder = Counter % 3;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class PlayerController : MonoBehaviour
 	int CurrentFoodAmount { get; set; }
 	
 	public bool IsGameOver { get; set; } = false;
+
+	bool RequestMovement { get; set; } = false;
+	BoardManager.Direction RequestedDirection { get; set; } = BoardManager.Direction.NONE; 
 
 	/// <summary>
 	/// Initialize
@@ -42,11 +46,10 @@ public class PlayerController : MonoBehaviour
 		MoveTo(a_cellPos, instant: true);
 	}
 
-	public void MoveTo(Vector2Int a_cellPos, BoardManager.FaceDirection a_direction = BoardManager.FaceDirection.NONE, bool instant = false)
+	public void MoveTo(Vector2Int a_cellPos, BoardManager.Direction a_direction = BoardManager.Direction.NONE, bool instant = false)
 	{
 		var cellPosBeforeMove = m_cellPos;
 		m_cellPos = a_cellPos;
-		Debug.Log(m_cellPos.x);
 
 		if (instant)
 		{
@@ -98,15 +101,19 @@ public class PlayerController : MonoBehaviour
 		OverlayCanvas.Instance.ShowHideGameOverPanel(true);
 	}
 
-	// Update is called once per frame
+	bool CanMove()
+	{
+		bool result = true;
+
+		result &= !IsGameOver;
+
+		return result;
+	}
+
 	void Update()
 	{
-		if (IsGameOver)
+		if (!CanMove())
 		{
-			if (Input.GetKeyDown(KeyCode.Space))
-			{
-				GameManager.Instance.StartNewGame();
-			}
 			return;
 		}
 
@@ -126,36 +133,46 @@ public class PlayerController : MonoBehaviour
 			return;
 		}
 
-		Vector2Int newCellTargetPos = m_cellPos; // put current first
-		bool hasMoved = false;
-		BoardManager.FaceDirection direction = BoardManager.FaceDirection.NONE;
+		Vector2Int newCellTargetPos = m_cellPos; // First, set the current cell pos as target.
+		bool needToMove = false;
+		BoardManager.Direction direction = BoardManager.Direction.NONE;
 
-		if (Input.GetKeyDown(KeyCode.W))
+		if (RequestMovement)
 		{
-			newCellTargetPos.y += 1;
-			hasMoved = true;
-			direction = BoardManager.FaceDirection.UP;
-		}
-		else if (Input.GetKeyDown(KeyCode.S))
-		{
-			newCellTargetPos.y -= 1;
-			hasMoved = true;
-			direction = BoardManager.FaceDirection.DOWN;
-		}
-		else if (Input.GetKeyDown(KeyCode.D))
-		{
-			newCellTargetPos.x += 1;
-			hasMoved = true;
-			direction = BoardManager.FaceDirection.RIGHT;
+			needToMove = true;
+			direction = RequestedDirection;
+
+			switch (direction)
+			{
+				case BoardManager.Direction.UP:
+					newCellTargetPos.y += 1;
+					break;
+				case BoardManager.Direction.DOWN:
+					newCellTargetPos.y -= 1;
+					break;
+				case BoardManager.Direction.RIGHT:
+					newCellTargetPos.x += 1;
+					break;
+				case BoardManager.Direction.LEFT:
+					newCellTargetPos.x -= 1;
+					break;
+				default:
+					break;
+			}
+
+			// Set Request values to default.
+			RequestMovement = false;
+			RequestedDirection = BoardManager.Direction.NONE;
 		}
 
-		if (hasMoved)
+		if (needToMove)
 		{
 			BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
 
 			if (cellData != null && cellData.Passable)
 			{
 				ChangeCurrentFoodAmount(-1);
+
 				if (cellData.m_containedObject == null)
 				{
 					MoveTo(newCellTargetPos, direction);
@@ -164,8 +181,87 @@ public class PlayerController : MonoBehaviour
 				{
 					MoveTo(newCellTargetPos, direction);
 				}
+
 				GameManager.Instance.TurnManager.Tick();
 			}
+		}
+	}
+
+	public void OnInputMoveUp(InputAction.CallbackContext a_context)
+	{
+		if (!CanAcceptMoveInput())
+		{
+			return;
+		}
+
+		if (a_context.performed)
+		{
+			RequestMovement = true;
+			RequestedDirection = BoardManager.Direction.UP;
+		}
+	}
+
+	public void OnInputMoveDown(InputAction.CallbackContext a_context)
+	{
+		if (!CanAcceptMoveInput())
+		{
+			return;
+		}
+
+		if (a_context.performed)
+		{
+			RequestMovement = true;
+			RequestedDirection = BoardManager.Direction.DOWN;
+		}
+	}
+
+	public void OnInputMoveRight(InputAction.CallbackContext a_context)
+	{
+		if (!CanAcceptMoveInput())
+		{
+			return;
+		}
+
+		if (a_context.performed)
+		{
+			RequestMovement = true;
+			RequestedDirection = BoardManager.Direction.RIGHT;
+		}
+	}
+
+	public void OnInputMoveLeft(InputAction.CallbackContext a_context)
+	{
+		if (!CanAcceptMoveInput())
+		{
+			return;
+		}
+
+		if (a_context.performed)
+		{
+			RequestMovement = true;
+			RequestedDirection = BoardManager.Direction.LEFT;
+		}
+	}
+
+	bool CanAcceptMoveInput()
+	{
+		bool result = true;
+
+		result &= !IsMoving;
+
+		return result;
+	}
+
+	public void OnInputRestart(InputAction.CallbackContext a_context)
+	{
+		if (!IsGameOver)
+		{
+			return;
+		}
+
+		if (a_context.performed)
+		{
+			GameManager.Instance.StartNewGame();
 		}
 	}
 }
