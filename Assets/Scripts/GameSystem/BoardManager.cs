@@ -57,6 +57,10 @@ public class BoardManager : MonoBehaviour
 	public GroundTile m_prefabGroundTile;
 	public COStairs m_prefabCOStairs;
 
+	[Header("Enemies")]
+	public EnemyExploder m_exploderPrefab;
+
+
 	public void Init()
 	{
 		m_emptyCellPositionList = new List<Vector2Int>();
@@ -81,6 +85,8 @@ public class BoardManager : MonoBehaviour
 		Vector2Int stairsCellPos = new Vector2Int(m_width - 1, m_height / 2);
 		AddObject(Instantiate(m_prefabCOStairs), stairsCellPos);
 		m_emptyCellPositionList.Remove(stairsCellPos);
+
+		GenerateEnemy();
 	}
 
 	public void Clean()
@@ -212,6 +218,20 @@ public class BoardManager : MonoBehaviour
 				var data = GetCellData(new Vector2Int(x, y));
 				data.m_groundTile.SetSpriteAlpha(.5f);
 			}
+		}
+	}
+
+	void GenerateEnemy()
+	{
+		int enemyCount = 3;
+		for (int i = 0; i < enemyCount; i++)
+		{
+			int randomIndex = Random.Range(0, m_emptyCellPositionList.Count);
+			Vector2Int cellPos = m_emptyCellPositionList[randomIndex];
+
+			m_emptyCellPositionList.RemoveAt(randomIndex);
+			EnemyExploder exploder = Instantiate(m_exploderPrefab);
+			AddObject(exploder, cellPos);
 		}
 	}
 }

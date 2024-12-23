@@ -11,6 +11,11 @@ public class CellObject : MonoBehaviour
 		m_cellPos = a_cellPos;
 	}
 
+	public virtual void GetAttacked(int a_damage)
+	{
+
+	}
+
 	public virtual void PlayerEntered()
 	{
 

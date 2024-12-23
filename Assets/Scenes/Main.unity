@@ -840,6 +840,7 @@ MonoBehaviour:
   m_cellSize: 1
   m_prefabGroundTile: {fileID: 2369915219063284019, guid: 77aba834c9c2a984d96bb94cc5cfe4ad, type: 3}
   m_prefabCOStairs: {fileID: 1172923118791334066, guid: 8c1b8ed4dff615b43a2eb44b54c9284b, type: 3}
+  m_exploderPrefab: {fileID: -6800117136066514012, guid: 7deff2c0a2828e34da0efb959db62e5e, type: 3}
 --- !u!1 &878495906
 GameObject:
   m_ObjectHideFlags: 3
