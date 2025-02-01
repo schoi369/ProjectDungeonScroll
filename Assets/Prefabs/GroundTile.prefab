@@ -100,3 +100,4 @@ MonoBehaviour:
   m_spriteRenderer: {fileID: 4085380729969740211}
   m_dangerColor: {r: 1, g: 0.6117647, b: 0.6117647, a: 1}
   m_passable: 1
+  _destroyedGroundSprite: {fileID: 21300000, guid: 1995a23384c6e394bac424e2ac6a8a27, type: 3}

@@ -99,6 +99,8 @@ public class PlayerController : MonoBehaviour
 	{
 		IsGameOver = true;
 		OverlayCanvas.Instance.ShowHideGameOverPanel(true);
+
+		m_board.StopBoardDestroying();
 	}
 
 	bool CanMove()

@@ -60,6 +60,7 @@ public class BoardManager : MonoBehaviour
 	[Header("Enemies")]
 	public EnemyExploder m_exploderPrefab;
 
+	Coroutine CoBoardCollapsing { get; set; }
 
 	public void Init()
 	{
@@ -87,6 +88,9 @@ public class BoardManager : MonoBehaviour
 		m_emptyCellPositionList.Remove(stairsCellPos);
 
 		GenerateEnemy();
+
+		StopBoardDestroying();
+		CoBoardCollapsing = StartCoroutine(StateBoardDestroying());
 	}
 
 	public void Clean()
@@ -206,21 +210,6 @@ public class BoardManager : MonoBehaviour
 		a_obj.Init(a_cellPos);
 	}
 
-	// TODO: Probably not optimized. Do it later.
-	public void RefreshGroundTiles()
-	{
-		Vector2Int playerCellPos = GameManager.Instance.m_player.CellPos;
-
-		for (int y = 0; y < m_height; y++)
-		{
-			for (int x = 0; x < playerCellPos.x - 1; x++)
-			{
-				var data = GetCellData(new Vector2Int(x, y));
-				data.m_groundTile.SetSpriteAlpha(.5f);
-			}
-		}
-	}
-
 	void GenerateEnemy()
 	{
 		int enemyCount = 3;
@@ -234,4 +223,48 @@ public class BoardManager : MonoBehaviour
 			AddObject(exploder, cellPos);
 		}
 	}
+
+	/// <summary>
+	/// x초마다 보드 가장 왼쪽의 Column부터 사용불가하게 하는 코루틴.
+	/// </summary>
+	/// <returns></returns>
+	IEnumerator StateBoardDestroying()
+	{
+		int targetColumnIndex = 0;
+		while (true)
+		{
+			yield return new WaitForSeconds(1f);
+
+			for (int y = 0; y < m_height; y++)
+			{
+				var data = GetCellData(new Vector2Int(targetColumnIndex, y));
+				data.m_groundTile.SetStatus(GroundTile.TileStatus.DESTROYED);
+			}
+			targetColumnIndex++;
+		}
+	}
+
+	public void StopBoardDestroying()
+	{
+		if (CoBoardCollapsing != null)
+		{
+			StopCoroutine(CoBoardCollapsing);
+			CoBoardCollapsing = null;
+		}
+	}
+
+	// TODO: Probably not optimized. Do it later.
+	//public void RefreshGroundTiles()
+	//{
+	//	Vector2Int playerCellPos = GameManager.Instance.m_player.CellPos;
+
+	//	for (int y = 0; y < m_height; y++)
+	//	{
+	//		for (int x = 0; x < playerCellPos.x - 1; x++)
+	//		{
+	//			var data = GetCellData(new Vector2Int(x, y));
+	//			data.m_groundTile.SetSpriteAlpha(.5f);
+	//		}
+	//	}
+	//}
 }
