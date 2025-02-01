@@ -5,6 +5,7 @@ using UnityEngine;
 public class CellObject : MonoBehaviour
 {
 	protected Vector2Int m_cellPos;
+	public bool m_canBeAttacked;
 
 	public virtual void Init(Vector2Int a_cellPos)
 	{

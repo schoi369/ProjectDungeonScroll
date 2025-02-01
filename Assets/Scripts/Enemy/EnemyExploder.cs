@@ -27,7 +27,16 @@ public class EnemyExploder : CellObject
 		CurrentHP = m_maxHP;
 	}
 
-    public override bool PlayerWantsToEnter()
+	public override void GetAttacked(int a_damage)
+	{
+		CurrentHP -= a_damage;
+		if (CurrentHP <= 0)
+		{
+			GameObject.Destroy(this.gameObject);
+		}
+	}
+
+	public override bool PlayerWantsToEnter()
     {
 		return false;
     }

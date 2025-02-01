@@ -97,5 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e008b2b3e69b274481a27bd96e42ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_canBeAttacked: 1
   m_maxHP: 1
   m_attackArea: {fileID: 11400000, guid: 79e79236864a08c46b0d966de25c15e0, type: 2}

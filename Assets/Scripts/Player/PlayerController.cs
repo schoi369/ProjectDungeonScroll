@@ -60,16 +60,6 @@ public class PlayerController : MonoBehaviour
 		{
 			IsMoving = true;
 			MoveTarget = m_board.CellPosToWorldPos(m_cellPos);
-
-			// Attack based on cellPosBeforeMove
-			var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, cellPosBeforeMove, a_direction);
-			foreach (var targetCellPos in cellPosList)
-			{
-				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
-				AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
-				// TODO: Inflict Damage
-				
-			}
 		}
 	}
 
@@ -136,56 +126,69 @@ public class PlayerController : MonoBehaviour
 		}
 
 		Vector2Int newCellTargetPos = m_cellPos; // First, set the current cell pos as target.
-		bool needToMove = false;
-		BoardManager.Direction direction = BoardManager.Direction.NONE;
-
 		if (RequestMovement)
 		{
-			needToMove = true;
-			direction = RequestedDirection;
-
-			switch (direction)
+			// Check the direction if there are anything that the player would attack.
+			bool attackedSomething = false;
+			var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_cellPos, RequestedDirection);
+			foreach (var targetCellPos in cellPosList)
 			{
-				case BoardManager.Direction.UP:
-					newCellTargetPos.y += 1;
-					break;
-				case BoardManager.Direction.DOWN:
-					newCellTargetPos.y -= 1;
-					break;
-				case BoardManager.Direction.RIGHT:
-					newCellTargetPos.x += 1;
-					break;
-				case BoardManager.Direction.LEFT:
-					newCellTargetPos.x -= 1;
-					break;
-				default:
-					break;
+				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
+				AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
+				var data = m_board.GetCellData(targetCellPos);
+				if (data.m_containedObject && data.m_containedObject.m_canBeAttacked)
+				{
+					attackedSomething = true;
+					data.m_containedObject.GetAttacked(1);
+				}
 			}
+
+			if (attackedSomething)
+			{
+
+			}
+			else
+			{
+				switch (RequestedDirection)
+				{
+					case BoardManager.Direction.UP:
+						newCellTargetPos.y += 1;
+						break;
+					case BoardManager.Direction.DOWN:
+						newCellTargetPos.y -= 1;
+						break;
+					case BoardManager.Direction.RIGHT:
+						newCellTargetPos.x += 1;
+						break;
+					case BoardManager.Direction.LEFT:
+						newCellTargetPos.x -= 1;
+						break;
+					default:
+						break;
+				}
+
+				BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
+				if (cellData != null && cellData.Passable)
+				{
+					ChangeCurrentFoodAmount(-1);
+
+					if (cellData.m_containedObject == null)
+					{
+						MoveTo(newCellTargetPos, RequestedDirection);
+					}
+					else if (cellData.m_containedObject.PlayerWantsToEnter())
+					{
+						MoveTo(newCellTargetPos, RequestedDirection);
+					}
+				}
+			}
+
+
+			GameManager.Instance.TurnManager.Tick();
 
 			// Set Request values to default.
 			RequestMovement = false;
 			RequestedDirection = BoardManager.Direction.NONE;
-		}
-
-		if (needToMove)
-		{
-			BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
-
-			if (cellData != null && cellData.Passable)
-			{
-				ChangeCurrentFoodAmount(-1);
-
-				if (cellData.m_containedObject == null)
-				{
-					MoveTo(newCellTargetPos, direction);
-				}
-				else if (cellData.m_containedObject.PlayerWantsToEnter())
-				{
-					MoveTo(newCellTargetPos, direction);
-				}
-
-				GameManager.Instance.TurnManager.Tick();
-			}
 		}
 	}
 
