@@ -56,6 +56,16 @@ public class GameManager : MonoBehaviour
 		m_player.Spawn(m_boardManager, new Vector2Int(1, 1));
 	}
 
+	public bool IsPlayerAt(Vector2Int a_cellPos)
+	{
+		if (m_player == null)
+		{
+			return false;
+		}
+		Debug.Log($"PlayerCellPos: {m_player.CellPos}");
+		return m_player.CellPos == a_cellPos;
+	}
+
 	void OnTurnHappen()
 	{
 		Debug.Log("GameManager: OnTurnHappen");

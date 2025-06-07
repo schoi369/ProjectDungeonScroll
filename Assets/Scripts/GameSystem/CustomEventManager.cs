@@ -14,8 +14,8 @@ public class CustomEventManager : MonoBehaviour
 		FloorChanged = 1,
 
 		// Player Info
-		PlayerMaxFoodAmountChanged = 100,
-		PlayerCurrentFoodAmountChanged = 101,
+		PlayerMaxHPChanged = 100,
+		PlayerCurrentHPChanged = 101,
 	}
 
 	static CustomEventManager _instance = null;

@@ -9,16 +9,20 @@ public class UIPlayerInfo : MonoBehaviour
 	public TextMeshProUGUI m_floorCountText;
 
 	// Food Amount
-	public TextMeshProUGUI m_foodAmountText;
 	int CurrentFoodAmount { get; set; }
 	int MaxFoodAmount { get; set; }
+
+	// HP
+	public TextMeshProUGUI m_hpText;
+	int CurrentHP { get; set; }
+	int MaxHP { get; set; }
 
 	private void OnEnable()
 	{
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.FloorChanged, OnFloorChanged);
 
-		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerCurrentFoodAmountChanged, OnCurrentFoodAmountChanged);
-		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerMaxFoodAmountChanged, OnMaxFoodAmountChanged);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, OnMaxHPChanged);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, OnCurrentHPChanged);
 	}
 
 	private void OnDisable()
@@ -31,20 +35,20 @@ public class UIPlayerInfo : MonoBehaviour
 		m_floorCountText.text = $"Floor: B{(int) a_floorCount}";
 	}
 
-	void OnCurrentFoodAmountChanged(object a_amount)
+	void OnCurrentHPChanged(object a_hp)
 	{
-		CurrentFoodAmount = (int) a_amount;
-		RefreshFoodAmountText();
+		CurrentHP = (int) a_hp;
+		RefreshHPText();
 	}
 
-	void OnMaxFoodAmountChanged(object a_max)
+	void OnMaxHPChanged(object a_max)
 	{
-		MaxFoodAmount = (int) a_max;
-		RefreshFoodAmountText();
+		MaxHP = (int) a_max;
+		RefreshHPText();
 	}
 
-	void RefreshFoodAmountText()
+	void RefreshHPText()
 	{
-		m_foodAmountText.text = $"Food: {CurrentFoodAmount} / {MaxFoodAmount}";
+		m_hpText.text = $"HP: {CurrentHP} / {MaxHP}";
 	}
 }

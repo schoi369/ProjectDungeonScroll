@@ -38,7 +38,10 @@ public class AttackCellVisualPool : MonoBehaviour
 			},
 			visual =>
 			{
-				Destroy(visual.gameObject);
+				if (visual && visual.gameObject)
+				{
+					Destroy(visual.gameObject);
+				}
 			},
 			false,
 			10,

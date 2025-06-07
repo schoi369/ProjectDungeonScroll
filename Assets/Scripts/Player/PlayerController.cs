@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
 
 	public float m_moveSpeed = 5f;
 
+	public int m_maxHP = 5;
+	int CurrentHP { get; set; }
+
+
 	bool IsMoving { get; set; }
 	Vector3 MoveTarget { get; set; }
 
@@ -31,8 +35,10 @@ public class PlayerController : MonoBehaviour
 	{
 		IsMoving = false;
 		IsGameOver = false;
-		SetMaxFoodAmount(m_maxFoodAmount);
-		SetCurrentFoodAmount(m_maxFoodAmount);
+
+		CurrentHP = m_maxHP;
+        CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
+        CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
 	}
 
 	/// <summary>
@@ -63,27 +69,24 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	void ChangeCurrentFoodAmount(int a_delta)
+	public void TakeDamage(int a_damage)
 	{
-		SetCurrentFoodAmount(CurrentFoodAmount + a_delta);
-	}
+		if (IsGameOver) // TODO: CanTakeDamage 등의 변수로 전체적인 체크 하도록 업데이트.
+		{
+			return;
+		}
 
-	void SetCurrentFoodAmount(int a_amount)
-	{
-		CurrentFoodAmount = a_amount;
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentFoodAmountChanged, CurrentFoodAmount);
+		Debug.Log("Player taking damage");
 
-		if (CurrentFoodAmount <= 0)
+		CurrentHP -= a_damage;
+        CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+
+        if (CurrentHP <= 0)
 		{
 			GameOver();
 		}
 	}
 
-	void SetMaxFoodAmount(int a_max)
-	{
-		m_maxFoodAmount = a_max;
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxFoodAmountChanged, m_maxFoodAmount);
-	}
 
 	void GameOver()
 	{
@@ -170,8 +173,6 @@ public class PlayerController : MonoBehaviour
 				BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
 				if (cellData != null && cellData.Passable)
 				{
-					ChangeCurrentFoodAmount(-1);
-
 					if (cellData.m_containedObject == null)
 					{
 						MoveTo(newCellTargetPos, RequestedDirection);

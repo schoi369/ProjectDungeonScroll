@@ -67,6 +67,12 @@ public class EnemyExploder : CellObject
 
 					Vector3 cellWorldPos = board.CellPosToWorldPos(targetCellPos);
 					AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
+
+					Debug.Log($"TargetCellPos: {targetCellPos}");
+					if (GameManager.Instance.IsPlayerAt(targetCellPos))
+					{
+						GameManager.Instance.m_player.TakeDamage(1);
+					}
 				}
 				break;
 		}
