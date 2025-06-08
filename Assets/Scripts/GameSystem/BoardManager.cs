@@ -59,6 +59,7 @@ public class BoardManager : MonoBehaviour
 
 	[Header("Enemies")]
 	public EnemyExploder m_exploderPrefab;
+	public EnemyWalker m_walkerPrefab;
 
 	[Header("Board Settings")]
 	public float m_CollapseInterval = 1f;
@@ -215,8 +216,10 @@ public class BoardManager : MonoBehaviour
 
 	void GenerateEnemy()
 	{
-		int enemyCount = 3;
-		for (int i = 0; i < enemyCount; i++)
+		int exploderCount = 3;
+		int walkerCount = 3;
+
+		for (int i = 0; i < exploderCount; i++)
 		{
 			int randomIndex = Random.Range(0, m_emptyCellPositionList.Count);
 			Vector2Int cellPos = m_emptyCellPositionList[randomIndex];
@@ -224,6 +227,16 @@ public class BoardManager : MonoBehaviour
 			m_emptyCellPositionList.RemoveAt(randomIndex);
 			EnemyExploder exploder = Instantiate(m_exploderPrefab);
 			AddObject(exploder, cellPos);
+		}
+
+		for (int i = 0; i < walkerCount; i++)
+		{
+			int randomIndex = Random.Range(0, m_emptyCellPositionList.Count);
+			Vector2Int cellPos = m_emptyCellPositionList[randomIndex];
+
+			m_emptyCellPositionList.RemoveAt(randomIndex);
+			EnemyWalker walker = Instantiate(m_walkerPrefab);
+			AddObject(walker, cellPos);
 		}
 	}
 
@@ -285,4 +298,48 @@ public class BoardManager : MonoBehaviour
 	//		}
 	//	}
 	//}
+
+	/// <summary>
+	/// 해당 셀이 다른 오브젝트가 없고, 지나갈 수 있는 타일인지 확인합니다.
+	/// </summary>
+	public bool IsCellWalkable(Vector2Int a_cellPos)
+	{
+		var data = GetCellData(a_cellPos);
+		if (data == null) // 보드 바깥
+		{
+			return false;
+		}
+
+		if (data.m_containedObject != null) // 다른 오브젝트가 있음
+		{
+			return false;
+		}
+
+		if (GameManager.Instance.IsPlayerAt(a_cellPos)) // 플레이어가 있음
+		{
+			return false;
+		}
+
+		return data.Passable; // 타일의 Passable 속성 반환
+	}
+
+	/// <summary>
+	/// 특정 CellObject를 새로운 위치로 이동시킵니다. (보드 데이터 및 실제 위치 포함)
+	/// </summary>
+	public void MoveObjectOnBoard(CellObject a_obj, Vector2Int a_toPos)
+	{
+		Vector2Int fromPos = a_obj.CellPos;
+
+		// 이전 위치의 데이터를 정리
+		GetCellData(fromPos).m_containedObject = null;
+
+		// 새로운 위치에 오브젝트 정보 설정
+		GetCellData(a_toPos).m_containedObject = a_obj;
+
+		// 오브젝트 내부의 위치 정보 갱신
+		a_obj.CellPos = a_toPos;
+
+		// 실제 게임 오브젝트의 위치를 이동
+		a_obj.transform.position = CellPosToWorldPos(a_toPos);
+	}
 }
