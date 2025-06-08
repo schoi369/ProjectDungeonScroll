@@ -31,7 +31,12 @@ public class PlayerController : MonoBehaviour
 	public int CurrentExp { get; private set; }
 	public int m_expToLevelUp = 30; // 차후 ScriptableObject 등으로 전체적 레벨업 세팅 가능하게 변화할지도.
 
+	int m_pendingLevelUps = 0;
+	public int PendingLevelUps => m_pendingLevelUps;
+
+	// Upgrades
 	private List<UpgradeSO> m_activeUpgrades = new();
+	public List<UpgradeSO> ActiveUpgrades => m_activeUpgrades;
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
 
 	public List<UpgradeSO> m_testUpgrades = new();
@@ -52,6 +57,7 @@ public class PlayerController : MonoBehaviour
 		// 레벨, 경험치 관련 초기화
 		Level = 1;
 		CurrentExp = 0;
+		m_pendingLevelUps = 0;
 
 		// 업그레이드 관련 변수 초기화
 		PeacefulTurns = 0;
@@ -129,10 +135,20 @@ public class PlayerController : MonoBehaviour
 	{
 		Level++;
 		CurrentExp -= m_expToLevelUp; // 넘긴 경험치 남기기.
-		
+
 		//m_expToLevelUp = (int) (m_expToLevelUp * 1.5f); // 필요 경험치 증가 예시.
-		
-		Debug.Log($"레벨업! 레벨 {Level} 달성");
+
+		m_pendingLevelUps++; // 레벨업 처리 예약 +1
+
+		Debug.Log($"레벨업! Level {Level} 달성! (대기 중: {m_pendingLevelUps}회)");
+	}
+
+	public void ConsumePendingLevelUp()
+	{
+		if (m_pendingLevelUps > 0)
+		{
+			m_pendingLevelUps--;
+		}
 	}
 
 	public void GameOver()

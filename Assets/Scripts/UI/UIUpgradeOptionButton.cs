@@ -1,0 +1,37 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class UIUpgradeOptionButton : MonoBehaviour
+{
+	[Header("UI References")]
+	public TextMeshProUGUI m_nameText;
+	public TextMeshProUGUI m_descriptionText;
+
+	private UpgradeSO m_representedUpgrade;
+
+	/// <summary>
+	/// 이 버튼이 어떤 업그레이드를 표시할지 설정하고 UI를 업데이트합니다.
+	/// </summary>
+	public void Setup(UpgradeSO a_upgradeData)
+	{
+		m_representedUpgrade = a_upgradeData;
+
+		m_nameText.text = m_representedUpgrade.upgradeName;
+		m_descriptionText.text = m_representedUpgrade.description;
+	}
+
+	/// <summary>
+	/// 이 버튼이 클릭되었을 때 호출될 메서드입니다.
+	/// </summary>
+	public void OnSelect()
+	{
+		if (m_representedUpgrade == null) return;
+
+		// 1. 플레이어에게 업그레이드 적용
+		GameManager.Instance.m_player.AddUpgrade(m_representedUpgrade);
+
+		// 2. GameManager에게 선택이 끝났음을 알림
+		GameManager.Instance.EndUpgradeSelection();
+	}
+}

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,12 +13,17 @@ public class GameManager : MonoBehaviour
 		GameStart,
 		PlayerTurn,
 		WorldTurn,
+		UpgradeSelection,
 		GameOver,
 	}
 	public GameState CurrentState { get; private set; }
 
 	public BoardManager m_boardManager;
 	public PlayerController m_player;
+	public UpgradeDatabase m_upgradeDatabase;
+
+	public UIUpgradeSelectionPanel m_upgradeSelectionPanel;
+
 
 	int FloorCount { get; set; } = 0;
 	private List<EnemyBase> m_enemies = new List<EnemyBase>();
@@ -92,6 +98,9 @@ public class GameManager : MonoBehaviour
 			case GameState.WorldTurn:
 				StartCoroutine(ProcessWorldTurn());
 				break;
+			case GameState.UpgradeSelection:
+				Debug.Log("업그레이드 선택 상태로 진입.");
+				break;
 			case GameState.GameOver:
 				// 게임 오버 로직
 				break;
@@ -104,7 +113,16 @@ public class GameManager : MonoBehaviour
 		{
 			OnPlayerTurnEnded?.Invoke();
 
-			UpdateGameState(GameState.WorldTurn);
+			// 플레이어 턴이 끝날 때 레벨업 처리.
+			if (m_player.PendingLevelUps > 0)
+			{
+				m_player.ConsumePendingLevelUp();
+				StartUpgradeSelection();
+			}
+			else
+			{
+				UpdateGameState(GameState.WorldTurn);
+			}
 		}
 	}
 
@@ -148,6 +166,46 @@ public class GameManager : MonoBehaviour
 		if (CurrentState != GameState.GameOver) // 플레이어가 적의 턴에 죽었을 수 있으므로 체크
 		{
 			UpdateGameState(GameState.PlayerTurn);
+		}
+	}
+
+	public void StartUpgradeSelection()
+	{
+		UpdateGameState(GameState.UpgradeSelection);
+
+		var playerUpgrades = m_player.ActiveUpgrades;
+		var availableUpgrades = m_upgradeDatabase.m_allUpgrades.
+			Where(upgrade => !playerUpgrades.Contains(upgrade)).ToList();
+
+		// 제공 가능한 업그레이드들을 무작위로 섞음
+		var shuffledUpgrades = availableUpgrades.OrderBy(x => UnityEngine.Random.value).ToList();
+
+		// 최대 3개를 선택 (가능한 업그레이드가 3개 미만이면 그만큼만 선택)
+		var options = shuffledUpgrades.Take(3).ToList();
+
+		if (options.Count > 0)
+		{
+			m_upgradeSelectionPanel.ShowOptions(options);
+		}
+		else
+		{
+			Debug.Log("선택할 수 있는 업그레이드가 더 이상 없습니다!");
+			EndUpgradeSelection();
+		}
+	}
+
+	public void EndUpgradeSelection()
+	{
+		m_upgradeSelectionPanel.Hide();
+
+		if (m_player.PendingLevelUps > 0)
+		{
+			m_player.ConsumePendingLevelUp();
+			StartUpgradeSelection();
+		}
+		else
+		{
+			UpdateGameState(GameState.WorldTurn);
 		}
 	}
 }
