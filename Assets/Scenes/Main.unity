@@ -154,7 +154,7 @@ MonoBehaviour:
   m_maxHP: 5
   m_maxFoodAmount: 20
   m_testUpgrades:
-  - {fileID: 11400000, guid: 683c39de561dac942b8ceda5479f41a4, type: 2}
+  - {fileID: 11400000, guid: bf3ebee6b3e0b914db626483fd4b3339, type: 2}
 --- !u!212 &206498441
 SpriteRenderer:
   m_ObjectHideFlags: 0

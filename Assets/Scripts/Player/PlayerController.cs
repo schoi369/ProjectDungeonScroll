@@ -26,10 +26,6 @@ public class PlayerController : MonoBehaviour
 
 	public bool IsGameOver { get; set; } = false;
 
-	// 입력 요청 관련 변수는 이제 ProcessPlayerAction 내부에서만 사용됩니다.
-	// bool RequestMovement { get; set; } = false;
-	// BoardManager.Direction RequestedDirection { get; set; } = BoardManager.Direction.NONE;
-
 	private List<UpgradeSO> m_activeUpgrades = new();
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyWalker : EnemyBase
 {
-	public override void ExecuteTurn()
+	protected override void PerformTurnLogic()
 	{
 		var player = GameManager.Instance.m_player;
 		var board = GameManager.Instance.m_boardManager;

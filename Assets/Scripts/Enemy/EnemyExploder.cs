@@ -8,7 +8,7 @@ public class EnemyExploder : EnemyBase
 
 	int Counter { get; set; } = 0;
 
-	public override void ExecuteTurn()
+	protected override void PerformTurnLogic()
 	{
 		var board = GameManager.Instance.m_boardManager;
 		var cellPosList = board.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.Direction.LEFT); // 방향은 현재 무관

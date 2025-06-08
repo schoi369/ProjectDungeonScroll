@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class GameManager : MonoBehaviour
 
 	int FloorCount { get; set; } = 0;
 	private List<EnemyBase> m_enemies = new List<EnemyBase>();
+
+	public event Action OnPlayerTurnEnded;
 
 	void Awake()
 	{
@@ -99,6 +102,8 @@ public class GameManager : MonoBehaviour
 	{
 		if (CurrentState == GameState.PlayerTurn)
 		{
+			OnPlayerTurnEnded?.Invoke();
+
 			UpdateGameState(GameState.WorldTurn);
 		}
 	}

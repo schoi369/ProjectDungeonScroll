@@ -6,6 +6,10 @@ public abstract class EnemyBase : CellObject
 	public int m_maxHP = 1;
 	protected int CurrentHP { get; private set; }
 	public bool IsDead { get; private set; } = false;
+	public bool IsStunned { get; set; } = false;
+
+	[Header("Visuals")]
+	public GameObject m_stunIcon;
 
 	// GameManager에 자신을 등록/해제
 	protected virtual void OnEnable()
@@ -29,6 +33,8 @@ public abstract class EnemyBase : CellObject
 		base.Init(a_cellPos);
 		CurrentHP = m_maxHP;
 		IsDead = false;
+
+		m_stunIcon.SetActive(false);
 	}
 
 	public override void GetAttacked(int a_damage)
@@ -53,6 +59,26 @@ public abstract class EnemyBase : CellObject
 		return false;
 	}
 
-	// 자식 클래스가 자신의 턴에 수행할 모든 로직을 이 메서드 안에서 구현합니다.
-	public abstract void ExecuteTurn();
+	public void ExecuteTurn()
+	{
+		if (IsStunned)
+		{
+			Debug.Log($"{name} is stunned and skips a turn.");
+			SetStun(false);
+			return;
+		}
+
+		PerformTurnLogic();
+	}
+
+	protected abstract void PerformTurnLogic();
+
+	public void SetStun(bool a_stun)
+	{
+		IsStunned = a_stun;
+		if (m_stunIcon != null)
+		{
+			m_stunIcon.SetActive(a_stun);
+		}
+	}
 }
