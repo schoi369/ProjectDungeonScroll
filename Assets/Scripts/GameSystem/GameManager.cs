@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
 
 	void OnTurnHappen()
 	{
-		Debug.Log("GameManager: OnTurnHappen");
+		//Debug.Log("GameManager: OnTurnHappen");
 	}
 
 	void SetFloorCount(int a_newCount)

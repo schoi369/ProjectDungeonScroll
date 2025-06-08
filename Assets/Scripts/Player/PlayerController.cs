@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,7 +27,13 @@ public class PlayerController : MonoBehaviour
 	public bool IsGameOver { get; set; } = false;
 
 	bool RequestMovement { get; set; } = false;
-	BoardManager.Direction RequestedDirection { get; set; } = BoardManager.Direction.NONE; 
+	BoardManager.Direction RequestedDirection { get; set; } = BoardManager.Direction.NONE;
+
+	private List<UpgradeSO> m_activeUpgrades = new();
+	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
+
+	public List<UpgradeSO> m_testUpgrades = new();
+
 
 	/// <summary>
 	/// Initialize
@@ -39,6 +46,12 @@ public class PlayerController : MonoBehaviour
 		CurrentHP = m_maxHP;
         CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
         CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+
+		// 테스트용 업그레이드 적용
+		foreach (var upgrade in m_testUpgrades)
+		{
+			AddUpgrade(upgrade);
+		}
 	}
 
 	/// <summary>
@@ -143,6 +156,7 @@ public class PlayerController : MonoBehaviour
 				{
 					attackedSomething = true;
 					data.m_containedObject.GetAttacked(1);
+					OnAttackLanded?.Invoke(data.m_containedObject, RequestedDirection);
 				}
 			}
 
@@ -192,6 +206,25 @@ public class PlayerController : MonoBehaviour
 			RequestedDirection = BoardManager.Direction.NONE;
 		}
 	}
+
+	/// <summary>
+	/// 새로운 업그레이드를 획득하고 적용합니다.
+	/// </summary>
+	public void AddUpgrade(UpgradeSO a_upgrade)
+	{
+		if (m_activeUpgrades.Contains(a_upgrade))
+		{
+			return; // 중복 획득 방지
+		}
+
+		m_activeUpgrades.Add(a_upgrade);
+		a_upgrade.Apply(this.gameObject);
+
+		Debug.Log($"업그레이드 획득: {a_upgrade.upgradeName}");
+	}
+
+	//----------------------------------------------------------------
+	// Inputs
 
 	public void OnInputMoveUp(InputAction.CallbackContext a_context)
 	{

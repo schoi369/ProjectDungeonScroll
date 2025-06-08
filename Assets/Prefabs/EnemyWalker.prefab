@@ -101,4 +101,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_canBeAttacked: 1
-  m_maxHP: 1
+  m_maxHP: 5

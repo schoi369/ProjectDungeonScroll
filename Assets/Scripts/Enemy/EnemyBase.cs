@@ -6,12 +6,14 @@ public abstract class EnemyBase : CellObject
 	public int m_maxHP = 1;
 	protected int CurrentHP { get; set; }
 
+	protected bool m_isMovementOverridden = false;
+
 	// 모든 적들은 턴 기반으로 행동하므로, EnemyBase에서 이벤트를 구독/해지
 	protected virtual void OnEnable()
 	{
 		if (GameManager.Instance != null && GameManager.Instance.TurnManager != null)
 		{
-			GameManager.Instance.TurnManager.OnTick += OnTurnPassed;
+			GameManager.Instance.TurnManager.OnTick += HandleTurn;
 		}
 	}
 
@@ -19,7 +21,7 @@ public abstract class EnemyBase : CellObject
 	{
 		if (GameManager.Instance != null && GameManager.Instance.TurnManager != null)
 		{
-			GameManager.Instance.TurnManager.OnTick -= OnTurnPassed;
+			GameManager.Instance.TurnManager.OnTick -= HandleTurn;
 		}
 	}
 
@@ -51,6 +53,26 @@ public abstract class EnemyBase : CellObject
 		return false;
 	}
 
+	void HandleTurn()
+	{
+		if (m_isMovementOverridden)
+		{
+			m_isMovementOverridden = false;
+		}
+		else
+		{
+			PerformMovement();
+		}
+
+		PerformAction();
+	}
+
 	// 자식 클래스가 반드시 구현해야 할 턴 별 행동
-	protected abstract void OnTurnPassed();
+	protected virtual void PerformMovement() {}
+	protected virtual void PerformAction() {}
+
+	public void OverrideNextMovement()
+	{
+		m_isMovementOverridden = true;
+	}
 }

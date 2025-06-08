@@ -8,7 +8,7 @@ public class EnemyExploder : EnemyBase
 
 	int Counter { get; set; } = 0;
 
-    protected override void OnTurnPassed()
+    protected override void PerformAction()
 	{
 		var board = GameManager.Instance.m_boardManager;
 		var cellPosList = GameManager.Instance.m_boardManager.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.Direction.LEFT);

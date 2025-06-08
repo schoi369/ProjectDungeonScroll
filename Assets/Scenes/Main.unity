@@ -153,6 +153,8 @@ MonoBehaviour:
   m_moveSpeed: 5
   m_maxHP: 5
   m_maxFoodAmount: 20
+  m_testUpgrades:
+  - {fileID: 11400000, guid: 683c39de561dac942b8ceda5479f41a4, type: 2}
 --- !u!212 &206498441
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -845,7 +847,7 @@ MonoBehaviour:
   m_prefabCOStairs: {fileID: 1172923118791334066, guid: 8c1b8ed4dff615b43a2eb44b54c9284b, type: 3}
   m_exploderPrefab: {fileID: -6800117136066514012, guid: 7deff2c0a2828e34da0efb959db62e5e, type: 3}
   m_walkerPrefab: {fileID: -2462235505342672282, guid: d322435d566df26458765baf8c275502, type: 3}
-  m_CollapseInterval: 1
+  m_CollapseInterval: 150
 --- !u!1 &878495906
 GameObject:
   m_ObjectHideFlags: 3
