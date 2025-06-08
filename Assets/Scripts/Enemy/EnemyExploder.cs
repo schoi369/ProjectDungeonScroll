@@ -8,29 +8,36 @@ public class EnemyExploder : EnemyBase
 
 	int Counter { get; set; } = 0;
 
-    protected override void PerformAction()
+	public override void ExecuteTurn()
 	{
 		var board = GameManager.Instance.m_boardManager;
-		var cellPosList = GameManager.Instance.m_boardManager.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.Direction.LEFT);
+		var cellPosList = board.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.Direction.LEFT); // 방향은 현재 무관
 
 		Counter++;
 		int remainder = Counter % 3;
 		switch (remainder)
 		{
 			case 0:
+				// 대기
 				break;
-			case 1:
+			case 1: // 폭발 예고
 				foreach (var targetCellPos in cellPosList)
 				{
 					var data = board.GetCellData(targetCellPos);
-					data.m_groundTile.SetStatus(GroundTile.TileStatus.DANGER);
+					if (data != null && data.m_groundTile != null)
+					{
+						data.m_groundTile.SetStatus(GroundTile.TileStatus.DANGER);
+					}
 				}
 				break;
-			case 2:
+			case 2: // 폭발
 				foreach (var targetCellPos in cellPosList)
 				{
 					var data = board.GetCellData(targetCellPos);
-					data.m_groundTile.SetStatus(GroundTile.TileStatus.NONE);
+					if (data != null && data.m_groundTile != null)
+					{
+						data.m_groundTile.SetStatus(GroundTile.TileStatus.NONE);
+					}
 
 					Vector3 cellWorldPos = board.CellPosToWorldPos(targetCellPos);
 					AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);

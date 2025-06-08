@@ -25,7 +25,6 @@ public class ShockwaveUpgradeSO : UpgradeSO
 
 	private void Knockback(CellObject targetEnemy, BoardManager.Direction a_direction)
 	{
-		// 필요한 정보 가져오기
 		var board = GameManager.Instance.m_boardManager;
 		var player = GameManager.Instance.m_player;
 
@@ -34,34 +33,18 @@ public class ShockwaveUpgradeSO : UpgradeSO
 		Vector2Int direction = Vector2Int.zero;
 		switch (a_direction)
 		{
-			case BoardManager.Direction.UP:
-				direction = Vector2Int.up;
-				break;
-			case BoardManager.Direction.DOWN:
-				direction = Vector2Int.down;
-				break;
-			case BoardManager.Direction.LEFT:
-				direction = Vector2Int.left;
-				break;
-			case BoardManager.Direction.RIGHT:
-				direction = Vector2Int.right;
-				break;
+			case BoardManager.Direction.UP: direction = Vector2Int.up; break;
+			case BoardManager.Direction.DOWN: direction = Vector2Int.down; break;
+			case BoardManager.Direction.LEFT: direction = Vector2Int.left; break;
+			case BoardManager.Direction.RIGHT: direction = Vector2Int.right; break;
 		}
 
-		// 밀려날 최종 위치 계산
 		Vector2Int knockbackPos = targetEnemy.CellPos + direction;
 
-		// 해당 위치로 이동 가능한지 확인 후 이동
 		if (board.IsCellWalkable(knockbackPos))
 		{
 			Debug.Log($"충격타 발동! {targetEnemy.name}을 {a_direction} 방향으로 밀어냅니다.");
 			board.MoveObjectOnBoard(targetEnemy, knockbackPos);
-
-			EnemyBase enemy = targetEnemy.GetComponent<EnemyBase>();
-			if (enemy != null)
-			{
-				enemy.OverrideNextMovement();
-			}
 		}
 	}
 }

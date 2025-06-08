@@ -23,11 +23,12 @@ public class PlayerController : MonoBehaviour
 
 	public int m_maxFoodAmount = 100;
 	int CurrentFoodAmount { get; set; }
-	
+
 	public bool IsGameOver { get; set; } = false;
 
-	bool RequestMovement { get; set; } = false;
-	BoardManager.Direction RequestedDirection { get; set; } = BoardManager.Direction.NONE;
+	// 입력 요청 관련 변수는 이제 ProcessPlayerAction 내부에서만 사용됩니다.
+	// bool RequestMovement { get; set; } = false;
+	// BoardManager.Direction RequestedDirection { get; set; } = BoardManager.Direction.NONE;
 
 	private List<UpgradeSO> m_activeUpgrades = new();
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
@@ -44,8 +45,8 @@ public class PlayerController : MonoBehaviour
 		IsGameOver = false;
 
 		CurrentHP = m_maxHP;
-        CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
-        CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
 
 		// 테스트용 업그레이드 적용
 		foreach (var upgrade in m_testUpgrades)
@@ -57,17 +58,14 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Board(Stage) related
 	/// </summary>
-	/// <param name="a_boardManager"></param>
-	/// <param name="a_cellPos"></param>
 	public void Spawn(BoardManager a_boardManager, Vector2Int a_cellPos)
 	{
 		m_board = a_boardManager;
 		MoveTo(a_cellPos, instant: true);
 	}
 
-	public void MoveTo(Vector2Int a_cellPos, BoardManager.Direction a_direction = BoardManager.Direction.NONE, bool instant = false)
+	public void MoveTo(Vector2Int a_cellPos, bool instant = false)
 	{
-		var cellPosBeforeMove = m_cellPos;
 		m_cellPos = a_cellPos;
 
 		if (instant)
@@ -84,7 +82,7 @@ public class PlayerController : MonoBehaviour
 
 	public void TakeDamage(int a_damage)
 	{
-		if (IsGameOver) // TODO: CanTakeDamage 등의 변수로 전체적인 체크 하도록 업데이트.
+		if (IsGameOver)
 		{
 			return;
 		}
@@ -92,40 +90,26 @@ public class PlayerController : MonoBehaviour
 		Debug.Log("Player taking damage");
 
 		CurrentHP -= a_damage;
-        CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
 
-        if (CurrentHP <= 0)
+		if (CurrentHP <= 0)
 		{
 			GameOver();
 		}
 	}
 
-
 	public void GameOver()
 	{
 		IsGameOver = true;
+		GameManager.Instance.UpdateGameState(GameManager.GameState.GameOver);
 		OverlayCanvas.Instance.ShowHideGameOverPanel(true);
 
 		m_board.StopBoardDestroying();
 	}
 
-	bool CanMove()
-	{
-		bool result = true;
-
-		result &= !IsGameOver;
-
-		return result;
-	}
-
 	void Update()
 	{
-		if (!CanMove())
-		{
-			return;
-		}
-
-		if (IsMoving && MoveTarget != null)
+		if (IsMoving)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, MoveTarget, m_moveSpeed * Time.deltaTime);
 			if (transform.position == MoveTarget)
@@ -137,74 +121,62 @@ public class PlayerController : MonoBehaviour
 					cellData.m_containedObject.PlayerEntered();
 				}
 			}
-
-			return;
 		}
+	}
 
-		Vector2Int newCellTargetPos = m_cellPos; // First, set the current cell pos as target.
-		if (RequestMovement)
+	private void ProcessPlayerAction(BoardManager.Direction a_direction)
+	{
+		// Check the direction if there are anything that the player would attack.
+		bool attackedSomething = false;
+		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_cellPos, a_direction);
+		foreach (var targetCellPos in cellPosList)
 		{
-			// Check the direction if there are anything that the player would attack.
-			bool attackedSomething = false;
-			var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_cellPos, RequestedDirection);
-			foreach (var targetCellPos in cellPosList)
+			Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
+			AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
+			var data = m_board.GetCellData(targetCellPos);
+			if (data.m_containedObject && data.m_containedObject.m_canBeAttacked)
 			{
-				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
-				AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
-				var data = m_board.GetCellData(targetCellPos);
-				if (data.m_containedObject && data.m_containedObject.m_canBeAttacked)
-				{
-					attackedSomething = true;
-					data.m_containedObject.GetAttacked(1);
-					OnAttackLanded?.Invoke(data.m_containedObject, RequestedDirection);
-				}
+				attackedSomething = true;
+				data.m_containedObject.GetAttacked(1);
+				OnAttackLanded?.Invoke(data.m_containedObject, a_direction);
 			}
-
-			if (attackedSomething)
-			{
-
-			}
-			else
-			{
-				switch (RequestedDirection)
-				{
-					case BoardManager.Direction.UP:
-						newCellTargetPos.y += 1;
-						break;
-					case BoardManager.Direction.DOWN:
-						newCellTargetPos.y -= 1;
-						break;
-					case BoardManager.Direction.RIGHT:
-						newCellTargetPos.x += 1;
-						break;
-					case BoardManager.Direction.LEFT:
-						newCellTargetPos.x -= 1;
-						break;
-					default:
-						break;
-				}
-
-				BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
-				if (cellData != null && cellData.Passable)
-				{
-					if (cellData.m_containedObject == null)
-					{
-						MoveTo(newCellTargetPos, RequestedDirection);
-					}
-					else if (cellData.m_containedObject.PlayerWantsToEnter())
-					{
-						MoveTo(newCellTargetPos, RequestedDirection);
-					}
-				}
-			}
-
-
-			GameManager.Instance.TurnManager.Tick();
-
-			// Set Request values to default.
-			RequestMovement = false;
-			RequestedDirection = BoardManager.Direction.NONE;
 		}
+
+		if (!attackedSomething)
+		{
+			Vector2Int newCellTargetPos = m_cellPos;
+			switch (a_direction)
+			{
+				case BoardManager.Direction.UP:
+					newCellTargetPos.y += 1;
+					break;
+				case BoardManager.Direction.DOWN:
+					newCellTargetPos.y -= 1;
+					break;
+				case BoardManager.Direction.RIGHT:
+					newCellTargetPos.x += 1;
+					break;
+				case BoardManager.Direction.LEFT:
+					newCellTargetPos.x -= 1;
+					break;
+			}
+
+			BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
+			if (cellData != null && cellData.Passable)
+			{
+				if (cellData.m_containedObject == null)
+				{
+					MoveTo(newCellTargetPos);
+				}
+				else if (cellData.m_containedObject.PlayerWantsToEnter())
+				{
+					MoveTo(newCellTargetPos);
+				}
+			}
+		}
+
+		// 행동이 끝나면(이동, 공격, 혹은 아무것도 못함) 턴을 종료
+		GameManager.Instance.EndPlayerTurn();
 	}
 
 	/// <summary>
@@ -226,79 +198,46 @@ public class PlayerController : MonoBehaviour
 	//----------------------------------------------------------------
 	// Inputs
 
+	private bool CanAcceptMoveInput()
+	{
+		return !IsMoving && !IsGameOver && GameManager.Instance.CurrentState == GameManager.GameState.PlayerTurn;
+	}
+
 	public void OnInputMoveUp(InputAction.CallbackContext a_context)
 	{
-		if (!CanAcceptMoveInput())
+		if (a_context.performed && CanAcceptMoveInput())
 		{
-			return;
-		}
-
-		if (a_context.performed)
-		{
-			RequestMovement = true;
-			RequestedDirection = BoardManager.Direction.UP;
+			ProcessPlayerAction(BoardManager.Direction.UP);
 		}
 	}
 
 	public void OnInputMoveDown(InputAction.CallbackContext a_context)
 	{
-		if (!CanAcceptMoveInput())
+		if (a_context.performed && CanAcceptMoveInput())
 		{
-			return;
-		}
-
-		if (a_context.performed)
-		{
-			RequestMovement = true;
-			RequestedDirection = BoardManager.Direction.DOWN;
+			ProcessPlayerAction(BoardManager.Direction.DOWN);
 		}
 	}
 
 	public void OnInputMoveRight(InputAction.CallbackContext a_context)
 	{
-		if (!CanAcceptMoveInput())
+		if (a_context.performed && CanAcceptMoveInput())
 		{
-			return;
-		}
-
-		if (a_context.performed)
-		{
-			RequestMovement = true;
-			RequestedDirection = BoardManager.Direction.RIGHT;
+			ProcessPlayerAction(BoardManager.Direction.RIGHT);
 		}
 	}
 
 	public void OnInputMoveLeft(InputAction.CallbackContext a_context)
 	{
-		if (!CanAcceptMoveInput())
+		if (a_context.performed && CanAcceptMoveInput())
 		{
-			return;
+			ProcessPlayerAction(BoardManager.Direction.LEFT);
 		}
-
-		if (a_context.performed)
-		{
-			RequestMovement = true;
-			RequestedDirection = BoardManager.Direction.LEFT;
-		}
-	}
-
-	bool CanAcceptMoveInput()
-	{
-		bool result = true;
-
-		result &= !IsMoving;
-
-		return result;
 	}
 
 	public void OnInputRestart(InputAction.CallbackContext a_context)
 	{
-		if (!IsGameOver)
-		{
-			return;
-		}
-
-		if (a_context.performed)
+		if (a_context.performed && IsGameOver)
 		{
 			GameManager.Instance.StartNewGame();
 		}
