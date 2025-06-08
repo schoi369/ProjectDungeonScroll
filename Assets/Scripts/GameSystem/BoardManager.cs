@@ -60,7 +60,10 @@ public class BoardManager : MonoBehaviour
 	[Header("Enemies")]
 	public EnemyExploder m_exploderPrefab;
 
+	[Header("Board Settings")]
+	public float m_CollapseInterval = 1f;
 	Coroutine CoBoardCollapsing { get; set; }
+	
 
 	public void Init()
 	{
@@ -212,7 +215,7 @@ public class BoardManager : MonoBehaviour
 
 	void GenerateEnemy()
 	{
-		int enemyCount = 1;
+		int enemyCount = 3;
 		for (int i = 0; i < enemyCount; i++)
 		{
 			int randomIndex = Random.Range(0, m_emptyCellPositionList.Count);
@@ -233,13 +236,28 @@ public class BoardManager : MonoBehaviour
 		int targetColumnIndex = 0;
 		while (true)
 		{
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(m_CollapseInterval);
 
 			for (int y = 0; y < m_height; y++)
 			{
 				var data = GetCellData(new Vector2Int(targetColumnIndex, y));
 				data.m_groundTile.SetStatus(GroundTile.TileStatus.DESTROYED);
+
+				// 셀 내부 오브젝트를 파괴.
+				if (data.m_containedObject)
+				{
+					data.m_containedObject.GetDestroyedFromBoard();
+					data.m_containedObject = null;
+				}
 			}
+
+			// 플레이어 사망.
+			var player = GameManager.Instance.m_player;
+			if (player.CellPos.x == targetColumnIndex)
+			{
+				player.GameOver();
+			}
+
 			targetColumnIndex++;
 		}
 	}

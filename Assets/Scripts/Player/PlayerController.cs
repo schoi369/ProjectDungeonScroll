@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 
-	void GameOver()
+	public void GameOver()
 	{
 		IsGameOver = true;
 		OverlayCanvas.Instance.ShowHideGameOverPanel(true);

@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour
 		{
 			return false;
 		}
-		Debug.Log($"PlayerCellPos: {m_player.CellPos}");
 		return m_player.CellPos == a_cellPos;
 	}
 
