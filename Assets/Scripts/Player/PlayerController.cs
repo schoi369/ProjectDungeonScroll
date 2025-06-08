@@ -26,6 +26,11 @@ public class PlayerController : MonoBehaviour
 
 	public bool IsGameOver { get; set; } = false;
 
+	// Level Related
+	public int Level { get; set; }
+	public int CurrentExp { get; private set; }
+	public int m_expToLevelUp = 30; // 차후 ScriptableObject 등으로 전체적 레벨업 세팅 가능하게 변화할지도.
+
 	private List<UpgradeSO> m_activeUpgrades = new();
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
 
@@ -43,6 +48,10 @@ public class PlayerController : MonoBehaviour
 		CurrentHP = m_maxHP;
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+
+		// 레벨, 경험치 관련 초기화
+		Level = 1;
+		CurrentExp = 0;
 
 		// 업그레이드 관련 변수 초기화
 		PeacefulTurns = 0;
@@ -103,6 +112,27 @@ public class PlayerController : MonoBehaviour
 		CurrentHP = Mathf.Min(CurrentHP + a_heal, m_maxHP);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
 		Debug.Log($"{a_heal} HP 회복.");
+	}
+
+	public void GainExp(int a_amount)
+	{
+		CurrentExp += a_amount;
+		Debug.Log($"경험치 {a_amount} 획득! 현재: {CurrentExp}/{m_expToLevelUp}");
+
+		while (CurrentExp >= m_expToLevelUp)
+		{
+			LevelUp();
+		}
+	}
+
+	void LevelUp()
+	{
+		Level++;
+		CurrentExp -= m_expToLevelUp; // 넘긴 경험치 남기기.
+		
+		//m_expToLevelUp = (int) (m_expToLevelUp * 1.5f); // 필요 경험치 증가 예시.
+		
+		Debug.Log($"레벨업! 레벨 {Level} 달성");
 	}
 
 	public void GameOver()

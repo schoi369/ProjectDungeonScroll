@@ -7,6 +7,7 @@ public abstract class EnemyBase : CellObject
 	protected int CurrentHP { get; private set; }
 	public bool IsDead { get; private set; } = false;
 	public bool IsStunned { get; set; } = false;
+	public int m_expValue = 10;
 
 	[Header("Visuals")]
 	public GameObject m_stunIcon;
@@ -50,6 +51,9 @@ public abstract class EnemyBase : CellObject
 	{
 		if (IsDead) return;
 		IsDead = true;
+
+		GameManager.Instance.m_player.GainExp(m_expValue);
+
 		GameManager.Instance.UnregisterEnemy(this);
 		Destroy(gameObject);
 	}
