@@ -155,6 +155,7 @@ MonoBehaviour:
   m_maxFoodAmount: 20
   m_testUpgrades:
   - {fileID: 11400000, guid: bf3ebee6b3e0b914db626483fd4b3339, type: 2}
+  - {fileID: 11400000, guid: d8ec5482e55e7f349a432861bd9c24ee, type: 2}
 --- !u!212 &206498441
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -745,7 +746,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 000000003397e6f85b735442
+  m_ApplyToSortingLayers: 000000003397e6f85b7354420f9b9bc9
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

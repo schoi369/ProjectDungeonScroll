@@ -24,7 +24,6 @@ public class StaticDischargeUpgradeSO : UpgradeSO
 		var player = GameManager.Instance.m_player;
 		var board = GameManager.Instance.m_boardManager;
 
-		Debug.Log("정전기 방출 시도...");
 		// 플레이어 주변 8칸을 순회
 		for (int x = -1; x <= 1; x++)
 		{

@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
 
 	public List<UpgradeSO> m_testUpgrades = new();
-
+	public int PeacefulTurns { get; set; } = 0;
 
 	/// <summary>
 	/// Initialize
@@ -43,6 +43,9 @@ public class PlayerController : MonoBehaviour
 		CurrentHP = m_maxHP;
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+
+		// 업그레이드 관련 변수 초기화
+		PeacefulTurns = 0;
 
 		// 테스트용 업그레이드 적용
 		foreach (var upgrade in m_testUpgrades)
@@ -84,6 +87,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		Debug.Log("Player taking damage");
+		PeacefulTurns = 0;
 
 		CurrentHP -= a_damage;
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
@@ -92,6 +96,13 @@ public class PlayerController : MonoBehaviour
 		{
 			GameOver();
 		}
+	}
+
+	public void Heal(int a_heal)
+	{
+		CurrentHP = Mathf.Min(CurrentHP + a_heal, m_maxHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+		Debug.Log($"{a_heal} HP 회복.");
 	}
 
 	public void GameOver()
@@ -133,6 +144,7 @@ public class PlayerController : MonoBehaviour
 			if (data.m_containedObject && data.m_containedObject.m_canBeAttacked)
 			{
 				attackedSomething = true;
+				PeacefulTurns = 0;
 				data.m_containedObject.GetAttacked(1);
 				OnAttackLanded?.Invoke(data.m_containedObject, a_direction);
 			}
@@ -169,6 +181,8 @@ public class PlayerController : MonoBehaviour
 					MoveTo(newCellTargetPos);
 				}
 			}
+
+			PeacefulTurns++;
 		}
 
 		// 행동이 끝나면(이동, 공격, 혹은 아무것도 못함) 턴을 종료
