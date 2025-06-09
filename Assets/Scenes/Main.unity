@@ -325,7 +325,6 @@ MonoBehaviour:
   m_boardManager: {fileID: 841463711}
   m_player: {fileID: 206498440}
   m_upgradeDatabase: {fileID: 11400000, guid: ea09d7507e5d6e046ae7b86d5c42e05c, type: 2}
-  m_upgradeSelectionPanel: {fileID: 1596158703}
 --- !u!4 &482107697
 Transform:
   m_ObjectHideFlags: 0
@@ -460,6 +459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerInfo: {fileID: 602272222}
   m_gameOverPanel: {fileID: 1895559755}
+  m_upgradeSelectionPanel: {fileID: 1596158703}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

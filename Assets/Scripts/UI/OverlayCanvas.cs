@@ -20,9 +20,20 @@ public class OverlayCanvas : MonoBehaviour
 
 	public UIPlayerInfo m_playerInfo;
 	public UIGameOverPanel m_gameOverPanel;
+	public UIUpgradeSelectionPanel m_upgradeSelectionPanel;
 
 	public void ShowHideGameOverPanel(bool a_show)
 	{
 		m_gameOverPanel.gameObject.SetActive(a_show);
+	}
+
+	public void ShowUpgradeSelection(List<UpgradeSO> a_options)
+	{
+		m_upgradeSelectionPanel.ShowOptions(a_options);
+	}
+
+	public void HideUpgradeSelection()
+	{
+		m_upgradeSelectionPanel.Hide();
 	}
 }

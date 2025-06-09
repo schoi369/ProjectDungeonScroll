@@ -22,8 +22,6 @@ public class GameManager : MonoBehaviour
 	public PlayerController m_player;
 	public UpgradeDatabase m_upgradeDatabase;
 
-	public UIUpgradeSelectionPanel m_upgradeSelectionPanel;
-
 
 	int FloorCount { get; set; } = 0;
 	private List<EnemyBase> m_enemies = new List<EnemyBase>();
@@ -185,7 +183,7 @@ public class GameManager : MonoBehaviour
 
 		if (options.Count > 0)
 		{
-			m_upgradeSelectionPanel.ShowOptions(options);
+			OverlayCanvas.Instance.ShowUpgradeSelection(options);
 		}
 		else
 		{
@@ -196,7 +194,7 @@ public class GameManager : MonoBehaviour
 
 	public void EndUpgradeSelection()
 	{
-		m_upgradeSelectionPanel.Hide();
+		OverlayCanvas.Instance.HideUpgradeSelection();
 
 		if (m_player.PendingLevelUps > 0)
 		{

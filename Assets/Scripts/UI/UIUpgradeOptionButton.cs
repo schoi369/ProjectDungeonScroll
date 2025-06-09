@@ -23,6 +23,7 @@ public class UIUpgradeOptionButton : MonoBehaviour
 
 	/// <summary>
 	/// 이 버튼이 클릭되었을 때 호출될 메서드입니다.
+	/// Inspector의 OnClick()에 할당됨.
 	/// </summary>
 	public void OnSelect()
 	{
