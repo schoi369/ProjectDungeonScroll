@@ -1,54 +1,74 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIPlayerInfo : MonoBehaviour
 {
-	// Floor
-	public TextMeshProUGUI m_floorCountText;
-
-	// Food Amount
-	int CurrentFoodAmount { get; set; }
-	int MaxFoodAmount { get; set; }
-
-	// HP
+	[Header("HP References")]
+	public Image m_hpBarFillImage;
 	public TextMeshProUGUI m_hpText;
-	int CurrentHP { get; set; }
-	int MaxHP { get; set; }
+
+	[Header("Experience References")]
+	public TextMeshProUGUI m_levelText;
+	public TextMeshProUGUI m_expText;
+	public Image m_expBarFillImage;
+
+	private int m_currentHP;
+	private int m_maxHP;
 
 	private void OnEnable()
 	{
-		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.FloorChanged, OnFloorChanged);
-
+		// 모든 플레이어 관련 이벤트를 구독
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, OnMaxHPChanged);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, OnCurrentHPChanged);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerLevelChanged, OnLevelChanged);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerExpChanged, OnExpChanged);
 	}
 
 	private void OnDisable()
 	{
-		CustomEventManager.Instance?.UnsubscribeAll(this);
+		if (CustomEventManager.Instance != null)
+		{
+			CustomEventManager.Instance.UnsubscribeAll(this);
+		}
 	}
 
-	void OnFloorChanged(object a_floorCount)
+	// --- HP 관련 핸들러 ---
+	private void OnCurrentHPChanged(object a_hp)
 	{
-		m_floorCountText.text = $"Floor: B{(int) a_floorCount}";
+		m_currentHP = (int)a_hp;
+		UpdateHpBar();
 	}
 
-	void OnCurrentHPChanged(object a_hp)
+	private void OnMaxHPChanged(object a_maxHP)
 	{
-		CurrentHP = (int) a_hp;
-		RefreshHPText();
+		m_maxHP = (int)a_maxHP;
+		UpdateHpBar();
 	}
 
-	void OnMaxHPChanged(object a_max)
+	private void UpdateHpBar()
 	{
-		MaxHP = (int) a_max;
-		RefreshHPText();
+		if (m_maxHP > 0)
+		{
+			m_hpBarFillImage.fillAmount = (float)m_currentHP / m_maxHP;
+			m_hpText.text = $"{m_currentHP} / {m_maxHP}";
+		}
 	}
 
-	void RefreshHPText()
+	// --- 경험치 관련 핸들러 ---
+	private void OnLevelChanged(object a_level)
 	{
-		m_hpText.text = $"HP: {CurrentHP} / {MaxHP}";
+		m_levelText.text = $"Lv. {(int)a_level}";
+	}
+
+	private void OnExpChanged(object a_expData)
+	{
+		var (currentExp, expToNext) = ((int, int))a_expData;
+		m_expText.text = $"{currentExp} / {expToNext}";
+
+		if (expToNext > 0)
+		{
+			m_expBarFillImage.fillAmount = (float)currentExp / expToNext;
+		}
 	}
 }

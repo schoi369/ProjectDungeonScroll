@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
 		GameOver,
 	}
 	public GameState CurrentState { get; private set; }
+	public event Action<GameState> OnGameStateChanged;
 
 	public BoardManager m_boardManager;
 	public PlayerController m_player;
@@ -103,6 +104,8 @@ public class GameManager : MonoBehaviour
 				// 게임 오버 로직
 				break;
 		}
+
+		OnGameStateChanged?.Invoke(CurrentState);
 	}
 
 	public void EndPlayerTurn()

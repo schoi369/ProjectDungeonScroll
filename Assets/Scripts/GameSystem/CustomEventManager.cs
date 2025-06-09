@@ -16,6 +16,8 @@ public class CustomEventManager : MonoBehaviour
 		// Player Info
 		PlayerMaxHPChanged = 100,
 		PlayerCurrentHPChanged = 101,
+		PlayerLevelChanged = 102,
+		PlayerExpChanged = 103,
 	}
 
 	static CustomEventManager _instance = null;

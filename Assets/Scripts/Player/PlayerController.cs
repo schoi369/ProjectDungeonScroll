@@ -51,8 +51,6 @@ public class PlayerController : MonoBehaviour
 		IsGameOver = false;
 
 		CurrentHP = m_maxHP;
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
 
 		// 레벨, 경험치 관련 초기화
 		Level = 1;
@@ -67,6 +65,12 @@ public class PlayerController : MonoBehaviour
 		{
 			AddUpgrade(upgrade);
 		}
+
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, Level);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
 	}
 
 	/// <summary>
@@ -123,7 +127,7 @@ public class PlayerController : MonoBehaviour
 	public void GainExp(int a_amount)
 	{
 		CurrentExp += a_amount;
-		Debug.Log($"경험치 {a_amount} 획득! 현재: {CurrentExp}/{m_expToLevelUp}");
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
 
 		while (CurrentExp >= m_expToLevelUp)
 		{
@@ -140,7 +144,8 @@ public class PlayerController : MonoBehaviour
 
 		m_pendingLevelUps++; // 레벨업 처리 예약 +1
 
-		Debug.Log($"레벨업! Level {Level} 달성! (대기 중: {m_pendingLevelUps}회)");
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, Level);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
 	}
 
 	public void ConsumePendingLevelUp()
