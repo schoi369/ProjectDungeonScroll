@@ -10,6 +10,14 @@ public abstract class UpgradeSO : ScriptableObject
 	public string description;
 	public Sprite icon;
 
+	public enum CounterType
+	{
+		None,
+		PeacefulTurns // '평온' 스택
+	}
+
+	public CounterType m_counterType = CounterType.None;
+
 	/// <summary>
 	/// 업그레이드가 플레이어에게 적용될 때 호출될 함수
 	/// </summary>

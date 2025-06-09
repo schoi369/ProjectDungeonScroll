@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour
 	public List<UpgradeSO> ActiveUpgrades => m_activeUpgrades;
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
 
+	public event Action<UpgradeSO> OnUpgradeAdded;
+
 	public List<UpgradeSO> m_testUpgrades = new();
 	public int PeacefulTurns { get; set; } = 0;
 
@@ -121,7 +123,6 @@ public class PlayerController : MonoBehaviour
 	{
 		CurrentHP = Mathf.Min(CurrentHP + a_heal, m_maxHP);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
-		Debug.Log($"{a_heal} HP 회복.");
 	}
 
 	public void GainExp(int a_amount)
@@ -254,6 +255,8 @@ public class PlayerController : MonoBehaviour
 		a_upgrade.Apply(this.gameObject);
 
 		Debug.Log($"업그레이드 획득: {a_upgrade.upgradeName}");
+
+		OnUpgradeAdded?.Invoke(a_upgrade);
 	}
 
 	//----------------------------------------------------------------

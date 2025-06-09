@@ -1,0 +1,74 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+{
+	public Image m_Image;
+	public TextMeshProUGUI m_counterText;
+
+	private UpgradeSO m_representedUpgrade;
+
+
+	public void Setup(UpgradeSO a_upgradeData)
+	{
+		m_representedUpgrade = a_upgradeData;
+		m_Image.sprite = a_upgradeData.icon;
+
+		// 카운터 타입에 따라 텍스트 활성화/비활성화 및 초기값 설정
+		if (m_representedUpgrade.m_counterType != UpgradeSO.CounterType.None)
+		{
+			m_counterText.gameObject.SetActive(true);
+			UpdateCounterText(); // 초기값 표시
+		}
+		else
+		{
+			m_counterText.gameObject.SetActive(false);
+		}
+	}
+
+	void OnEnable()
+	{
+		GameManager.Instance.OnPlayerTurnEnded += UpdateCounterText;
+	}
+
+	void OnDisable()
+	{
+		if (GameManager.Instance != null)
+		{
+			GameManager.Instance.OnPlayerTurnEnded -= UpdateCounterText;
+		}
+	}
+
+	private void UpdateCounterText()
+	{
+		if (m_representedUpgrade == null || m_representedUpgrade.m_counterType == UpgradeSO.CounterType.None) return;
+
+		// 어떤 카운터 타입인지에 따라 적절한 값을 가져와 표시
+		switch (m_representedUpgrade.m_counterType)
+		{
+			case UpgradeSO.CounterType.PeacefulTurns:
+				int currentPeacefulTurns = GameManager.Instance.m_player.PeacefulTurns;
+				m_counterText.text = currentPeacefulTurns.ToString();
+				break;
+				// 추후 다른 카운터 타입이 추가될 수 있음
+		}
+	}
+
+
+	public void OnPointerEnter(PointerEventData a_eventData)
+	{
+		// 마우스가 들어오면 툴팁에 내 정보를 보내며 보여달라고 요청
+		if (m_representedUpgrade != null)
+		{
+			UIUpgradeIconTooltipPanel.Instance.ShowTooltip(m_representedUpgrade);
+		}
+	}
+
+	public void OnPointerExit(PointerEventData a_eventData)
+	{
+		// 마우스가 나가면 툴팁을 숨겨달라고 요청
+		UIUpgradeIconTooltipPanel.Instance.HideTooltip();
+	}
+}
