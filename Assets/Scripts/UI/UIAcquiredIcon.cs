@@ -59,7 +59,6 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	public void OnPointerEnter(PointerEventData a_eventData)
 	{
-		// 마우스가 들어오면 툴팁에 내 정보를 보내며 보여달라고 요청
 		if (m_representedUpgrade != null)
 		{
 			UIUpgradeIconTooltipPanel.Instance.ShowTooltip(m_representedUpgrade);

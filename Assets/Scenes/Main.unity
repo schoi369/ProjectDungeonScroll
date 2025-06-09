@@ -1383,8 +1383,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 50, y: -40}
+  m_SizeDelta: {x: -100, y: -80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &736169570
 MonoBehaviour:
@@ -3177,6 +3177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nameText: {fileID: 1908313886}
   m_descriptionText: {fileID: 468057814}
+  m_positionOffset: {x: 300, y: -200}
   m_canvasGroup: {fileID: 1997646115}
 --- !u!114 &1997646113
 MonoBehaviour:
