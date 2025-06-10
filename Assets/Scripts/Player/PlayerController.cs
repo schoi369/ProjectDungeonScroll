@@ -44,6 +44,12 @@ public class PlayerController : MonoBehaviour
 	public List<UpgradeSO> m_testUpgrades = new();
 	public int PeacefulTurns { get; set; } = 0;
 
+	[Header("Visuals")]
+	public float m_hitScaleMultiplier = 1.2f;
+	public float m_hitEffectDuration = 0.1f;
+	Vector3 m_originalScale;
+	Coroutine m_hitScaleEffectCoroutine;
+
 	/// <summary>
 	/// Initialize
 	/// </summary>
@@ -57,10 +63,14 @@ public class PlayerController : MonoBehaviour
 		}
 		m_activeUpgrades.Clear(); // 업그레이드 리스트 비우기
 
+		//
 		IsMoving = false;
 		IsGameOver = false;
 
 		CurrentHP = m_maxHP;
+
+		// 비주얼
+		m_originalScale = transform.localScale;
 
 		// 레벨, 경험치 관련 초기화
 		Level = 1;
@@ -114,6 +124,13 @@ public class PlayerController : MonoBehaviour
 		{
 			return;
 		}
+
+		if (m_hitScaleEffectCoroutine != null)
+		{
+			StopCoroutine(m_hitScaleEffectCoroutine);
+		}
+		transform.localScale = m_originalScale;
+		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
 
 		PeacefulTurns = 0;
 
@@ -268,9 +285,35 @@ public class PlayerController : MonoBehaviour
 		OnUpgradeAdded?.Invoke(a_upgrade);
 	}
 
+	IEnumerator HitEffectCoroutine()
+	{
+		Vector3 hitScale = m_originalScale * m_hitScaleMultiplier;
+		float halfDuration = m_hitEffectDuration / 2f;
+		float timer = 0f;
+
+		while (timer < halfDuration)
+		{
+			transform.localScale = Vector3.Lerp(m_originalScale, hitScale, timer / halfDuration);
+			timer += Time.deltaTime;
+			yield return null;
+		}
+
+		timer = 0f;
+
+		while (timer < halfDuration)
+		{
+			transform.localScale = Vector3.Lerp(hitScale, m_originalScale, timer / halfDuration);
+			timer += Time.deltaTime;
+			yield return null;
+		}
+
+		transform.localScale = m_originalScale;
+		m_hitScaleEffectCoroutine = null;
+	}
+
 	//----------------------------------------------------------------
 	// Inputs
-
+	#region Inputs
 	private bool CanAcceptMoveInput()
 	{
 		return !IsMoving && !IsGameOver && GameManager.Instance.CurrentState == GameManager.GameState.PlayerTurn;
@@ -315,4 +358,5 @@ public class PlayerController : MonoBehaviour
 			GameManager.Instance.StartNewGame();
 		}
 	}
+	#endregion
 }

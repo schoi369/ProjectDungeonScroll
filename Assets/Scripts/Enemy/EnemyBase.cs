@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public abstract class EnemyBase : CellObject
 {
@@ -11,6 +12,10 @@ public abstract class EnemyBase : CellObject
 
 	[Header("Visuals")]
 	public GameObject m_stunIcon;
+	public float m_hitScaleMultiplier = 1.2f;
+	public float m_hitScaleEffectDuration = 0.1f;
+	Vector3 m_originalScale;
+	Coroutine m_hitScaleEffectCoroutine;
 
 	// GameManager에 자신을 등록/해제
 	protected virtual void OnEnable()
@@ -36,15 +41,50 @@ public abstract class EnemyBase : CellObject
 		IsDead = false;
 
 		m_stunIcon.SetActive(false);
+
+		m_originalScale = transform.localScale;
 	}
 
 	public override void GetAttacked(int a_damage)
 	{
+		if (m_hitScaleEffectCoroutine != null)
+		{
+			StopCoroutine(m_hitScaleEffectCoroutine);
+		}
+		transform.localScale = m_originalScale;
+		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
+
 		CurrentHP -= a_damage;
 		if (CurrentHP <= 0)
 		{
 			Die();
 		}
+	}
+
+	IEnumerator HitEffectCoroutine()
+	{
+		Vector3 hitScale = m_originalScale * m_hitScaleMultiplier;
+		float halfDuration = m_hitScaleEffectDuration / 2f;
+		float timer = 0f;
+
+		while (timer < halfDuration)
+		{
+			transform.localScale = Vector3.Lerp(m_originalScale, hitScale, timer / halfDuration);
+			timer += Time.deltaTime;
+			yield return null;
+		}
+
+		timer = 0f;
+
+		while (timer < halfDuration)
+		{
+			transform.localScale = Vector3.Lerp(hitScale, m_originalScale, timer / halfDuration);
+			timer += Time.deltaTime;
+			yield return null;
+		}
+
+		transform.localScale = m_originalScale;
+		m_hitScaleEffectCoroutine = null;
 	}
 
 	protected virtual void Die()
