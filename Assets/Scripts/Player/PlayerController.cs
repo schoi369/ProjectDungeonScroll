@@ -49,6 +49,14 @@ public class PlayerController : MonoBehaviour
 	/// </summary>
 	public void Init()
 	{
+		// 업그레이드 초기화
+		// 모든 업그레이드의 구독 해제
+		for (int i = m_activeUpgrades.Count - 1; i >= 0; i--)
+		{
+			m_activeUpgrades[i].Remove(this.gameObject);
+		}
+		m_activeUpgrades.Clear(); // 업그레이드 리스트 비우기
+
 		IsMoving = false;
 		IsGameOver = false;
 

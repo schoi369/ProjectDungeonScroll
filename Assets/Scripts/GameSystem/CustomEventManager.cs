@@ -12,6 +12,7 @@ public class CustomEventManager : MonoBehaviour
 		
 		// Game System
 		FloorChanged = 1,
+		GameStarted = 2,
 
 		// Player Info
 		PlayerMaxHPChanged = 100,

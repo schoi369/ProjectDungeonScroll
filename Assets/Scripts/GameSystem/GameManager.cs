@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
 
 	public void StartNewGame()
 	{
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.GameStarted);
+
 		OverlayCanvas.Instance.ShowHideGameOverPanel(false);
 
 		SetFloorCount(1);
