@@ -29,6 +29,7 @@ public class GroundTile : MonoBehaviour
 				break;
 			case TileStatus.DESTROYED:
 				m_spriteRenderer.sprite = _destroyedGroundSprite;
+				m_passable = false;
 				break;
 		}
 	}
