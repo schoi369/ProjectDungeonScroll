@@ -43,7 +43,6 @@ public class ShockwaveUpgradeSO : UpgradeSO
 
 		if (board.IsCellWalkable(knockbackPos))
 		{
-			Debug.Log($"충격타 발동! {targetEnemy.name}을 {a_direction} 방향으로 밀어냅니다.");
 			board.MoveObjectOnBoard(targetEnemy, knockbackPos);
 		}
 	}

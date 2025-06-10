@@ -107,7 +107,6 @@ public class PlayerController : MonoBehaviour
 			return;
 		}
 
-		Debug.Log("Player taking damage");
 		PeacefulTurns = 0;
 
 		CurrentHP -= a_damage;

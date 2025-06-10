@@ -25,7 +25,6 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 
 	private void AddIcon(UpgradeSO a_newUpgrade)
 	{
-		Debug.Log("Add Icon");
 		GameObject newIconObj = Instantiate(m_iconPrefab, m_iconsParent);
 		newIconObj.GetComponent<UIAcquiredIcon>().Setup(a_newUpgrade);
 	}

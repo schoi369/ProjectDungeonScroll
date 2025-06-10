@@ -25,11 +25,8 @@ public class SerenityUpgradeSO : UpgradeSO
 
 		if (player == null || player.IsGameOver) return;
 
-		Debug.Log($"Peaceful turns: {player.PeacefulTurns}");
-
 		if (player.PeacefulTurns >= m_turnsRequired)
 		{
-			Debug.Log($"평온 발동!");
 			player.Heal(m_healAmount);
 			player.PeacefulTurns = 0; // 회복 후 카운터 리셋
 		}
