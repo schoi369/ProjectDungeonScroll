@@ -36,6 +36,11 @@ public abstract class EnemyBase : CellObject
 		}
 	}
 
+	protected virtual void Start()
+	{
+		EnemyHealthUIManager.Instance.AddHealthUI(transform, m_maxHP);
+	}
+
 	public override void Init(Vector2Int a_cellPos)
 	{
 		base.Init(a_cellPos);
@@ -57,6 +62,7 @@ public abstract class EnemyBase : CellObject
 		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
 
 		CurrentHP -= a_damage;
+		EnemyHealthUIManager.Instance.UpdateHealth(transform, CurrentHP);
 		if (CurrentHP <= 0)
 		{
 			Die();
@@ -99,6 +105,9 @@ public abstract class EnemyBase : CellObject
 		GameManager.Instance.m_player.GainExp(m_expValue);
 
 		GameManager.Instance.UnregisterEnemy(this);
+
+		EnemyHealthUIManager.Instance.RemoveHealthUI(transform);
+
 		Destroy(gameObject);
 	}
 
@@ -136,4 +145,10 @@ public abstract class EnemyBase : CellObject
 	protected virtual void ClearTelegraphs()
 	{
 	}
+
+	public override void GetDestroyedFromBoard()
+	{
+		Die();
+	}
+
 }
