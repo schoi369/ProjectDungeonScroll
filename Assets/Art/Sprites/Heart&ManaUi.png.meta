@@ -1,7 +1,37 @@
 fileFormatVersion: 2
-guid: 22df355e68278594f9eb4255469e6191
+guid: 354888a02ea09f740bfc04958313c938
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 523888095791003304
+    second: Heart&ManaUi_0
+  - first:
+      213: 7078957633047559561
+    second: Heart&ManaUi_1
+  - first:
+      213: 7584909091477175504
+    second: Heart&ManaUi_2
+  - first:
+      213: -7066647530778836694
+    second: Heart&ManaUi_3
+  - first:
+      213: 2400690780651743819
+    second: Heart&ManaUi_4
+  - first:
+      213: 9016578204417659432
+    second: Heart&ManaUi_5
+  - first:
+      213: 4557878713002554156
+    second: Heart&ManaUi_6
+  - first:
+      213: -8357500693734853782
+    second: Heart&ManaUi_7
+  - first:
+      213: 8635801019558425389
+    second: Heart&ManaUi_8
+  - first:
+      213: -4622905862925712265
+    second: Heart&ManaUi_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -43,7 +73,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -67,7 +97,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -80,7 +110,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -95,18 +125,71 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Heart&ManaUi_0
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 28
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a6bdab8279354700800000000000000
+      internalID: 523888095791003304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Heart&ManaUi_1
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 28
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98df6d916728d3260800000000000000
+      internalID: 7078957633047559561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 777676043108b2f49b5409e1ba6c3f7c
     internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Heart&ManaUi_0: 523888095791003304
+      Heart&ManaUi_1: 7078957633047559561
+      Heart&ManaUi_2: 7584909091477175504
+      Heart&ManaUi_3: -7066647530778836694
+      Heart&ManaUi_4: 2400690780651743819
+      Heart&ManaUi_5: 9016578204417659432
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
