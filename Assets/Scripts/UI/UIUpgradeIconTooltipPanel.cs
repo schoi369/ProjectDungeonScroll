@@ -41,13 +41,10 @@ public class UIUpgradeIconTooltipPanel : MonoBehaviour
 		m_descriptionText.text = a_upgradeData.description;
 
 		m_canvasGroup.alpha = 1f;
-		m_canvasGroup.blocksRaycasts = true;
 	}
 
 	public void HideTooltip()
 	{
 		m_canvasGroup.alpha = 0f;
-		// 마우스 이벤트가 툴팁 뒤로 통과하도록 설정
-		m_canvasGroup.blocksRaycasts = false;
 	}
 }
