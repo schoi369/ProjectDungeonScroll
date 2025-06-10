@@ -8,6 +8,9 @@ public class EnemyExploder : EnemyBase
 
 	int Counter { get; set; } = 0;
 
+	List<GroundTile> m_warnedTiles = new();
+
+
 	protected override void PerformTurnLogic()
 	{
 		var board = GameManager.Instance.m_boardManager;
@@ -21,24 +24,21 @@ public class EnemyExploder : EnemyBase
 				// 대기
 				break;
 			case 1: // 폭발 예고
+				ClearTelegraphs();
 				foreach (var targetCellPos in cellPosList)
 				{
 					var data = board.GetCellData(targetCellPos);
 					if (data != null && data.m_groundTile != null)
 					{
-						data.m_groundTile.SetAttackWarning(true);
+						data.m_groundTile.AddAttackWarning();
+						m_warnedTiles.Add(data.m_groundTile);
 					}
 				}
 				break;
 			case 2: // 폭발
+				ClearTelegraphs();
 				foreach (var targetCellPos in cellPosList)
 				{
-					var data = board.GetCellData(targetCellPos);
-					if (data != null && data.m_groundTile != null)
-					{
-						data.m_groundTile.SetAttackWarning(false);
-					}
-
 					Vector3 cellWorldPos = board.CellPosToWorldPos(targetCellPos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
 
@@ -50,4 +50,17 @@ public class EnemyExploder : EnemyBase
 				break;
 		}
 	}
+
+	protected override void ClearTelegraphs()
+	{
+		foreach (var tile in m_warnedTiles)
+		{
+			if (tile != null) // 타일이 이미 파괴되었을 경우 대비
+			{
+				tile.RemoveAttackWarning();
+			}
+		}
+		m_warnedTiles.Clear(); // 리스트 비우기
+	}
+
 }

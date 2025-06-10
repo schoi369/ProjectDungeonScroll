@@ -94,6 +94,8 @@ public abstract class EnemyBase : CellObject
 		if (IsDead) return;
 		IsDead = true;
 
+		ClearTelegraphs();
+
 		GameManager.Instance.m_player.GainExp(m_expValue);
 
 		GameManager.Instance.UnregisterEnemy(this);
@@ -126,5 +128,12 @@ public abstract class EnemyBase : CellObject
 		{
 			m_stunIcon.SetActive(a_stun);
 		}
+	}
+
+	/// <summary>
+	/// 이 적이 남긴 모든 타일 텔레그래핑 효과를 정리합니다. 자식 클래스에서 재정의할 수 있습니다.
+	/// </summary>
+	protected virtual void ClearTelegraphs()
+	{
 	}
 }

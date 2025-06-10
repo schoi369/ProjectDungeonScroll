@@ -14,6 +14,9 @@ public class GroundTile : MonoBehaviour
 	[Header("State")]
 	public bool m_passable;
 
+	int m_attackWarningCounter = 0;
+
+
 	// 물리적 상태를 나타내는 새로운 enum
 	public enum PhysicalState { Normal, Warned, Destroyed }
 	private PhysicalState m_physicalState;
@@ -22,7 +25,6 @@ public class GroundTile : MonoBehaviour
 	{
 		// 게임 시작 시 기본 상태로 설정
 		SetPhysicalState(PhysicalState.Normal);
-		SetAttackWarning(false);
 	}
 
 	/// <summary>
@@ -49,18 +51,28 @@ public class GroundTile : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 타일의 공격 위험 상태를 변경합니다. (색상 변경)
-	/// TODO: AttackWarning 복수 해당 문제는? 카운터 형식으로 변경?
-	/// </summary>
-	public void SetAttackWarning(bool a_isUnderWarning)
+	 /// 이 타일에 대한 공격 예고를 하나 추가합니다.
+	 /// </summary>
+	public void AddAttackWarning()
 	{
-		if (a_isUnderWarning)
-		{
-			m_spriteRenderer.color = m_dangerColor;
-		}
-		else
-		{
-			m_spriteRenderer.color = Color.white;
-		}
+		m_attackWarningCounter++;
+		UpdateAttackWarningVisuals();
+	}
+
+	/// <summary>
+	/// 이 타일에 대한 공격 예고를 하나 제거합니다.
+	/// </summary>
+	public void RemoveAttackWarning()
+	{
+		m_attackWarningCounter--;
+		if (m_attackWarningCounter < 0) m_attackWarningCounter = 0;
+		UpdateAttackWarningVisuals();
+	}
+
+	// 카운터 값에 따라 색상을 업데이트합니다.
+	private void UpdateAttackWarningVisuals()
+	{
+		// 카운터가 0보다 크면(하나라도 예고가 있으면) 위험색으로, 아니면 원래색으로
+		m_spriteRenderer.color = (m_attackWarningCounter > 0) ? m_dangerColor : Color.white;
 	}
 }
