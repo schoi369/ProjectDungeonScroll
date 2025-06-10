@@ -61,13 +61,12 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	{
 		if (m_representedUpgrade != null)
 		{
-			UIUpgradeIconTooltipPanel.Instance.ShowTooltip(m_representedUpgrade);
+			OverlayCanvas.Instance.ShowTooltip(m_representedUpgrade);
 		}
 	}
 
 	public void OnPointerExit(PointerEventData a_eventData)
 	{
-		// 마우스가 나가면 툴팁을 숨겨달라고 요청
-		UIUpgradeIconTooltipPanel.Instance.HideTooltip();
+		OverlayCanvas.Instance.HideTooltip();
 	}
 }

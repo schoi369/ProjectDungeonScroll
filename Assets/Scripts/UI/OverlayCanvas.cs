@@ -21,12 +21,14 @@ public class OverlayCanvas : MonoBehaviour
 	public UIPlayerInfo m_playerInfo;
 	public UIGameOverPanel m_gameOverPanel;
 	public UIUpgradeSelectionPanel m_upgradeSelectionPanel;
+	public UIUpgradeIconTooltipPanel m_tooltipPanel;
 
 	public void ShowHideGameOverPanel(bool a_show)
 	{
 		m_gameOverPanel.gameObject.SetActive(a_show);
 	}
 
+	// Upgrade
 	public void ShowUpgradeSelection(List<UpgradeSO> a_options)
 	{
 		m_upgradeSelectionPanel.ShowOptions(a_options);
@@ -35,5 +37,16 @@ public class OverlayCanvas : MonoBehaviour
 	public void HideUpgradeSelection()
 	{
 		m_upgradeSelectionPanel.Hide();
+	}
+
+	// Icon Tooltip
+	public void ShowTooltip(UpgradeSO a_upgradeData)
+	{
+		m_tooltipPanel.ShowTooltip(a_upgradeData);
+	}
+
+	public void HideTooltip()
+	{
+		m_tooltipPanel.HideTooltip();
 	}
 }

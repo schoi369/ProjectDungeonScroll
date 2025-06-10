@@ -4,21 +4,18 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class UIUpgradeIconTooltipPanel : MonoBehaviour
-{
-	public static UIUpgradeIconTooltipPanel Instance { get; private set; }
-	
+{	
 	public TextMeshProUGUI m_nameText;
 	public TextMeshProUGUI m_descriptionText;
 	public Vector2 m_positionOffset; // 아이콘 위치로부터 얼마나 떨어져서 표시될지
 
-	public CanvasGroup m_canvasGroup;
+	private CanvasGroup m_canvasGroup;
 	private RectTransform m_rectTransform;
 	private Canvas m_rootCanvas;
 
 	void Awake()
 	{
-		Instance = this;
-
+		m_canvasGroup = GetComponent<CanvasGroup>();
 		m_rectTransform = GetComponent<RectTransform>();
 		m_rootCanvas = GetComponentInParent<Canvas>();
 
