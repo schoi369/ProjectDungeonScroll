@@ -11,6 +11,8 @@ public abstract class EnemyBase : CellObject
 	public int m_expValue = 10;
 
 	[Header("Visuals")]
+	public SpriteRenderer m_spriteRenderer;
+	public Color m_originalColor;
 	public GameObject m_stunIcon;
 	public float m_hitScaleMultiplier = 1.2f;
 	public float m_hitScaleEffectDuration = 0.1f;

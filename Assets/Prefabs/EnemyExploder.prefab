@@ -190,5 +190,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_canBeAttacked: 1
   m_maxHP: 1
+  m_expValue: 10
+  m_spriteRenderer: {fileID: 7235955009231737751}
+  m_originalColor: {r: 0.11764706, g: 0.13333334, b: 0.2627451, a: 1}
   m_stunIcon: {fileID: 353998072931934827}
+  m_hitScaleMultiplier: 1.2
+  m_hitScaleEffectDuration: 0.1
   m_attackArea: {fileID: 11400000, guid: 79e79236864a08c46b0d966de25c15e0, type: 2}
