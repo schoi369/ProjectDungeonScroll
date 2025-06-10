@@ -49,6 +49,9 @@ public class GameManager : MonoBehaviour
 		StartNewGame();
 	}
 
+	/// <summary>
+	/// MEMO: 여기서 하는 것들 중 NewLevel()에서도 해야 하는 것들 있는 것 기억하기.
+	/// </summary>
 	public void StartNewGame()
 	{
 		m_turnCounterForCollapse = 0;
@@ -72,6 +75,9 @@ public class GameManager : MonoBehaviour
 
 	public void NewLevel()
 	{
+		m_turnCounterForCollapse = 0;
+		m_nextCollapseColumnIndex = 0;
+
 		FloorCount++;
 		SetFloorCount(FloorCount);
 
