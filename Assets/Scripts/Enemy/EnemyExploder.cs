@@ -40,7 +40,7 @@ public class EnemyExploder : EnemyBase
 					}
 
 					Vector3 cellWorldPos = board.CellPosToWorldPos(targetCellPos);
-					AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
+					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
 
 					if (GameManager.Instance.IsPlayerAt(targetCellPos))
 					{

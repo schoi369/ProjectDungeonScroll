@@ -23,6 +23,7 @@ public class EnemyWalker : EnemyBase
 		{
 			// 공격하고 턴 종료
 			player.TakeDamage(1);
+			VFXManager.Instance.PlaySlashEffect(player.transform.position, Color.red);
 		}
 		else
 		{

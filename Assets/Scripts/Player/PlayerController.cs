@@ -189,13 +189,15 @@ public class PlayerController : MonoBehaviour
 		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_cellPos, a_direction);
 		foreach (var targetCellPos in cellPosList)
 		{
-			Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
-			AttackCellVisualPool.Instance.SpawnVisual(cellWorldPos);
 			var data = m_board.GetCellData(targetCellPos);
 			if (data.m_containedObject && data.m_containedObject.m_canBeAttacked)
 			{
 				attackedSomething = true;
 				PeacefulTurns = 0;
+
+				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
+				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
+
 				data.m_containedObject.GetAttacked(1);
 				OnAttackLanded?.Invoke(data.m_containedObject, a_direction);
 			}
