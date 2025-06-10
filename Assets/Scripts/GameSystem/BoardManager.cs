@@ -61,11 +61,6 @@ public class BoardManager : MonoBehaviour
 	public EnemyExploder m_exploderPrefab;
 	public EnemyWalker m_walkerPrefab;
 
-	[Header("Board Settings")]
-	public float m_CollapseInterval = 1f;
-	Coroutine CoBoardCollapsing { get; set; }
-	
-
 	public void Init()
 	{
 		m_emptyCellPositionList = new List<Vector2Int>();
@@ -92,10 +87,8 @@ public class BoardManager : MonoBehaviour
 		m_emptyCellPositionList.Remove(stairsCellPos);
 
 		GenerateEnemy();
-
-		StopBoardDestroying();
-		CoBoardCollapsing = StartCoroutine(StateBoardDestroying());
 	}
+
 
 	public void Clean()
 	{
@@ -241,65 +234,6 @@ public class BoardManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// x초마다 보드 가장 왼쪽의 Column부터 사용불가하게 하는 코루틴.
-	/// </summary>
-	/// <returns></returns>
-	IEnumerator StateBoardDestroying()
-	{
-		int targetColumnIndex = 0;
-		while (true)
-		{
-			yield return new WaitForSeconds(m_CollapseInterval);
-
-			for (int y = 0; y < m_height; y++)
-			{
-				var data = GetCellData(new Vector2Int(targetColumnIndex, y));
-				data.m_groundTile.SetStatus(GroundTile.TileStatus.DESTROYED);
-
-				// 셀 내부 오브젝트를 파괴.
-				if (data.m_containedObject)
-				{
-					data.m_containedObject.GetDestroyedFromBoard();
-					data.m_containedObject = null;
-				}
-			}
-
-			// 플레이어 사망.
-			var player = GameManager.Instance.m_player;
-			if (player.CellPos.x == targetColumnIndex)
-			{
-				player.GameOver();
-			}
-
-			targetColumnIndex++;
-		}
-	}
-
-	public void StopBoardDestroying()
-	{
-		if (CoBoardCollapsing != null)
-		{
-			StopCoroutine(CoBoardCollapsing);
-			CoBoardCollapsing = null;
-		}
-	}
-
-	// TODO: Probably not optimized. Do it later.
-	//public void RefreshGroundTiles()
-	//{
-	//	Vector2Int playerCellPos = GameManager.Instance.m_player.CellPos;
-
-	//	for (int y = 0; y < m_height; y++)
-	//	{
-	//		for (int x = 0; x < playerCellPos.x - 1; x++)
-	//		{
-	//			var data = GetCellData(new Vector2Int(x, y));
-	//			data.m_groundTile.SetSpriteAlpha(.5f);
-	//		}
-	//	}
-	//}
-
-	/// <summary>
 	/// 해당 셀이 다른 오브젝트가 없고, 지나갈 수 있는 타일인지 확인합니다.
 	/// </summary>
 	public bool IsCellWalkable(Vector2Int a_cellPos)
@@ -342,4 +276,44 @@ public class BoardManager : MonoBehaviour
 		// 실제 게임 오브젝트의 위치를 이동
 		a_obj.transform.position = CellPosToWorldPos(a_toPos);
 	}
+
+	public void WarnColumn(int a_columnIndex)
+	{
+		if (a_columnIndex < m_width)
+		{
+			for (int y = 0; y < m_height; y++)
+			{
+				var data = GetCellData(new Vector2Int(a_columnIndex, y));
+				if (data.m_groundTile == null) continue;
+				data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Warned);
+			}
+		}
+	}
+
+	// 특정 열을 파괴하는 public 메서드
+	public void DestroyColumn(int a_columnIndex)
+	{
+		if (a_columnIndex < m_width)
+		{
+			for (int y = 0; y < m_height; y++)
+			{
+				var data = GetCellData(new Vector2Int(a_columnIndex, y));
+				if (data.m_groundTile == null) continue;
+				data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Destroyed);
+
+				if (data.m_containedObject)
+				{
+					data.m_containedObject.GetDestroyedFromBoard();
+					data.m_containedObject = null;
+				}
+			}
+
+			var player = GameManager.Instance.m_player;
+			if (player.CellPos.x == a_columnIndex)
+			{
+				player.GameOver();
+			}
+		}
+	}
+
 }

@@ -186,8 +186,6 @@ public class PlayerController : MonoBehaviour
 		IsGameOver = true;
 		GameManager.Instance.UpdateGameState(GameManager.GameState.GameOver);
 		OverlayCanvas.Instance.ShowHideGameOverPanel(true);
-
-		m_board.StopBoardDestroying();
 	}
 
 	void Update()

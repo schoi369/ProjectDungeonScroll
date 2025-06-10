@@ -50,6 +50,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -97,7 +100,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8567c23c3a0cfb74b9f30afa966e3fd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_defaultSprite: {fileID: 21300000, guid: 9c5a356930ce4fd488af7cb9a7a9b2ba, type: 3}
+  m_warnedSprite: {fileID: 21300000, guid: b00f7fd32270e944d93b9895cada38c3, type: 3}
+  m_destroyedSprite: {fileID: 21300000, guid: 1995a23384c6e394bac424e2ac6a8a27, type: 3}
   m_spriteRenderer: {fileID: 4085380729969740211}
   m_dangerColor: {r: 1, g: 0.6117647, b: 0.6117647, a: 1}
   m_passable: 1
-  _destroyedGroundSprite: {fileID: 21300000, guid: 1995a23384c6e394bac424e2ac6a8a27, type: 3}

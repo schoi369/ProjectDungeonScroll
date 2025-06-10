@@ -26,7 +26,7 @@ public class EnemyExploder : EnemyBase
 					var data = board.GetCellData(targetCellPos);
 					if (data != null && data.m_groundTile != null)
 					{
-						data.m_groundTile.SetStatus(GroundTile.TileStatus.DANGER);
+						data.m_groundTile.SetAttackWarning(true);
 					}
 				}
 				break;
@@ -36,7 +36,7 @@ public class EnemyExploder : EnemyBase
 					var data = board.GetCellData(targetCellPos);
 					if (data != null && data.m_groundTile != null)
 					{
-						data.m_groundTile.SetStatus(GroundTile.TileStatus.NONE);
+						data.m_groundTile.SetAttackWarning(false);
 					}
 
 					Vector3 cellWorldPos = board.CellPosToWorldPos(targetCellPos);

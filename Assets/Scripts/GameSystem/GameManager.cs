@@ -19,9 +19,13 @@ public class GameManager : MonoBehaviour
 	public GameState CurrentState { get; private set; }
 	public event Action<GameState> OnGameStateChanged;
 
-	public BoardManager m_boardManager;
 	public PlayerController m_player;
 	public UpgradeDatabase m_upgradeDatabase;
+
+	public BoardManager m_boardManager;
+	public int m_collapseTurnInterval = 5;
+	int m_turnCounterForCollapse = 0;
+	int m_nextCollapseColumnIndex = 0;
 
 
 	int FloorCount { get; set; } = 0;
@@ -47,6 +51,9 @@ public class GameManager : MonoBehaviour
 
 	public void StartNewGame()
 	{
+		m_turnCounterForCollapse = 0;
+		m_nextCollapseColumnIndex = 0;
+
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.GameStarted);
 
 		OverlayCanvas.Instance.ShowHideGameOverPanel(false);
@@ -115,6 +122,19 @@ public class GameManager : MonoBehaviour
 		if (CurrentState == GameState.PlayerTurn)
 		{
 			OnPlayerTurnEnded?.Invoke();
+
+			m_turnCounterForCollapse++;
+
+			if (m_turnCounterForCollapse == m_collapseTurnInterval - 1)
+			{
+				m_boardManager.WarnColumn(m_nextCollapseColumnIndex);
+			}
+			else if (m_turnCounterForCollapse >= m_collapseTurnInterval)
+			{
+				m_turnCounterForCollapse = 0;
+				m_boardManager.DestroyColumn(m_nextCollapseColumnIndex);
+				m_nextCollapseColumnIndex++;
+			}
 
 			// 플레이어 턴이 끝날 때 레벨업 처리.
 			if (m_player.PendingLevelUps > 0)
