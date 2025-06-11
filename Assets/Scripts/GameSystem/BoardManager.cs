@@ -28,7 +28,7 @@ public class BoardManager : MonoBehaviour
 
 			if (m_containedObject)
 			{
-				Destroy(m_containedObject.gameObject);
+				m_containedObject.GetDestroyedFromBoard();
 			}
 
 			m_groundTile = null;
@@ -105,7 +105,7 @@ public class BoardManager : MonoBehaviour
 
 				if (cellData.m_containedObject != null)
 				{
-					Destroy(cellData.m_containedObject.gameObject);
+					cellData.m_containedObject.GetDestroyedFromBoard();
 				}
 
 				SetCellTile(new Vector2Int(x, y), null);

@@ -36,14 +36,12 @@ public abstract class EnemyBase : CellObject
 		}
 	}
 
-	protected virtual void Start()
-	{
-		EnemyHealthUIManager.Instance.AddHealthUI(transform, m_maxHP);
-	}
-
 	public override void Init(Vector2Int a_cellPos)
 	{
 		base.Init(a_cellPos);
+
+		EnemyHealthUIManager.Instance.AddHealthUI(transform, m_maxHP);
+
 		CurrentHP = m_maxHP;
 		IsDead = false;
 
@@ -95,14 +93,21 @@ public abstract class EnemyBase : CellObject
 		m_hitScaleEffectCoroutine = null;
 	}
 
-	protected virtual void Die()
+	/// <summary>
+	/// 적 파괴/사망을 담당하는 메소드.
+	/// </summary>
+	/// <param name="a_byGameSystem"> 보드 리셋, 바닥 파괴 등 게임 시스템 때문에 죽었는가.</param>
+	protected virtual void Die(bool a_byGameSystem = false)
 	{
 		if (IsDead) return;
 		IsDead = true;
 
-		ClearTelegraphs();
+		if (!a_byGameSystem)
+		{
+			GameManager.Instance.m_player.GainExp(m_expValue);
+		}
 
-		GameManager.Instance.m_player.GainExp(m_expValue);
+		ClearTelegraphs();
 
 		GameManager.Instance.UnregisterEnemy(this);
 
@@ -148,7 +153,7 @@ public abstract class EnemyBase : CellObject
 
 	public override void GetDestroyedFromBoard()
 	{
-		Die();
+		Die(true);
 	}
 
 }
