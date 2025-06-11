@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2169844108729185284}
   - component: {fileID: 4105173773313588157}
   m_Layer: 5
-  m_Name: EnemyHealthGroup
+  m_Name: EnemyHPContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +84,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2187f23471ebaff4cba16f75f86b4132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_heartIconPrefab: {fileID: 3926879962024609572, guid: 4cff2a4db06b87b41ba6b46b2ed1c2d6, type: 3}
-  m_fullHeartSprite: {fileID: 523888095791003304, guid: 354888a02ea09f740bfc04958313c938, type: 3}
-  m_emptyHeartSprite: {fileID: 7078957633047559561, guid: 354888a02ea09f740bfc04958313c938, type: 3}
-  m_heartsParent: {fileID: 490214629783759087}
+  m_heartIconPrefab: {fileID: 2347793856905938888, guid: 4cff2a4db06b87b41ba6b46b2ed1c2d6, type: 3}

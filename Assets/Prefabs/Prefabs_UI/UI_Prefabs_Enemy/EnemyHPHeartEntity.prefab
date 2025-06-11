@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 240314056174849413}
   - component: {fileID: 3368734466702491261}
   - component: {fileID: 229939530131027150}
+  - component: {fileID: 2347793856905938888}
   m_Layer: 5
-  m_Name: HeartSinglePrefab
+  m_Name: EnemyHPHeartEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,3 +76,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2347793856905938888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3926879962024609572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f070b8b8cfde53f44ac7eb82325d084e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Image: {fileID: 229939530131027150}
+  m_fullSprite: {fileID: 523888095791003304, guid: 354888a02ea09f740bfc04958313c938, type: 3}
+  m_emptySprite: {fileID: 7078957633047559561, guid: 354888a02ea09f740bfc04958313c938, type: 3}

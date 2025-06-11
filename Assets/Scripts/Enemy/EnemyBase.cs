@@ -40,7 +40,7 @@ public abstract class EnemyBase : CellObject
 	{
 		base.Init(a_cellPos);
 
-		EnemyHealthUIManager.Instance.AddHealthUI(transform, m_maxHP);
+		EnemyHPUIManager.Instance.AddHealthUI(transform, m_maxHP);
 
 		CurrentHP = m_maxHP;
 		IsDead = false;
@@ -60,7 +60,7 @@ public abstract class EnemyBase : CellObject
 		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
 
 		CurrentHP -= a_damage;
-		EnemyHealthUIManager.Instance.UpdateHealth(transform, CurrentHP);
+		EnemyHPUIManager.Instance.UpdateHealth(transform, CurrentHP);
 		if (CurrentHP <= 0)
 		{
 			Die();
@@ -111,7 +111,7 @@ public abstract class EnemyBase : CellObject
 
 		GameManager.Instance.UnregisterEnemy(this);
 
-		EnemyHealthUIManager.Instance.RemoveHealthUI(transform);
+		EnemyHPUIManager.Instance.RemoveHealthUI(transform);
 
 		Destroy(gameObject);
 	}
