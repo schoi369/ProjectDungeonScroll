@@ -79,15 +79,23 @@ public class StageManager : MonoBehaviour
 		UpdateGameState(GameState.PlayerTurn);
 	}
 
-	void NewStage()
+	void NewStage(bool a_fromDeath)
 	{
 		m_boardManager = FindFirstObjectByType<BoardManager>();
 
 		m_turnCounterForCollapse = 0;
 		m_nextCollapseColumnIndex = 0;
 
-		FloorCount++;
+		if (a_fromDeath)
+		{
+			FloorCount = 1;
+		}
+		else
+		{
+			FloorCount++;
+		}
 		SetFloorCount(FloorCount);
+
 
 		m_boardManager.Clean();
 		m_boardManager.Init();
@@ -248,12 +256,17 @@ public class StageManager : MonoBehaviour
 		}
 	}
 
+	public void LoadTestStage001()
+	{
+		StartCoroutine(LoadSceneRoutine("TestStage_001", true));
+	}
+
 	public void LoadNewScene(string a_sceneName)
 	{
 		StartCoroutine(LoadSceneRoutine(a_sceneName));
 	}
 
-	private IEnumerator LoadSceneRoutine(string a_sceneName)
+	private IEnumerator LoadSceneRoutine(string a_sceneName, bool a_fromDeath = false)
 	{
 		// TODO: 여기에 화면을 어둡게 하는 페이드 아웃 효과를 넣으면 좋습니다.
 		Debug.Log($"Loading scene: {a_sceneName}...");
@@ -269,6 +282,6 @@ public class StageManager : MonoBehaviour
 
 		// TODO: 여기에 화면을 다시 밝게 하는 페이드 인 효과를 넣으면 좋습니다.
 		Debug.Log("Scene loaded.");
-		NewStage();
+		NewStage(a_fromDeath);
 	}
 }

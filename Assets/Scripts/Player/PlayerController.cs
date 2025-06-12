@@ -402,7 +402,8 @@ public class PlayerController : MonoBehaviour
 	{
 		if (IsGameOver)
 		{
-			StageManager.Instance.StartNewGame();
+			// TODO: 나중에는 랜덤한 첫 스테이지를 불러오기
+			StageManager.Instance.LoadTestStage001();
 		}
 	}
 	#endregion
