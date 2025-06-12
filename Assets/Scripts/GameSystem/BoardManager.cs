@@ -299,17 +299,19 @@ public class BoardManager : MonoBehaviour
 		return manhattanDistance == 1;
 	}
 
-	public void WarnColumn(int a_columnIndex)
+	public void WarnColumn(int a_arrayColumnIndex)
 	{
-		//if (a_columnIndex < m_width)
-		//{
-		//	for (int y = 0; y < m_height; y++)
-		//	{
-		//		var data = GetCellData(new Vector2Int(a_columnIndex, y));
-		//		//if (data.m_groundTile == null) continue;
-		//		//data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Warned);
-		//	}
-		//}
+		for (int y = 0; y < m_cellDataMap.GetLength(0); y++)
+		{
+			Vector3Int arrayPos = new(a_arrayColumnIndex, y);
+			Vector3Int tilemapPos = ArrayPosToTilemapPos(arrayPos);
+			CellData data = GetCellData(tilemapPos);
+			
+			if (data == null) continue;
+
+			data.ContainedTileProperty.SetPhysicalState(TilePhysicalState.Warned);
+		}
+
 	}
 
 	// 특정 열을 파괴하는 public 메서드
