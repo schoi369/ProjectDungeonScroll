@@ -88,13 +88,13 @@ public class GameManager : MonoBehaviour
 		UpdateGameState(GameState.PlayerTurn);
 	}
 
-	public bool IsPlayerAt(Vector3Int a_cellPos)
+	public bool IsPlayerAt(Vector3Int a_tilemapPos)
 	{
 		if (m_player == null)
 		{
 			return false;
 		}
-		return m_player.TilemapPos == a_cellPos;
+		return m_player.TilemapPos == a_tilemapPos;
 	}
 
 	public void UpdateGameState(GameState a_newState)

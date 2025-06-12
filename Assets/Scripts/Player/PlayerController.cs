@@ -96,10 +96,10 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Board(Stage) related
 	/// </summary>
-	public void Spawn(BoardManager a_boardManager, Vector3Int a_cellPos)
+	public void Spawn(BoardManager a_boardManager, Vector3Int a_tilemapPos)
 	{
 		m_board = a_boardManager;
-		MoveTo(a_cellPos, instant: true);
+		MoveTo(a_tilemapPos, instant: true);
 	}
 
 	public void MoveTo(Vector3Int a_newTilemapPos, bool instant = false)
@@ -209,16 +209,16 @@ public class PlayerController : MonoBehaviour
 	{
 		// Check the direction if there are anything that the player would attack.
 		bool attackedSomething = false;
-		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_tilemapPos, a_direction);
-		foreach (var targetCellPos in cellPosList)
+		var tilemapPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_tilemapPos, a_direction);
+		foreach (var targetTilemapPos in tilemapPosList)
 		{
-			var data = m_board.GetCellData(targetCellPos);
+			var data = m_board.GetCellData(targetTilemapPos);
 			if (data.ContainedObject && data.ContainedObject.m_canBeAttacked)
 			{
 				attackedSomething = true;
 				PeacefulTurns = 0;
 
-				Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetCellPos);
+				Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
 				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
 				data.ContainedObject.GetAttacked(1);

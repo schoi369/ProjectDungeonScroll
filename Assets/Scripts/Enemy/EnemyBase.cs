@@ -36,9 +36,9 @@ public abstract class EnemyBase : CellObject
 		}
 	}
 
-	public override void Init(Vector3Int a_cellPos)
+	public override void Init(Vector3Int a_tilemapPos)
 	{
-		base.Init(a_cellPos);
+		base.Init(a_tilemapPos);
 
 		EnemyHPUIManager.Instance.AddHealthUI(transform, m_maxHP);
 

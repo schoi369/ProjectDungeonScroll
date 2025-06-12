@@ -17,7 +17,7 @@ public class EnemyWalker : EnemyBase
 		}
 
 		Vector3Int playerPos = player.TilemapPos;
-		Vector3Int enemyPos = m_cellPos;
+		Vector3Int enemyPos = m_TilemapPos;
 
 		// 공격 조건 확인: 플레이어와 인접해 있는가?
 		bool nextToPlayer = board.ArePositionsAdjacent(enemyPos, playerPos);

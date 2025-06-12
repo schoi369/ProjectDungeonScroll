@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class CellObject : MonoBehaviour
 {
-	protected Vector3Int m_cellPos;
-	public Vector3Int CellPos
+	protected Vector3Int m_TilemapPos;
+	public Vector3Int TilemapPos
 	{
-		get { return m_cellPos; } set { m_cellPos = value; }
+		get { return m_TilemapPos; } set { m_TilemapPos = value; }
 	}
 
 	public bool m_canBeAttacked;
 
-	public virtual void Init(Vector3Int a_cellPos)
+	public virtual void Init(Vector3Int a_tilemapPos)
 	{
-		m_cellPos = a_cellPos;
+		m_TilemapPos = a_tilemapPos;
 	}
 
 	public virtual void GetAttacked(int a_damage)

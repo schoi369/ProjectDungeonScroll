@@ -14,7 +14,7 @@ public class EnemyExploder : EnemyBase
 	protected override void PerformTurnLogic()
 	{
 		var board = GameManager.Instance.m_boardManager;
-		var cellPosList = board.GetAttackAreaCellPositions(m_attackArea, m_cellPos, BoardManager.Direction.LEFT); // 방향은 현재 무관
+		var tilemapPosList = board.GetAttackAreaCellPositions(m_attackArea, m_TilemapPos, BoardManager.Direction.LEFT); // 방향은 현재 무관
 
 		Counter++;
 		int remainder = Counter % 3;
@@ -25,9 +25,9 @@ public class EnemyExploder : EnemyBase
 				break;
 			case 1: // 폭발 예고
 				ClearTelegraphs();
-				foreach (var targetCellPos in cellPosList)
+				foreach (var targetTilemapPos in tilemapPosList)
 				{
-					var data = board.GetCellData(targetCellPos);
+					var data = board.GetCellData(targetTilemapPos);
 					//if (data != null && data.m_groundTile != null)
 					//{
 					//	data.m_groundTile.AddAttackWarning();
@@ -37,12 +37,12 @@ public class EnemyExploder : EnemyBase
 				break;
 			case 2: // 폭발
 				ClearTelegraphs();
-				foreach (var targetCellPos in cellPosList)
+				foreach (var targetTilemapPos in tilemapPosList)
 				{
-					Vector3 cellWorldPos = board.TilemapPosToWorldPos(targetCellPos);
+					Vector3 cellWorldPos = board.TilemapPosToWorldPos(targetTilemapPos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
 
-					if (GameManager.Instance.IsPlayerAt(targetCellPos))
+					if (GameManager.Instance.IsPlayerAt(targetTilemapPos))
 					{
 						GameManager.Instance.m_player.TakeDamage(1);
 					}

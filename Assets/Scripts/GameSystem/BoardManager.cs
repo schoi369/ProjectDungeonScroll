@@ -178,9 +178,9 @@ public class BoardManager : MonoBehaviour
 	/// <summary>
 	/// 해당 셀이 다른 오브젝트가 없고, 지나갈 수 있는 타일인지 확인합니다.
 	/// </summary>
-	public bool IsCellWalkable(Vector3Int a_cellPos)
+	public bool IsCellWalkable(Vector3Int a_tilemapPos)
 	{
-		var data = GetCellData(a_cellPos);
+		var data = GetCellData(a_tilemapPos);
 		if (data == null) // 보드 바깥
 		{
 			return false;
@@ -191,7 +191,7 @@ public class BoardManager : MonoBehaviour
 			return false;
 		}
 
-		if (GameManager.Instance.IsPlayerAt(a_cellPos)) // 플레이어가 있음
+		if (GameManager.Instance.IsPlayerAt(a_tilemapPos)) // 플레이어가 있음
 		{
 			return false;
 		}
@@ -254,12 +254,12 @@ public class BoardManager : MonoBehaviour
 		return result;
 	}
 
-	void AddObject(CellObject a_obj, Vector3Int a_cellPos)
+	void AddObject(CellObject a_obj, Vector3Int a_tilemapPos)
 	{
-		CellData data = m_cellDataMap[a_cellPos.x, a_cellPos.y];
-		a_obj.transform.position = TilemapPosToWorldPos(a_cellPos);
+		CellData data = m_cellDataMap[a_tilemapPos.x, a_tilemapPos.y];
+		a_obj.transform.position = TilemapPosToWorldPos(a_tilemapPos);
 		data.ContainedObject = a_obj;
-		a_obj.Init(a_cellPos);
+		a_obj.Init(a_tilemapPos);
 	}
 
 	/// <summary>
@@ -267,13 +267,13 @@ public class BoardManager : MonoBehaviour
 	/// </summary>
 	public void MoveObjectOnBoard(CellObject a_obj, Vector3Int a_toPos)
 	{
-		Vector3Int fromPos = a_obj.CellPos;
+		Vector3Int fromPos = a_obj.TilemapPos;
 
 		GetCellData(fromPos).ContainedObject = null;
 		GetCellData(a_toPos).ContainedObject = a_obj;
 
 		// 오브젝트 내부의 위치 정보 갱신
-		a_obj.CellPos = a_toPos;
+		a_obj.TilemapPos = a_toPos;
 
 		// 실제 게임 오브젝트의 위치를 이동
 		a_obj.transform.position = TilemapPosToWorldPos(a_toPos);

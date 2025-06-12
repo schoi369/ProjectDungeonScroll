@@ -39,7 +39,7 @@ public class ShockwaveUpgradeSO : UpgradeSO
 			case BoardManager.Direction.RIGHT: direction = Vector3Int.right; break;
 		}
 
-		Vector3Int knockbackPos = targetEnemy.CellPos + direction;
+		Vector3Int knockbackPos = targetEnemy.TilemapPos + direction;
 
 		if (board.IsCellWalkable(knockbackPos))
 		{
