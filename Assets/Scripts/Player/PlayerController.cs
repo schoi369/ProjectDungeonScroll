@@ -352,6 +352,12 @@ public class PlayerController : MonoBehaviour
 		m_hitScaleEffectCoroutine = null;
 	}
 
+	[InspectorButton]
+	void DebugDie()
+	{
+		TakeDamage(100);
+	}
+
 	//----------------------------------------------------------------
 	// Inputs
 	#region Inputs
