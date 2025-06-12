@@ -311,11 +311,9 @@ public class BoardManager : MonoBehaviour
 
 			data.ContainedTileProperty.SetPhysicalState(TilePhysicalState.Warned);
 		}
-
 	}
 
-	// 특정 열을 파괴하는 public 메서드
-	public void DestroyColumn(int a_columnIndex)
+	public void DestroyColumn(int a_arrayColumnIndex)
 	{
 		//	if (a_columnIndex < m_width)
 		//	{
@@ -338,5 +336,30 @@ public class BoardManager : MonoBehaviour
 		//			player.GameOver();
 		//		}
 		//	}
+
+		for (int y = 0; y < m_cellDataMap.GetLength(0); y++)
+		{
+			Vector3Int arrayPos = new(a_arrayColumnIndex, y);
+			Vector3Int tilemapPos = ArrayPosToTilemapPos(arrayPos);
+			CellData data = GetCellData(tilemapPos);
+
+			if (data == null) continue;
+
+			data.ContainedTileProperty.SetPhysicalState(TilePhysicalState.Destroyed);
+
+			// 타일 위의 오브젝트 파괴.
+			if (data.ContainedObject)
+			{
+				data.ContainedObject.GetDestroyedFromBoard();
+				data.ContainedObject = null;
+			}
+		}
+
+		var player = GameManager.Instance.m_player;
+		var playerArrayPos = TilemapPosToArrayPos(player.TilemapPos);
+		if (playerArrayPos.x == a_arrayColumnIndex)
+		{
+			player.GameOver();
+		}
 	}
 }
