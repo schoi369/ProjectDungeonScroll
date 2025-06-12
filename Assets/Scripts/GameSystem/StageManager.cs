@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class StageManager : MonoBehaviour
 {
@@ -19,9 +20,9 @@ public class StageManager : MonoBehaviour
 	public GameState CurrentState { get; private set; }
 	public event Action<GameState> OnGameStateChanged;
 
-	public PlayerController m_player;
 	public UpgradeDatabase m_upgradeDatabase;
 
+	public PlayerController m_player;
 	public BoardManager m_boardManager;
 	public int m_collapseTurnInterval = 5;
 	int m_turnCounterForCollapse = 0;
@@ -35,13 +36,18 @@ public class StageManager : MonoBehaviour
 
 	void Awake()
 	{
-		if (Instance != null)
+		if (Instance == null)
+		{
+			Instance = this;
+			DontDestroyOnLoad(gameObject);
+		}
+		else
 		{
 			Destroy(gameObject);
-			return;
 		}
 
-		Instance = this;
+		m_player = FindFirstObjectByType<PlayerController>();
+		m_boardManager = FindFirstObjectByType<BoardManager>();
 	}
 
 	void Start()
@@ -73,8 +79,10 @@ public class StageManager : MonoBehaviour
 		UpdateGameState(GameState.PlayerTurn);
 	}
 
-	public void NewLevel()
+	void NewStage()
 	{
+		m_boardManager = FindFirstObjectByType<BoardManager>();
+
 		m_turnCounterForCollapse = 0;
 		m_nextCollapseColumnIndex = 0;
 
@@ -83,6 +91,8 @@ public class StageManager : MonoBehaviour
 
 		m_boardManager.Clean();
 		m_boardManager.Init();
+
+		m_player.NewStageInit();
 		m_player.Spawn(m_boardManager, new Vector3Int(0, 0));
 
 		UpdateGameState(GameState.PlayerTurn);
@@ -236,5 +246,29 @@ public class StageManager : MonoBehaviour
 		{
 			UpdateGameState(GameState.WorldTurn);
 		}
+	}
+
+	public void LoadNewScene(string a_sceneName)
+	{
+		StartCoroutine(LoadSceneRoutine(a_sceneName));
+	}
+
+	private IEnumerator LoadSceneRoutine(string a_sceneName)
+	{
+		// TODO: 여기에 화면을 어둡게 하는 페이드 아웃 효과를 넣으면 좋습니다.
+		Debug.Log($"Loading scene: {a_sceneName}...");
+
+		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(a_sceneName);
+
+		// 씬 로딩이 완료될 때까지 대기
+		while (!asyncLoad.isDone)
+		{
+			// TODO: 여기에 로딩 진행률(asyncLoad.progress)을 표시하는 UI를 업데이트할 수 있습니다.
+			yield return null;
+		}
+
+		// TODO: 여기에 화면을 다시 밝게 하는 페이드 인 효과를 넣으면 좋습니다.
+		Debug.Log("Scene loaded.");
+		NewStage();
 	}
 }

@@ -67,6 +67,24 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	private void OnEnable()
+	{
+		GameInputManager.onMoveUp += OnInputMoveUp;
+		GameInputManager.onMoveDown += OnInputMoveDown;
+		GameInputManager.onMoveRight += OnInputMoveRight;
+		GameInputManager.onMoveLeft += OnInputMoveLeft;
+		GameInputManager.onGameOverRestart += OnInputRestart;
+	}
+
+	private void OnDisable()
+	{
+		GameInputManager.onMoveUp -= OnInputMoveUp;
+		GameInputManager.onMoveDown -= OnInputMoveDown;
+		GameInputManager.onMoveRight -= OnInputMoveRight;
+		GameInputManager.onMoveLeft -= OnInputMoveLeft;
+		GameInputManager.onGameOverRestart -= OnInputRestart;
+	}
+
 	/// <summary>
 	/// Initialize
 	/// </summary>
@@ -108,6 +126,13 @@ public class PlayerController : MonoBehaviour
 
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, Level);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
+	}
+
+	public void NewStageInit()
+	{
+		//
+		IsMoving = false;
+		IsGameOver = false;
 	}
 
 	/// <summary>
@@ -335,41 +360,41 @@ public class PlayerController : MonoBehaviour
 		return !IsMoving && !IsGameOver && StageManager.Instance.CurrentState == StageManager.GameState.PlayerTurn;
 	}
 
-	public void OnInputMoveUp(InputAction.CallbackContext a_context)
+	void OnInputMoveUp()
 	{
-		if (a_context.performed && CanAcceptMoveInput())
+		if (CanAcceptMoveInput())
 		{
 			ProcessPlayerAction(BoardManager.Direction.UP);
 		}
 	}
 
-	public void OnInputMoveDown(InputAction.CallbackContext a_context)
+	void OnInputMoveDown()
 	{
-		if (a_context.performed && CanAcceptMoveInput())
+		if (CanAcceptMoveInput())
 		{
 			ProcessPlayerAction(BoardManager.Direction.DOWN);
 		}
 	}
 
-	public void OnInputMoveRight(InputAction.CallbackContext a_context)
+	void OnInputMoveRight()
 	{
-		if (a_context.performed && CanAcceptMoveInput())
+		if (CanAcceptMoveInput())
 		{
 			ProcessPlayerAction(BoardManager.Direction.RIGHT);
 		}
 	}
 
-	public void OnInputMoveLeft(InputAction.CallbackContext a_context)
+	void OnInputMoveLeft()
 	{
-		if (a_context.performed && CanAcceptMoveInput())
+		if (CanAcceptMoveInput())
 		{
 			ProcessPlayerAction(BoardManager.Direction.LEFT);
 		}
 	}
 
-	public void OnInputRestart(InputAction.CallbackContext a_context)
+	void OnInputRestart()
 	{
-		if (a_context.performed && IsGameOver)
+		if (IsGameOver)
 		{
 			StageManager.Instance.StartNewGame();
 		}
