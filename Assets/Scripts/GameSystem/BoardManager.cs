@@ -1,38 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class BoardManager : MonoBehaviour
 {
 	public class CellData
 	{
-		public GroundTile m_groundTile;
-		public CellObject m_containedObject;
+		public TileProperty ContainedTileProperty { get; private set; }
+		public CellObject ContainedObject { get; set; }
 
-		public bool Passable
+		public bool Passable => ContainedTileProperty.IsWalkable;
+
+		public CellData(TileProperty a_tileProperty)
 		{
-			get
-			{
-				bool result = true;
-				result &= m_groundTile.m_passable;
-				return result;
-			}
+			ContainedTileProperty = a_tileProperty;
 		}
 
 		public void CleanUp()
 		{
-			if (m_groundTile)
+			if (ContainedObject)
 			{
-				Destroy(m_groundTile.gameObject);
+				ContainedObject.GetDestroyedFromBoard();
 			}
-
-			if (m_containedObject)
-			{
-				m_containedObject.GetDestroyedFromBoard();
-			}
-
-			m_groundTile = null;
-			m_containedObject = null;
+			ContainedObject = null;
 		}
 	}
 
@@ -45,118 +37,158 @@ public class BoardManager : MonoBehaviour
 		LEFT,
 	}
 
-	public Transform m_boardHolder;
+	CellData[,] m_cellDataMap;
+    Vector3Int m_mapOrigin; // 오프셋 계산을 위한 맵의 원점
 
-	CellData[,] m_boardData;
-	public List<Vector2Int> m_emptyCellPositionList;
-
-	public int m_width;
-	public int m_height;
 	public float m_cellSize = 1f;
 
-	public GroundTile m_prefabGroundTile;
-	public COStairs m_prefabCOStairs;
-
-	[Header("Enemies")]
-	public EnemyExploder m_exploderPrefab;
-	public EnemyWalker m_walkerPrefab;
+	public Tilemap m_groundTilemap;
 
 	public void Init()
 	{
-		m_emptyCellPositionList = new List<Vector2Int>();
-
-		m_boardData = new CellData[m_width, m_height];
-
-		for (int y = 0; y < m_height; y++)
-		{
-			for (int x = 0; x < m_width; x++)
-			{
-				var cellPos = new Vector2Int(x, y);
-
-				SetCellTile(cellPos, m_prefabGroundTile);
-				m_emptyCellPositionList.Add(cellPos);
-			}
-		}
-
-		// Player
-		m_emptyCellPositionList.Remove(new Vector2Int(1, 1)); // Player Cell Position
-
-		// Exit
-		Vector2Int stairsCellPos = new Vector2Int(m_width - 1, m_height / 2);
-		AddObject(Instantiate(m_prefabCOStairs), stairsCellPos);
-		m_emptyCellPositionList.Remove(stairsCellPos);
-
-		GenerateEnemy();
+		CreateLogicalMap();
 	}
 
+	/// <summary>
+	/// 보드 형태를 읽어내서, m_boardData에 논리적 맵을 형성함.
+	/// </summary>
+	void CreateLogicalMap()
+	{
+		BoundsInt bounds = m_groundTilemap.cellBounds;
+		m_mapOrigin = bounds.min;
+
+		m_cellDataMap = new CellData[bounds.size.x, bounds.size.y];
+
+		Debug.Log($"Bounds: {bounds.size.x} , {bounds.size.y}");
+		
+		foreach (var pos in bounds.allPositionsWithin)
+		{
+			LogicalTile tile = m_groundTilemap.GetTile<LogicalTile>(pos);
+
+			// 월드 좌표 -> 배열 좌표
+			int x = pos.x - m_mapOrigin.x;
+			int y = pos.y - m_mapOrigin.y;
+
+			if (tile != null)
+			{
+				//Debug.Log($"Pos ({x}, {y}) Type {tile.m_tileType}");
+
+				TileProperty property = CreateTilePropertyFromType(tile.m_tileType);
+				m_cellDataMap[x, y] = new CellData(property);
+			}
+			else
+			{
+				m_cellDataMap[x, y] = null;
+			}
+		}
+	}
+
+	/// <summary>
+	/// TileType enum 값에 따라 해당하는 TileProperty 인스턴스를 생성하여 반환합니다.
+	/// </summary>
+	private TileProperty CreateTilePropertyFromType(TileType a_type)
+	{
+		switch (a_type)
+		{
+			case TileType.Floor:
+				return new FloorTileProperty();
+			case TileType.Wall:
+				return new WallTileProperty();
+			// 새로운 타일 타입을 추가할 때마다 이곳에 case를 추가하면 됩니다.
+			default:
+				Debug.LogWarning($"정의되지 않은 TileType: {a_type}. 기본 Walkable로 처리합니다.");
+				return null;
+		}
+	}
+
+	public Vector3Int WorldToGrid(Vector3 a_worldPos)
+	{
+		return m_groundTilemap.WorldToCell(a_worldPos);
+	}
+
+	public Vector3 GridToWorld(Vector3Int a_gridPos)
+	{
+		return m_groundTilemap.GetCellCenterWorld(a_gridPos);
+	}
+
+	public CellData GetCellData(Vector3Int a_gridPos)
+	{
+		// 그리드 좌표를 배열 인덱스로 변환
+		int x = a_gridPos.x - m_mapOrigin.x;
+		int y = a_gridPos.y - m_mapOrigin.y;
+
+		// 배열 범위를 체크하여 안전하게 데이터 반환
+		if (x >= 0 && x < m_cellDataMap.GetLength(0) && y >= 0 && y < m_cellDataMap.GetLength(1))
+		{
+			return m_cellDataMap[x, y];
+		}
+
+		return null; // 맵 범위를 벗어난 경우
+	}
+
+	/// <summary>
+	/// Vector2Int를 지원하는 임시 메소드.
+	/// </summary>
+	/// <param name="a_gridPos2"></param>
+	/// <returns></returns>
+	public CellData GetCellData(Vector2Int a_gridPos2)
+	{
+		// 그리드 좌표를 배열 인덱스로 변환
+		int x = a_gridPos2.x - m_mapOrigin.x;
+		int y = a_gridPos2.y - m_mapOrigin.y;
+
+		// 배열 범위를 체크하여 안전하게 데이터 반환
+		if (x >= 0 && x < m_cellDataMap.GetLength(0) && y >= 0 && y < m_cellDataMap.GetLength(1))
+		{
+			return m_cellDataMap[x, y];
+		}
+
+		return null; // 맵 범위를 벗어난 경우
+	}
+
+	/// <summary>
+	/// 해당 셀이 다른 오브젝트가 없고, 지나갈 수 있는 타일인지 확인합니다.
+	/// </summary>
+	public bool IsCellWalkable(Vector3Int a_cellPos)
+	{
+		var data = GetCellData(a_cellPos);
+		if (data == null) // 보드 바깥
+		{
+			return false;
+		}
+
+		if (data.ContainedObject != null) // 다른 오브젝트가 있음
+		{
+			return false;
+		}
+
+		if (GameManager.Instance.IsPlayerAt(a_cellPos)) // 플레이어가 있음
+		{
+			return false;
+		}
+
+		return data.Passable; // 타일의 Passable 속성 반환
+	}
+
+	// ============================================================================
 
 	public void Clean()
 	{
-		if (m_boardData == null)
+		if (m_cellDataMap == null)
 		{
 			return;
 		}
-
-		for (int y = 0; y < m_height; y++)
-		{
-			for (int x = 0; x < m_width; x++)
-			{
-				var cellData = m_boardData[x, y];
-
-				if (cellData.m_containedObject != null)
-				{
-					cellData.m_containedObject.GetDestroyedFromBoard();
-				}
-
-				SetCellTile(new Vector2Int(x, y), null);
-			}
-		}
 	}
 
-	public Vector3 CellPosToWorldPos(Vector2Int a_cellPos)
+	public Vector3 CellPosToWorldPos(Vector3Int a_cellPos)
 	{
 		return m_cellSize * new Vector3(a_cellPos.x, a_cellPos.y, 0f);
 	}
 
-	public CellData GetCellData(Vector2Int a_cellPos)
+
+	public List<Vector3Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector3Int a_center, Direction a_direction)
 	{
-		if (a_cellPos.x < 0 || a_cellPos.x >= m_width || a_cellPos.y < 0 || a_cellPos.y >= m_height)
-		{
-			return null;
-		}
-
-		return m_boardData[a_cellPos.x, a_cellPos.y];
-	}
-
-	public void SetCellTile(Vector2Int a_cellPos, GroundTile a_tile_prefab)
-	{
-		CellData newCell;
-		CellData prevCell = m_boardData[a_cellPos.x, a_cellPos.y];
-		if (prevCell != null)
-		{
-			prevCell.CleanUp();
-			newCell = prevCell;
-		}
-		else
-		{
-			newCell = new();
-		}
-
-		m_boardData[a_cellPos.x, a_cellPos.y] = newCell;
-
-		var targetCell = m_boardData[a_cellPos.x, a_cellPos.y];
-
-		if (a_tile_prefab)
-		{
-			GroundTile newTile = Instantiate(a_tile_prefab, m_boardHolder);
-			newTile.transform.position = CellPosToWorldPos(a_cellPos);
-			targetCell.m_groundTile = newTile;
-		}
-	}
-
-	public List<Vector2Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector2Int a_center, Direction a_direction)
-	{
-		List<Vector2Int> result = new();
+		List<Vector3Int> result = new();
 
 		for (int y = 0; y < AttackAreaSO.GridSize; y++)
 		{
@@ -187,7 +219,7 @@ public class BoardManager : MonoBehaviour
 							break;
 					}
 
-					Vector2Int target = new(a_center.x + offsetX, a_center.y + offsetY);
+					Vector3Int target = new(a_center.x + offsetX, a_center.y + offsetY);
 					if (GetCellData(target) != null)
 					{
 						result.Add(target);
@@ -199,76 +231,28 @@ public class BoardManager : MonoBehaviour
 		return result;
 	}
 
-	void AddObject(CellObject a_obj, Vector2Int a_cellPos)
+	void AddObject(CellObject a_obj, Vector3Int a_cellPos)
 	{
-		CellData data = m_boardData[a_cellPos.x, a_cellPos.y];
-		a_obj.transform.position = CellPosToWorldPos(a_cellPos);
-		data.m_containedObject = a_obj;
+		CellData data = m_cellDataMap[a_cellPos.x, a_cellPos.y];
+		a_obj.transform.position = GridToWorld(a_cellPos);
+		data.ContainedObject = a_obj;
 		a_obj.Init(a_cellPos);
 	}
 
-	void GenerateEnemy()
-	{
-		int exploderCount = 3;
-		int walkerCount = 3;
-
-		for (int i = 0; i < exploderCount; i++)
-		{
-			int randomIndex = Random.Range(0, m_emptyCellPositionList.Count);
-			Vector2Int cellPos = m_emptyCellPositionList[randomIndex];
-
-			m_emptyCellPositionList.RemoveAt(randomIndex);
-			EnemyExploder exploder = Instantiate(m_exploderPrefab);
-			AddObject(exploder, cellPos);
-		}
-
-		for (int i = 0; i < walkerCount; i++)
-		{
-			int randomIndex = Random.Range(0, m_emptyCellPositionList.Count);
-			Vector2Int cellPos = m_emptyCellPositionList[randomIndex];
-
-			m_emptyCellPositionList.RemoveAt(randomIndex);
-			EnemyWalker walker = Instantiate(m_walkerPrefab);
-			AddObject(walker, cellPos);
-		}
-	}
-
-	/// <summary>
-	/// 해당 셀이 다른 오브젝트가 없고, 지나갈 수 있는 타일인지 확인합니다.
-	/// </summary>
-	public bool IsCellWalkable(Vector2Int a_cellPos)
-	{
-		var data = GetCellData(a_cellPos);
-		if (data == null) // 보드 바깥
-		{
-			return false;
-		}
-
-		if (data.m_containedObject != null) // 다른 오브젝트가 있음
-		{
-			return false;
-		}
-
-		if (GameManager.Instance.IsPlayerAt(a_cellPos)) // 플레이어가 있음
-		{
-			return false;
-		}
-
-		return data.Passable; // 타일의 Passable 속성 반환
-	}
+	
 
 	/// <summary>
 	/// 특정 CellObject를 새로운 위치로 이동시킵니다. (보드 데이터 및 실제 위치 포함)
 	/// </summary>
-	public void MoveObjectOnBoard(CellObject a_obj, Vector2Int a_toPos)
+	public void MoveObjectOnBoard(CellObject a_obj, Vector3Int a_toPos)
 	{
-		Vector2Int fromPos = a_obj.CellPos;
+		Vector3Int fromPos = a_obj.CellPos;
 
 		// 이전 위치의 데이터를 정리
-		GetCellData(fromPos).m_containedObject = null;
+		GetCellData(fromPos).ContainedObject = null;
 
 		// 새로운 위치에 오브젝트 정보 설정
-		GetCellData(a_toPos).m_containedObject = a_obj;
+		GetCellData(a_toPos).ContainedObject = a_obj;
 
 		// 오브젝트 내부의 위치 정보 갱신
 		a_obj.CellPos = a_toPos;
@@ -279,41 +263,40 @@ public class BoardManager : MonoBehaviour
 
 	public void WarnColumn(int a_columnIndex)
 	{
-		if (a_columnIndex < m_width)
-		{
-			for (int y = 0; y < m_height; y++)
-			{
-				var data = GetCellData(new Vector2Int(a_columnIndex, y));
-				if (data.m_groundTile == null) continue;
-				data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Warned);
-			}
-		}
+		//if (a_columnIndex < m_width)
+		//{
+		//	for (int y = 0; y < m_height; y++)
+		//	{
+		//		var data = GetCellData(new Vector2Int(a_columnIndex, y));
+		//		//if (data.m_groundTile == null) continue;
+		//		//data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Warned);
+		//	}
+		//}
 	}
 
 	// 특정 열을 파괴하는 public 메서드
 	public void DestroyColumn(int a_columnIndex)
 	{
-		if (a_columnIndex < m_width)
-		{
-			for (int y = 0; y < m_height; y++)
-			{
-				var data = GetCellData(new Vector2Int(a_columnIndex, y));
-				if (data.m_groundTile == null) continue;
-				data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Destroyed);
+		//	if (a_columnIndex < m_width)
+		//	{
+		//		for (int y = 0; y < m_height; y++)
+		//		{
+		//			var data = GetCellData(new Vector2Int(a_columnIndex, y));
+		//			//if (data.m_groundTile == null) continue;
+		//			//data.m_groundTile.SetPhysicalState(GroundTile.PhysicalState.Destroyed);
 
-				if (data.m_containedObject)
-				{
-					data.m_containedObject.GetDestroyedFromBoard();
-					data.m_containedObject = null;
-				}
-			}
+		//			if (data.m_containedObject)
+		//			{
+		//				data.m_containedObject.GetDestroyedFromBoard();
+		//				data.m_containedObject = null;
+		//			}
+		//		}
 
-			var player = GameManager.Instance.m_player;
-			if (player.CellPos.x == a_columnIndex)
-			{
-				player.GameOver();
-			}
-		}
+		//		var player = GameManager.Instance.m_player;
+		//		if (player.CellPos.x == a_columnIndex)
+		//		{
+		//			player.GameOver();
+		//		}
+		//	}
 	}
-
 }

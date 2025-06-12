@@ -28,18 +28,18 @@ public class EnemyExploder : EnemyBase
 				foreach (var targetCellPos in cellPosList)
 				{
 					var data = board.GetCellData(targetCellPos);
-					if (data != null && data.m_groundTile != null)
-					{
-						data.m_groundTile.AddAttackWarning();
-						m_warnedTiles.Add(data.m_groundTile);
-					}
+					//if (data != null && data.m_groundTile != null)
+					//{
+					//	data.m_groundTile.AddAttackWarning();
+					//	m_warnedTiles.Add(data.m_groundTile);
+					//}
 				}
 				break;
 			case 2: // 폭발
 				ClearTelegraphs();
 				foreach (var targetCellPos in cellPosList)
 				{
-					Vector3 cellWorldPos = board.CellPosToWorldPos(targetCellPos);
+					Vector3 cellWorldPos = board.GridToWorld(targetCellPos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
 
 					if (GameManager.Instance.IsPlayerAt(targetCellPos))

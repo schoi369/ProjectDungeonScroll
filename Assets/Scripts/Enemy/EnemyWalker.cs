@@ -16,8 +16,8 @@ public class EnemyWalker : EnemyBase
 			return;
 		}
 
-		Vector2Int playerPos = player.CellPos;
-		Vector2Int enemyPos = m_cellPos;
+		Vector3Int playerPos = player.CellPos;
+		Vector3Int enemyPos = m_cellPos;
 
 		// 공격 조건 확인: 플레이어와 인접해 있는가?
 		int distance = Mathf.Abs(playerPos.x - enemyPos.x) + Mathf.Abs(playerPos.y - enemyPos.y);
@@ -51,8 +51,8 @@ public class EnemyWalker : EnemyBase
 		int dx = playerPos.x - enemyPos.x;
 		int dy = playerPos.y - enemyPos.y;
 
-		Vector2Int horizontalTarget = new(enemyPos.x + (int)Mathf.Sign(dx), enemyPos.y);
-		Vector2Int verticalTarget = new(enemyPos.x, enemyPos.y + (int)Mathf.Sign(dy));
+		Vector3Int horizontalTarget = new(enemyPos.x + (int)Mathf.Sign(dx), enemyPos.y);
+		Vector3Int verticalTarget = new(enemyPos.x, enemyPos.y + (int)Mathf.Sign(dy));
 
 		bool isHorizontalPrimary = Mathf.Abs(dx) > Mathf.Abs(dy);
 

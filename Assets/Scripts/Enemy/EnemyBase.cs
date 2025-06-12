@@ -36,7 +36,7 @@ public abstract class EnemyBase : CellObject
 		}
 	}
 
-	public override void Init(Vector2Int a_cellPos)
+	public override void Init(Vector3Int a_cellPos)
 	{
 		base.Init(a_cellPos);
 

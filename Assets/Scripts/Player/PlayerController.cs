@@ -9,8 +9,8 @@ public class PlayerController : MonoBehaviour
 	public AttackAreaSO m_attackAreaSetting;
 
 	BoardManager m_board;
-	Vector2Int m_cellPos;
-	public Vector2Int CellPos => m_cellPos;
+	Vector3Int m_gridPos;
+	public Vector3Int CellPos => m_gridPos;
 
 	public float m_moveSpeed = 5f;
 
@@ -96,25 +96,25 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Board(Stage) related
 	/// </summary>
-	public void Spawn(BoardManager a_boardManager, Vector2Int a_cellPos)
+	public void Spawn(BoardManager a_boardManager, Vector3Int a_cellPos)
 	{
 		m_board = a_boardManager;
 		MoveTo(a_cellPos, instant: true);
 	}
 
-	public void MoveTo(Vector2Int a_cellPos, bool instant = false)
+	public void MoveTo(Vector3Int a_newGridPos, bool instant = false)
 	{
-		m_cellPos = a_cellPos;
+		m_gridPos = a_newGridPos;
 
 		if (instant)
 		{
 			IsMoving = false;
-			transform.position = m_board.CellPosToWorldPos(m_cellPos);
+			transform.position = m_board.GridToWorld(m_gridPos);
 		}
 		else
 		{
 			IsMoving = true;
-			MoveTarget = m_board.CellPosToWorldPos(m_cellPos);
+			MoveTarget = m_board.GridToWorld(m_gridPos);
 		}
 	}
 
@@ -196,10 +196,10 @@ public class PlayerController : MonoBehaviour
 			if (transform.position == MoveTarget)
 			{
 				IsMoving = false;
-				var cellData = m_board.GetCellData(m_cellPos);
-				if (cellData.m_containedObject != null)
+				var cellData = m_board.GetCellData(m_gridPos);
+				if (cellData.ContainedObject != null)
 				{
-					cellData.m_containedObject.PlayerEntered();
+					cellData.ContainedObject.PlayerEntered();
 				}
 			}
 		}
@@ -209,11 +209,11 @@ public class PlayerController : MonoBehaviour
 	{
 		// Check the direction if there are anything that the player would attack.
 		bool attackedSomething = false;
-		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_cellPos, a_direction);
+		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_gridPos, a_direction);
 		foreach (var targetCellPos in cellPosList)
 		{
 			var data = m_board.GetCellData(targetCellPos);
-			if (data.m_containedObject && data.m_containedObject.m_canBeAttacked)
+			if (data.ContainedObject && data.ContainedObject.m_canBeAttacked)
 			{
 				attackedSomething = true;
 				PeacefulTurns = 0;
@@ -221,14 +221,14 @@ public class PlayerController : MonoBehaviour
 				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
 				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
-				data.m_containedObject.GetAttacked(1);
-				OnAttackLanded?.Invoke(data.m_containedObject, a_direction);
+				data.ContainedObject.GetAttacked(1);
+				OnAttackLanded?.Invoke(data.ContainedObject, a_direction);
 			}
 		}
 
 		if (!attackedSomething)
 		{
-			Vector2Int newCellTargetPos = m_cellPos;
+			Vector3Int newCellTargetPos = m_gridPos;
 			switch (a_direction)
 			{
 				case BoardManager.Direction.UP:
@@ -248,11 +248,11 @@ public class PlayerController : MonoBehaviour
 			BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
 			if (cellData != null && cellData.Passable)
 			{
-				if (cellData.m_containedObject == null)
+				if (cellData.ContainedObject == null)
 				{
 					MoveTo(newCellTargetPos);
 				}
-				else if (cellData.m_containedObject.PlayerWantsToEnter())
+				else if (cellData.ContainedObject.PlayerWantsToEnter())
 				{
 					MoveTo(newCellTargetPos);
 				}

@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
 
 		m_player.Init(); // Only at StartNewGame, not at NewLevel().
 
-		m_player.Spawn(m_boardManager, new Vector2Int(1, 1)); // Player Start Pos. Need Refactoring, directly set in multiple places.
+		m_player.Spawn(m_boardManager, new Vector3Int(0, 0)); // Player Start Pos. Need Refactoring, directly set in multiple places.
 
 		UpdateGameState(GameState.PlayerTurn);
 	}
@@ -83,12 +83,12 @@ public class GameManager : MonoBehaviour
 
 		m_boardManager.Clean();
 		m_boardManager.Init();
-		m_player.Spawn(m_boardManager, new Vector2Int(1, 1));
+		m_player.Spawn(m_boardManager, new Vector3Int(1, 1));
 
 		UpdateGameState(GameState.PlayerTurn);
 	}
 
-	public bool IsPlayerAt(Vector2Int a_cellPos)
+	public bool IsPlayerAt(Vector3Int a_cellPos)
 	{
 		if (m_player == null)
 		{

@@ -30,16 +30,16 @@ public class ShockwaveUpgradeSO : UpgradeSO
 
 		if (targetEnemy == null || board == null || player == null) return;
 
-		Vector2Int direction = Vector2Int.zero;
+		Vector3Int direction = Vector3Int.zero;
 		switch (a_direction)
 		{
-			case BoardManager.Direction.UP: direction = Vector2Int.up; break;
-			case BoardManager.Direction.DOWN: direction = Vector2Int.down; break;
-			case BoardManager.Direction.LEFT: direction = Vector2Int.left; break;
-			case BoardManager.Direction.RIGHT: direction = Vector2Int.right; break;
+			case BoardManager.Direction.UP: direction = Vector3Int.up; break;
+			case BoardManager.Direction.DOWN: direction = Vector3Int.down; break;
+			case BoardManager.Direction.LEFT: direction = Vector3Int.left; break;
+			case BoardManager.Direction.RIGHT: direction = Vector3Int.right; break;
 		}
 
-		Vector2Int knockbackPos = targetEnemy.CellPos + direction;
+		Vector3Int knockbackPos = targetEnemy.CellPos + direction;
 
 		if (board.IsCellWalkable(knockbackPos))
 		{
