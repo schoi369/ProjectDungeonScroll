@@ -58,7 +58,7 @@ public class BoardManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 보드 형태를 읽어내서, m_boardData에 논리적 맵을 형성함.
+	/// 보드 형태를 읽어내서, m_cellDataMap에 논리적 맵을 형성함.
 	/// </summary>
 	void CreateLogicalMap()
 	{
@@ -67,25 +67,22 @@ public class BoardManager : MonoBehaviour
 
 		m_cellDataMap = new CellData[bounds.size.x, bounds.size.y];
 
-		//Debug.Log($"Bounds: {bounds.size.x} , {bounds.size.y}");
 		foreach (var tilemapPos in bounds.allPositionsWithin)
 		{
 			LogicalTile tile = m_groundTilemap.GetTile<LogicalTile>(tilemapPos);
 
 			Vector3Int arrayPos = TilemapPosToArrayPos(tilemapPos);
-			int x = arrayPos.x;
-			int y = arrayPos.y;
 
 			if (tile != null)
 			{
 				TileProperty property = CreateTilePropertyFromType(tile.m_tileType);
 				property.Init(tilemapPos, tile);
 
-				m_cellDataMap[x, y] = new CellData(property, tilemapPos);
+				m_cellDataMap[arrayPos.x, arrayPos.y] = new CellData(property, arrayPos);
 			}
 			else
 			{
-				m_cellDataMap[x, y] = null;
+				m_cellDataMap[arrayPos.x, arrayPos.y] = null;
 			}
 		}
 	}
