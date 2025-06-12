@@ -8,7 +8,7 @@ public class EnemyExploder : EnemyBase
 
 	int Counter { get; set; } = 0;
 
-	List<GroundTile> m_warnedTiles = new();
+	//List<GroundTile> m_warnedTiles = new();
 
 
 	protected override void PerformTurnLogic()
@@ -53,14 +53,14 @@ public class EnemyExploder : EnemyBase
 
 	protected override void ClearTelegraphs()
 	{
-		foreach (var tile in m_warnedTiles)
-		{
-			if (tile != null) // 타일이 이미 파괴되었을 경우 대비
-			{
-				tile.RemoveAttackWarning();
-			}
-		}
-		m_warnedTiles.Clear(); // 리스트 비우기
+		//foreach (var tile in m_warnedTiles)
+		//{
+		//	if (tile != null) // 타일이 이미 파괴되었을 경우 대비
+		//	{
+		//		tile.RemoveAttackWarning();
+		//	}
+		//}
+		//m_warnedTiles.Clear(); // 리스트 비우기
 	}
 
 }
