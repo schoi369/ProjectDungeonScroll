@@ -463,7 +463,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 482107697}
-  - component: {fileID: 482107696}
+  - component: {fileID: 482107698}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -471,22 +471,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &482107696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 482107695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f86d0dc7ef3210489e63a24786723af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_player: {fileID: 206498440}
-  m_upgradeDatabase: {fileID: 11400000, guid: ea09d7507e5d6e046ae7b86d5c42e05c, type: 2}
-  m_boardManager: {fileID: 540949814}
-  m_collapseTurnInterval: 5
 --- !u!4 &482107697
 Transform:
   m_ObjectHideFlags: 0
@@ -502,6 +486,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &482107698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482107695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ca65ee169635464f883fc1611c0184b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_player: {fileID: 206498440}
+  m_upgradeDatabase: {fileID: 11400000, guid: ea09d7507e5d6e046ae7b86d5c42e05c, type: 2}
+  m_boardManager: {fileID: 540949814}
+  m_collapseTurnInterval: 5
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2831,9 +2831,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5605580581487139586, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5605580581487139586, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5605580581487139586, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6006856133687967994, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
       propertyPath: m_Name
       value: OverlayCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583338184240176207, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583338184240176207, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583338184240176207, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8507163611396310224, guid: a29ddd9daccc7484083703bcb6fc2195, type: 3}
       propertyPath: m_Camera

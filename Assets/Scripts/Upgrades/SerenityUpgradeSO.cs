@@ -8,20 +8,20 @@ public class SerenityUpgradeSO : UpgradeSO
 
 	public override void Apply(GameObject playerObject)
 	{
-		GameManager.Instance.OnPlayerTurnEnded += CheckSerenity;
+		StageManager.Instance.OnPlayerTurnEnded += CheckSerenity;
 	}
 
 	public override void Remove(GameObject playerObject)
 	{
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.OnPlayerTurnEnded -= CheckSerenity;
+			StageManager.Instance.OnPlayerTurnEnded -= CheckSerenity;
 		}
 	}
 
 	private void CheckSerenity()
 	{
-		var player = GameManager.Instance.m_player;
+		var player = StageManager.Instance.m_player;
 
 		if (player == null || player.IsGameOver) return;
 

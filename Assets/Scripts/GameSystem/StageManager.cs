@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class GameManager : MonoBehaviour
+public class StageManager : MonoBehaviour
 {
-	public static GameManager Instance { get; private set; }
+	public static StageManager Instance { get; private set; }
 
 	public enum GameState
 	{

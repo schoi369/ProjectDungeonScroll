@@ -22,17 +22,17 @@ public abstract class EnemyBase : CellObject
 	// GameManager에 자신을 등록/해제
 	protected virtual void OnEnable()
 	{
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.RegisterEnemy(this);
+			StageManager.Instance.RegisterEnemy(this);
 		}
 	}
 
 	protected virtual void OnDisable()
 	{
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.UnregisterEnemy(this);
+			StageManager.Instance.UnregisterEnemy(this);
 		}
 	}
 
@@ -104,12 +104,12 @@ public abstract class EnemyBase : CellObject
 
 		if (!a_byGameSystem)
 		{
-			GameManager.Instance.m_player.GainExp(m_expValue);
+			StageManager.Instance.m_player.GainExp(m_expValue);
 		}
 
 		ClearTelegraphs();
 
-		GameManager.Instance.UnregisterEnemy(this);
+		StageManager.Instance.UnregisterEnemy(this);
 
 		EnemyHPUIManager.Instance.RemoveHealthUI(transform);
 

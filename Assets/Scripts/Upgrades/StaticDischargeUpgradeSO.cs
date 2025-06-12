@@ -8,21 +8,21 @@ public class StaticDischargeUpgradeSO : UpgradeSO
 
 	public override void Apply(GameObject playerObject)
 	{
-		GameManager.Instance.OnPlayerTurnEnded += StunNearbyEnemies;
+		StageManager.Instance.OnPlayerTurnEnded += StunNearbyEnemies;
 	}
 
 	public override void Remove(GameObject playerObject)
 	{
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.OnPlayerTurnEnded -= StunNearbyEnemies;
+			StageManager.Instance.OnPlayerTurnEnded -= StunNearbyEnemies;
 		}
 	}
 
 	private void StunNearbyEnemies()
 	{
-		var player = GameManager.Instance.m_player;
-		var board = GameManager.Instance.m_boardManager;
+		var player = StageManager.Instance.m_player;
+		var board = StageManager.Instance.m_boardManager;
 
 		// 플레이어 주변 8칸을 순회
 		for (int x = -1; x <= 1; x++)

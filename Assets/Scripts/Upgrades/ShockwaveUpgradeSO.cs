@@ -25,8 +25,8 @@ public class ShockwaveUpgradeSO : UpgradeSO
 
 	private void Knockback(CellObject targetEnemy, BoardManager.Direction a_direction)
 	{
-		var board = GameManager.Instance.m_boardManager;
-		var player = GameManager.Instance.m_player;
+		var board = StageManager.Instance.m_boardManager;
+		var player = StageManager.Instance.m_player;
 
 		if (targetEnemy == null || board == null || player == null) return;
 

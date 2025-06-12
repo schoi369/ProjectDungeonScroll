@@ -9,32 +9,32 @@ public class UITurnIndicator : MonoBehaviour
 	void OnEnable()
 	{
 		// GameManager의 상태 변경 이벤트를 구독
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
+			StageManager.Instance.OnGameStateChanged += HandleGameStateChanged;
 		}
 	}
 
 	void OnDisable()
 	{
 		// 오브젝트가 비활성화되거나 파괴될 때 구독을 해제 (메모리 누수 방지)
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.OnGameStateChanged -= HandleGameStateChanged;
+			StageManager.Instance.OnGameStateChanged -= HandleGameStateChanged;
 		}
 	}
 
 	/// <summary>
 	/// 게임 상태 변경 이벤트를 받았을 때 호출될 메서드
 	/// </summary>
-	private void HandleGameStateChanged(GameManager.GameState a_newState)
+	private void HandleGameStateChanged(StageManager.GameState a_newState)
 	{
-		if (a_newState == GameManager.GameState.PlayerTurn)
+		if (a_newState == StageManager.GameState.PlayerTurn)
 		{
 			m_playerTurnDisplay.SetActive(true);
 			m_worldTurnDisplay.SetActive(false);
 		}
-		else if (a_newState == GameManager.GameState.WorldTurn)
+		else if (a_newState == StageManager.GameState.WorldTurn)
 		{
 			m_playerTurnDisplay.SetActive(false);
 			m_worldTurnDisplay.SetActive(true);

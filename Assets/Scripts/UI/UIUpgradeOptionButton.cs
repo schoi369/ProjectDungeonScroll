@@ -30,9 +30,9 @@ public class UIUpgradeOptionButton : MonoBehaviour
 		if (m_representedUpgrade == null) return;
 
 		// 1. 플레이어에게 업그레이드 적용
-		GameManager.Instance.m_player.AddUpgrade(m_representedUpgrade);
+		StageManager.Instance.m_player.AddUpgrade(m_representedUpgrade);
 
 		// 2. GameManager에게 선택이 끝났음을 알림
-		GameManager.Instance.EndUpgradeSelection();
+		StageManager.Instance.EndUpgradeSelection();
 	}
 }

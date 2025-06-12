@@ -6,6 +6,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+	public static PlayerController Instance;
+
+	//
+
 	public AttackAreaSO m_attackAreaSetting;
 
 	BoardManager m_board;
@@ -49,6 +53,19 @@ public class PlayerController : MonoBehaviour
 	public float m_hitEffectDuration = 0.1f;
 	Vector3 m_originalScale;
 	Coroutine m_hitScaleEffectCoroutine;
+
+	public void Awake()
+	{
+		if (Instance == null)
+		{
+			Instance = this;
+			DontDestroyOnLoad(gameObject);
+		}
+		else
+		{
+			Destroy(gameObject);
+		}
+	}
 
 	/// <summary>
 	/// Initialize
@@ -184,7 +201,7 @@ public class PlayerController : MonoBehaviour
 	public void GameOver()
 	{
 		IsGameOver = true;
-		GameManager.Instance.UpdateGameState(GameManager.GameState.GameOver);
+		StageManager.Instance.UpdateGameState(StageManager.GameState.GameOver);
 		OverlayCanvas.Instance.ShowHideGameOverPanel(true);
 	}
 
@@ -263,7 +280,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		// 행동이 끝나면(이동, 공격, 혹은 아무것도 못함) 턴을 종료
-		GameManager.Instance.EndPlayerTurn();
+		StageManager.Instance.EndPlayerTurn();
 	}
 
 	/// <summary>
@@ -315,7 +332,7 @@ public class PlayerController : MonoBehaviour
 	#region Inputs
 	private bool CanAcceptMoveInput()
 	{
-		return !IsMoving && !IsGameOver && GameManager.Instance.CurrentState == GameManager.GameState.PlayerTurn;
+		return !IsMoving && !IsGameOver && StageManager.Instance.CurrentState == StageManager.GameState.PlayerTurn;
 	}
 
 	public void OnInputMoveUp(InputAction.CallbackContext a_context)
@@ -354,7 +371,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (a_context.performed && IsGameOver)
 		{
-			GameManager.Instance.StartNewGame();
+			StageManager.Instance.StartNewGame();
 		}
 	}
 	#endregion

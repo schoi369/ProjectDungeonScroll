@@ -9,7 +9,7 @@ public class BoardManager : MonoBehaviour
 	public class CellData
 	{
 		public Vector3Int ArrayPos { get; private set; }
-		public Vector3Int TilemapPos => GameManager.Instance.m_boardManager.ArrayPosToTilemapPos(ArrayPos);
+		public Vector3Int TilemapPos => StageManager.Instance.m_boardManager.ArrayPosToTilemapPos(ArrayPos);
 
 		public TileProperty ContainedTileProperty { get; private set; }
 		public CellObject ContainedObject { get; set; }
@@ -191,7 +191,7 @@ public class BoardManager : MonoBehaviour
 			return false;
 		}
 
-		if (GameManager.Instance.IsPlayerAt(a_tilemapPos)) // 플레이어가 있음
+		if (StageManager.Instance.IsPlayerAt(a_tilemapPos)) // 플레이어가 있음
 		{
 			return false;
 		}
@@ -355,7 +355,7 @@ public class BoardManager : MonoBehaviour
 			}
 		}
 
-		var player = GameManager.Instance.m_player;
+		var player = StageManager.Instance.m_player;
 		var playerArrayPos = TilemapPosToArrayPos(player.TilemapPos);
 		if (playerArrayPos.x == a_arrayColumnIndex)
 		{

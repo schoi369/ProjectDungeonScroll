@@ -13,7 +13,7 @@ public class EnemyExploder : EnemyBase
 
 	protected override void PerformTurnLogic()
 	{
-		var board = GameManager.Instance.m_boardManager;
+		var board = StageManager.Instance.m_boardManager;
 		var tilemapPosList = board.GetAttackAreaCellPositions(m_attackArea, m_TilemapPos, BoardManager.Direction.LEFT); // 방향은 현재 무관
 
 		Counter++;
@@ -42,9 +42,9 @@ public class EnemyExploder : EnemyBase
 					Vector3 cellWorldPos = board.TilemapPosToWorldPos(targetTilemapPos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
 
-					if (GameManager.Instance.IsPlayerAt(targetTilemapPos))
+					if (StageManager.Instance.IsPlayerAt(targetTilemapPos))
 					{
-						GameManager.Instance.m_player.TakeDamage(1);
+						StageManager.Instance.m_player.TakeDamage(1);
 					}
 				}
 				break;

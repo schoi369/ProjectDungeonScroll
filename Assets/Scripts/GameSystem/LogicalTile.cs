@@ -40,7 +40,7 @@ public class TileProperty
 	{
 		m_physicalState = a_newState;
 
-		GameManager.Instance.m_boardManager.SetTileByPhysicalState(TilemapPos, TileInfo.m_tileType, m_physicalState);
+		StageManager.Instance.m_boardManager.SetTileByPhysicalState(TilemapPos, TileInfo.m_tileType, m_physicalState);
 	}
 }
 

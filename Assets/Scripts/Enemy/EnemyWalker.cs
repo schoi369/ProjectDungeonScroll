@@ -8,8 +8,8 @@ public class EnemyWalker : EnemyBase
 
 	protected override void PerformTurnLogic()
 	{
-		var player = GameManager.Instance.m_player;
-		var board = GameManager.Instance.m_boardManager;
+		var player = StageManager.Instance.m_player;
+		var board = StageManager.Instance.m_boardManager;
 
 		if (player == null || player.IsGameOver)
 		{

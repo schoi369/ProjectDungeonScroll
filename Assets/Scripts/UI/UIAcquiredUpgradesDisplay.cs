@@ -10,9 +10,9 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.GameStarted, HandleGameStarted);
 
 		// PlayerController가 존재하면 이벤트 구독
-		if (GameManager.Instance != null && GameManager.Instance.m_player != null)
+		if (StageManager.Instance != null && StageManager.Instance.m_player != null)
 		{
-			GameManager.Instance.m_player.OnUpgradeAdded += AddIcon;
+			StageManager.Instance.m_player.OnUpgradeAdded += AddIcon;
 		}
 	}
 
@@ -23,9 +23,9 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 			CustomEventManager.Instance.Unsubscribe(CustomEventManager.CustomGameEvent.GameStarted, HandleGameStarted);
 		}
 		// 씬 전환 또는 파괴 시 이벤트 구독 해제
-		if (GameManager.Instance != null && GameManager.Instance.m_player != null)
+		if (StageManager.Instance != null && StageManager.Instance.m_player != null)
 		{
-			GameManager.Instance.m_player.OnUpgradeAdded -= AddIcon;
+			StageManager.Instance.m_player.OnUpgradeAdded -= AddIcon;
 		}
 	}
 

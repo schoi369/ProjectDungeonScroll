@@ -30,14 +30,14 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	void OnEnable()
 	{
-		GameManager.Instance.OnPlayerTurnEnded += UpdateCounterText;
+		StageManager.Instance.OnPlayerTurnEnded += UpdateCounterText;
 	}
 
 	void OnDisable()
 	{
-		if (GameManager.Instance != null)
+		if (StageManager.Instance != null)
 		{
-			GameManager.Instance.OnPlayerTurnEnded -= UpdateCounterText;
+			StageManager.Instance.OnPlayerTurnEnded -= UpdateCounterText;
 		}
 	}
 
@@ -49,7 +49,7 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 		switch (m_representedUpgrade.m_counterType)
 		{
 			case UpgradeSO.CounterType.PeacefulTurns:
-				int currentPeacefulTurns = GameManager.Instance.m_player.PeacefulTurns;
+				int currentPeacefulTurns = StageManager.Instance.m_player.PeacefulTurns;
 				m_counterText.text = currentPeacefulTurns.ToString();
 				break;
 				// 추후 다른 카운터 타입이 추가될 수 있음
