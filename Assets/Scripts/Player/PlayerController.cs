@@ -228,7 +228,8 @@ public class PlayerController : MonoBehaviour
 
 		if (!attackedSomething)
 		{
-			Vector3Int newCellTargetPos = m_gridPos;
+			// 공격하지 않았을 경우 이동.
+			Vector3Int newCellTargetPos = m_gridPos; // 우선 현재의 위치로.
 			switch (a_direction)
 			{
 				case BoardManager.Direction.UP:

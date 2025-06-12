@@ -10,10 +10,38 @@ public enum TileType
 	Wall,
 }
 
-public abstract class TileProperty
+public enum TilePhysicalState
 {
+	Default = 0,
+	Warned = 1,
+	Destroyed = 2,
+}
+
+public class TileProperty
+{
+	public Vector3Int TilemapPos { get; private set; }
+	public LogicalTile TileInfo { get; private set; }
+
 	public virtual bool IsWalkable => true;
+
+	TilePhysicalState m_physicalState;
+
 	public virtual void OnStepOn(CellObject a_stepper) { }
+
+	public void Init(Vector3Int a_tilemapPos, LogicalTile a_logicalTile)
+	{
+		TilemapPos = a_tilemapPos;
+		TileInfo = a_logicalTile;
+
+		SetPhysicalState(TilePhysicalState.Default);
+	}
+
+	public void SetPhysicalState(TilePhysicalState a_newState)
+	{
+		m_physicalState = a_newState;
+
+		GameManager.Instance.m_boardManager.SetTileByPhysicalState(TilemapPos, TileInfo.m_tileType, m_physicalState);
+	}
 }
 
 public class FloorTileProperty : TileProperty
@@ -27,7 +55,7 @@ public class WallTileProperty : TileProperty
 }
 
 /// <summary>
-/// 프로젝트 창에서 우클릭으로 쉽게 'LogicalTile' 애셋을 생성할 수 있도록 메뉴를 추가합니다.
+/// 타일의 정적인 정보를 보관함.
 /// </summary>
 [CreateAssetMenu(fileName = "New LogicalTile", menuName = "Tiles/Logical Tile")]
 public class LogicalTile : Tile

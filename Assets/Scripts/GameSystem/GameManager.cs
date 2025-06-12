@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
 
 		m_boardManager.Clean();
 		m_boardManager.Init();
-		m_player.Spawn(m_boardManager, new Vector3Int(1, 1));
+		m_player.Spawn(m_boardManager, new Vector3Int(0, 0));
 
 		UpdateGameState(GameState.PlayerTurn);
 	}

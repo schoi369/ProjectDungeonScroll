@@ -8,14 +8,18 @@ public class BoardManager : MonoBehaviour
 {
 	public class CellData
 	{
+		public Vector3Int ArrayPos { get; private set; }
+		public Vector3Int TilemapPos => GameManager.Instance.m_boardManager.ArrayPosToTilemapPos(ArrayPos);
+
 		public TileProperty ContainedTileProperty { get; private set; }
 		public CellObject ContainedObject { get; set; }
 
 		public bool Passable => ContainedTileProperty.IsWalkable;
 
-		public CellData(TileProperty a_tileProperty)
+		public CellData(TileProperty a_tileProperty, Vector3Int a_arrayPos)
 		{
 			ContainedTileProperty = a_tileProperty;
+			ArrayPos = a_arrayPos;
 		}
 
 		public void CleanUp()
@@ -43,6 +47,10 @@ public class BoardManager : MonoBehaviour
 	public Tilemap m_groundTilemap;
 	public Tilemap m_cellObjectsTilemap;
 
+	[Header("Tiles")]
+	public LogicalTile[] m_floorTiles;
+	public LogicalTile[] m_wallTiles;
+
 	public void Init()
 	{
 		CreateLogicalMap();
@@ -60,20 +68,20 @@ public class BoardManager : MonoBehaviour
 		m_cellDataMap = new CellData[bounds.size.x, bounds.size.y];
 
 		//Debug.Log($"Bounds: {bounds.size.x} , {bounds.size.y}");
-		foreach (var pos in bounds.allPositionsWithin)
+		foreach (var tilemapPos in bounds.allPositionsWithin)
 		{
-			LogicalTile tile = m_groundTilemap.GetTile<LogicalTile>(pos);
+			LogicalTile tile = m_groundTilemap.GetTile<LogicalTile>(tilemapPos);
 
-			// 월드 좌표 -> 배열 좌표
-			int x = pos.x - m_mapOrigin.x;
-			int y = pos.y - m_mapOrigin.y;
+			Vector3Int arrayPos = TilemapPosToArrayPos(tilemapPos);
+			int x = arrayPos.x;
+			int y = arrayPos.y;
 
 			if (tile != null)
 			{
-				//Debug.Log($"Pos ({x}, {y}) Type {tile.m_tileType}");
-
 				TileProperty property = CreateTilePropertyFromType(tile.m_tileType);
-				m_cellDataMap[x, y] = new CellData(property);
+				property.Init(tilemapPos, tile);
+
+				m_cellDataMap[x, y] = new CellData(property, tilemapPos);
 			}
 			else
 			{
@@ -123,6 +131,22 @@ public class BoardManager : MonoBehaviour
 		return m_groundTilemap.GetCellCenterWorld(a_gridPos);
 	}
 
+	public Vector3Int TilemapPosToArrayPos(Vector3Int a_gridPos)
+	{
+		int x = a_gridPos.x - m_mapOrigin.x;
+		int y = a_gridPos.y - m_mapOrigin.y;
+
+		return new Vector3Int(x, y);
+	}
+
+	public Vector3Int ArrayPosToTilemapPos(Vector3Int a_arrayPos)
+	{
+		int x = a_arrayPos.x + m_mapOrigin.x;
+		int y = a_arrayPos.y + m_mapOrigin.y;
+
+		return new Vector3Int(x, y);
+	}
+
 	public CellData GetCellData(Vector3Int a_gridPos)
 	{
 		// 그리드 좌표를 배열 인덱스로 변환
@@ -136,6 +160,24 @@ public class BoardManager : MonoBehaviour
 		}
 
 		return null; // 맵 범위를 벗어난 경우
+	}
+
+	LogicalTile GetAppropriateLogicalTile(LogicalTile[] a_tiles, TilePhysicalState a_state)
+	{
+		return a_tiles[(int)a_state];
+	}
+
+	public void SetTileByPhysicalState(Vector3Int a_tilemapPos, TileType a_tileType, TilePhysicalState a_state)
+	{
+		switch (a_tileType)
+		{
+			case TileType.Floor:
+				m_groundTilemap.SetTile(a_tilemapPos, GetAppropriateLogicalTile(m_floorTiles, a_state));
+				break;
+			case TileType.Wall:
+				m_groundTilemap.SetTile(a_tilemapPos, GetAppropriateLogicalTile(m_wallTiles, a_state));
+				break;
+		}
 	}
 
 	/// <summary>
