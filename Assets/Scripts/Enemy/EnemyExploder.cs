@@ -39,7 +39,7 @@ public class EnemyExploder : EnemyBase
 				ClearTelegraphs();
 				foreach (var targetCellPos in cellPosList)
 				{
-					Vector3 cellWorldPos = board.GridToWorld(targetCellPos);
+					Vector3 cellWorldPos = board.TilemapPosToWorldPos(targetCellPos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
 
 					if (GameManager.Instance.IsPlayerAt(targetCellPos))

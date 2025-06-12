@@ -92,10 +92,10 @@ public class BoardManager : MonoBehaviour
 		CellObject[] cellObjects = m_cellObjectsTilemap.transform.GetComponentsInChildren<CellObject>();
 		foreach (var cellObject in cellObjects)
 		{
-			Vector3Int gridPos = m_cellObjectsTilemap.WorldToCell(cellObject.transform.position);
-			cellObject.Init(gridPos);
+			Vector3Int tilemapPos = m_cellObjectsTilemap.WorldToCell(cellObject.transform.position);
+			cellObject.Init(tilemapPos);
 
-			CellData thatCell = GetCellData(gridPos);
+			CellData thatCell = GetCellData(tilemapPos);
 			thatCell.ContainedObject = cellObject;
 		}
 	}
@@ -123,15 +123,15 @@ public class BoardManager : MonoBehaviour
 		return m_groundTilemap.WorldToCell(a_worldPos);
 	}
 
-	public Vector3 GridToWorld(Vector3Int a_gridPos)
+	public Vector3 TilemapPosToWorldPos(Vector3Int a_tilemapPos)
 	{
-		return m_groundTilemap.GetCellCenterWorld(a_gridPos);
+		return m_groundTilemap.GetCellCenterWorld(a_tilemapPos);
 	}
 
-	public Vector3Int TilemapPosToArrayPos(Vector3Int a_gridPos)
+	public Vector3Int TilemapPosToArrayPos(Vector3Int a_tilemapPos)
 	{
-		int x = a_gridPos.x - m_mapOrigin.x;
-		int y = a_gridPos.y - m_mapOrigin.y;
+		int x = a_tilemapPos.x - m_mapOrigin.x;
+		int y = a_tilemapPos.y - m_mapOrigin.y;
 
 		return new Vector3Int(x, y);
 	}
@@ -144,16 +144,14 @@ public class BoardManager : MonoBehaviour
 		return new Vector3Int(x, y);
 	}
 
-	public CellData GetCellData(Vector3Int a_gridPos)
+	public CellData GetCellData(Vector3Int a_tilemapPos)
 	{
-		// 그리드 좌표를 배열 인덱스로 변환
-		int x = a_gridPos.x - m_mapOrigin.x;
-		int y = a_gridPos.y - m_mapOrigin.y;
+		Vector3Int arrayPos = TilemapPosToArrayPos(a_tilemapPos);
 
 		// 배열 범위를 체크하여 안전하게 데이터 반환
-		if (x >= 0 && x < m_cellDataMap.GetLength(0) && y >= 0 && y < m_cellDataMap.GetLength(1))
+		if (arrayPos.x >= 0 && arrayPos.x < m_cellDataMap.GetLength(0) && arrayPos.y >= 0 && arrayPos.y < m_cellDataMap.GetLength(1))
 		{
-			return m_cellDataMap[x, y];
+			return m_cellDataMap[arrayPos.x, arrayPos.y];
 		}
 
 		return null; // 맵 범위를 벗어난 경우
@@ -175,26 +173,6 @@ public class BoardManager : MonoBehaviour
 				m_groundTilemap.SetTile(a_tilemapPos, GetAppropriateLogicalTile(m_wallTiles, a_state));
 				break;
 		}
-	}
-
-	/// <summary>
-	/// Vector2Int를 지원하는 임시 메소드.
-	/// </summary>
-	/// <param name="a_gridPos2"></param>
-	/// <returns></returns>
-	public CellData GetCellData(Vector2Int a_gridPos2)
-	{
-		// 그리드 좌표를 배열 인덱스로 변환
-		int x = a_gridPos2.x - m_mapOrigin.x;
-		int y = a_gridPos2.y - m_mapOrigin.y;
-
-		// 배열 범위를 체크하여 안전하게 데이터 반환
-		if (x >= 0 && x < m_cellDataMap.GetLength(0) && y >= 0 && y < m_cellDataMap.GetLength(1))
-		{
-			return m_cellDataMap[x, y];
-		}
-
-		return null; // 맵 범위를 벗어난 경우
 	}
 
 	/// <summary>
@@ -279,7 +257,7 @@ public class BoardManager : MonoBehaviour
 	void AddObject(CellObject a_obj, Vector3Int a_cellPos)
 	{
 		CellData data = m_cellDataMap[a_cellPos.x, a_cellPos.y];
-		a_obj.transform.position = GridToWorld(a_cellPos);
+		a_obj.transform.position = TilemapPosToWorldPos(a_cellPos);
 		data.ContainedObject = a_obj;
 		a_obj.Init(a_cellPos);
 	}
@@ -298,26 +276,26 @@ public class BoardManager : MonoBehaviour
 		a_obj.CellPos = a_toPos;
 
 		// 실제 게임 오브젝트의 위치를 이동
-		a_obj.transform.position = GridToWorld(a_toPos);
+		a_obj.transform.position = TilemapPosToWorldPos(a_toPos);
 	}
 
 	/// <summary>
-	/// 두 GridPos가 인접해 있는가 판단하는 Util 메소드.
+	/// 두 Vector3Int가 인접해 있는가 판단하는 Util 메소드.
 	/// </summary>
-	/// <param name="a_gridPos1"></param>
-	/// <param name="a_gridPos2"></param>
+	/// <param name="a_vector1"></param>
+	/// <param name="a_vector2"></param>
 	/// <returns></returns>
-	public bool AreCellsAdjacent(Vector3Int a_gridPos1, Vector3Int a_gridPos2)
+	public bool ArePositionsAdjacent(Vector3Int a_vector1, Vector3Int a_vector2)
 	{
-		if (a_gridPos1 == a_gridPos2)
+		if (a_vector1 == a_vector2)
 		{
 			return false;
 		}
 
 		// 각 축의 거리 차이(절대값)를 모두 더합니다.
-		int manhattanDistance = Mathf.Abs(a_gridPos1.x - a_gridPos2.x) +
-								Mathf.Abs(a_gridPos1.y - a_gridPos2.y) +
-								Mathf.Abs(a_gridPos1.z - a_gridPos2.z);
+		int manhattanDistance = Mathf.Abs(a_vector1.x - a_vector2.x) +
+								Mathf.Abs(a_vector1.y - a_vector2.y) +
+								Mathf.Abs(a_vector1.z - a_vector2.z);
 		return manhattanDistance == 1;
 	}
 

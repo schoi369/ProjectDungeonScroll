@@ -9,8 +9,8 @@ public class PlayerController : MonoBehaviour
 	public AttackAreaSO m_attackAreaSetting;
 
 	BoardManager m_board;
-	Vector3Int m_gridPos;
-	public Vector3Int CellPos => m_gridPos;
+	Vector3Int m_tilemapPos;
+	public Vector3Int TilemapPos => m_tilemapPos;
 
 	public float m_moveSpeed = 5f;
 
@@ -102,19 +102,19 @@ public class PlayerController : MonoBehaviour
 		MoveTo(a_cellPos, instant: true);
 	}
 
-	public void MoveTo(Vector3Int a_newGridPos, bool instant = false)
+	public void MoveTo(Vector3Int a_newTilemapPos, bool instant = false)
 	{
-		m_gridPos = a_newGridPos;
+		m_tilemapPos = a_newTilemapPos;
 
 		if (instant)
 		{
 			IsMoving = false;
-			transform.position = m_board.GridToWorld(m_gridPos);
+			transform.position = m_board.TilemapPosToWorldPos(m_tilemapPos);
 		}
 		else
 		{
 			IsMoving = true;
-			MoveTarget = m_board.GridToWorld(m_gridPos);
+			MoveTarget = m_board.TilemapPosToWorldPos(m_tilemapPos);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class PlayerController : MonoBehaviour
 			if (transform.position == MoveTarget)
 			{
 				IsMoving = false;
-				var cellData = m_board.GetCellData(m_gridPos);
+				var cellData = m_board.GetCellData(m_tilemapPos);
 				if (cellData.ContainedObject != null)
 				{
 					cellData.ContainedObject.PlayerEntered();
@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour
 	{
 		// Check the direction if there are anything that the player would attack.
 		bool attackedSomething = false;
-		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_gridPos, a_direction);
+		var cellPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_tilemapPos, a_direction);
 		foreach (var targetCellPos in cellPosList)
 		{
 			var data = m_board.GetCellData(targetCellPos);
@@ -218,7 +218,7 @@ public class PlayerController : MonoBehaviour
 				attackedSomething = true;
 				PeacefulTurns = 0;
 
-				Vector3 cellWorldPos = m_board.GridToWorld(targetCellPos);
+				Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetCellPos);
 				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
 				data.ContainedObject.GetAttacked(1);
@@ -229,7 +229,7 @@ public class PlayerController : MonoBehaviour
 		if (!attackedSomething)
 		{
 			// 공격하지 않았을 경우 이동.
-			Vector3Int newCellTargetPos = m_gridPos; // 우선 현재의 위치로.
+			Vector3Int newCellTargetPos = m_tilemapPos; // 우선 현재의 위치로.
 			switch (a_direction)
 			{
 				case BoardManager.Direction.UP:

@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
 		{
 			return false;
 		}
-		return m_player.CellPos == a_cellPos;
+		return m_player.TilemapPos == a_cellPos;
 	}
 
 	public void UpdateGameState(GameState a_newState)

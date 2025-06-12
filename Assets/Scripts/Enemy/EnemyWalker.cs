@@ -16,11 +16,11 @@ public class EnemyWalker : EnemyBase
 			return;
 		}
 
-		Vector3Int playerPos = player.CellPos;
+		Vector3Int playerPos = player.TilemapPos;
 		Vector3Int enemyPos = m_cellPos;
 
 		// 공격 조건 확인: 플레이어와 인접해 있는가?
-		bool nextToPlayer = board.AreCellsAdjacent(enemyPos, playerPos);
+		bool nextToPlayer = board.ArePositionsAdjacent(enemyPos, playerPos);
 
 		// 1. 공격 실행 단계
 		if (m_isChargingAttack)

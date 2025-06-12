@@ -31,7 +31,7 @@ public class StaticDischargeUpgradeSO : UpgradeSO
 			{
 				if (x == 0 && y == 0) continue; // 플레이어 자신은 제외
 
-				Vector3Int targetPos = player.CellPos + new Vector3Int(x, y);
+				Vector3Int targetPos = player.TilemapPos + new Vector3Int(x, y);
 				var cellData = board.GetCellData(targetPos);
 
 				if (cellData?.ContainedObject is EnemyBase enemy)
