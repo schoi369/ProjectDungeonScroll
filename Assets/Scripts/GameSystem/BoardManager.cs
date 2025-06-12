@@ -38,15 +38,15 @@ public class BoardManager : MonoBehaviour
 	}
 
 	CellData[,] m_cellDataMap;
-    Vector3Int m_mapOrigin; // 오프셋 계산을 위한 맵의 원점
-
-	public float m_cellSize = 1f;
+	Vector3Int m_mapOrigin; // 오프셋 계산을 위한 맵의 원점
 
 	public Tilemap m_groundTilemap;
+	public Tilemap m_cellObjectsTilemap;
 
 	public void Init()
 	{
 		CreateLogicalMap();
+		InitializeCellObjectsInMap();
 	}
 
 	/// <summary>
@@ -59,8 +59,7 @@ public class BoardManager : MonoBehaviour
 
 		m_cellDataMap = new CellData[bounds.size.x, bounds.size.y];
 
-		Debug.Log($"Bounds: {bounds.size.x} , {bounds.size.y}");
-		
+		//Debug.Log($"Bounds: {bounds.size.x} , {bounds.size.y}");
 		foreach (var pos in bounds.allPositionsWithin)
 		{
 			LogicalTile tile = m_groundTilemap.GetTile<LogicalTile>(pos);
@@ -80,6 +79,19 @@ public class BoardManager : MonoBehaviour
 			{
 				m_cellDataMap[x, y] = null;
 			}
+		}
+	}
+
+	void InitializeCellObjectsInMap()
+	{
+		CellObject[] cellObjects = m_cellObjectsTilemap.transform.GetComponentsInChildren<CellObject>();
+		foreach (var cellObject in cellObjects)
+		{
+			Vector3Int gridPos = m_cellObjectsTilemap.WorldToCell(cellObject.transform.position);
+			cellObject.Init(gridPos);
+
+			CellData thatCell = GetCellData(gridPos);
+			thatCell.ContainedObject = cellObject;
 		}
 	}
 
@@ -180,12 +192,6 @@ public class BoardManager : MonoBehaviour
 		}
 	}
 
-	public Vector3 CellPosToWorldPos(Vector3Int a_cellPos)
-	{
-		return m_cellSize * new Vector3(a_cellPos.x, a_cellPos.y, 0f);
-	}
-
-
 	public List<Vector3Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector3Int a_center, Direction a_direction)
 	{
 		List<Vector3Int> result = new();
@@ -239,8 +245,6 @@ public class BoardManager : MonoBehaviour
 		a_obj.Init(a_cellPos);
 	}
 
-	
-
 	/// <summary>
 	/// 특정 CellObject를 새로운 위치로 이동시킵니다. (보드 데이터 및 실제 위치 포함)
 	/// </summary>
@@ -248,17 +252,34 @@ public class BoardManager : MonoBehaviour
 	{
 		Vector3Int fromPos = a_obj.CellPos;
 
-		// 이전 위치의 데이터를 정리
 		GetCellData(fromPos).ContainedObject = null;
-
-		// 새로운 위치에 오브젝트 정보 설정
 		GetCellData(a_toPos).ContainedObject = a_obj;
 
 		// 오브젝트 내부의 위치 정보 갱신
 		a_obj.CellPos = a_toPos;
 
 		// 실제 게임 오브젝트의 위치를 이동
-		a_obj.transform.position = CellPosToWorldPos(a_toPos);
+		a_obj.transform.position = GridToWorld(a_toPos);
+	}
+
+	/// <summary>
+	/// 두 GridPos가 인접해 있는가 판단하는 Util 메소드.
+	/// </summary>
+	/// <param name="a_gridPos1"></param>
+	/// <param name="a_gridPos2"></param>
+	/// <returns></returns>
+	public bool AreCellsAdjacent(Vector3Int a_gridPos1, Vector3Int a_gridPos2)
+	{
+		if (a_gridPos1 == a_gridPos2)
+		{
+			return false;
+		}
+
+		// 각 축의 거리 차이(절대값)를 모두 더합니다.
+		int manhattanDistance = Mathf.Abs(a_gridPos1.x - a_gridPos2.x) +
+								Mathf.Abs(a_gridPos1.y - a_gridPos2.y) +
+								Mathf.Abs(a_gridPos1.z - a_gridPos2.z);
+		return manhattanDistance == 1;
 	}
 
 	public void WarnColumn(int a_columnIndex)

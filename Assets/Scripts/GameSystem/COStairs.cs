@@ -11,6 +11,9 @@ public class COStairs : CellObject
 
 	public override void PlayerEntered()
 	{
-		GameManager.Instance.NewLevel();
+		Debug.Log("Player Entered Stairs");
+		//GameManager.Instance.NewLevel();
+
+		// TODO: 랜덤으로 스테이지(Scene)을 로드하기.
 	}
 }

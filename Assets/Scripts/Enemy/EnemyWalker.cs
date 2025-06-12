@@ -20,9 +20,7 @@ public class EnemyWalker : EnemyBase
 		Vector3Int enemyPos = m_cellPos;
 
 		// 공격 조건 확인: 플레이어와 인접해 있는가?
-		int distance = Mathf.Abs(playerPos.x - enemyPos.x) + Mathf.Abs(playerPos.y - enemyPos.y);
-
-		bool nextToPlayer = (distance == 1);
+		bool nextToPlayer = board.AreCellsAdjacent(enemyPos, playerPos);
 
 		// 1. 공격 실행 단계
 		if (m_isChargingAttack)

@@ -218,7 +218,7 @@ public class PlayerController : MonoBehaviour
 				attackedSomething = true;
 				PeacefulTurns = 0;
 
-				Vector3 cellWorldPos = m_board.CellPosToWorldPos(targetCellPos);
+				Vector3 cellWorldPos = m_board.GridToWorld(targetCellPos);
 				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
 				data.ContainedObject.GetAttacked(1);
