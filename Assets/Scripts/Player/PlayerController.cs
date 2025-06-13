@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
 	public float m_moveSpeed = 5f;
 
 	public int m_maxHP = 5;
-	int CurrentHP { get; set; }
+	public int CurrentHP { get; private set; }
 
 
 	bool IsMoving { get; set; }

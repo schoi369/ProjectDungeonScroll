@@ -103,6 +103,8 @@ public class StageManager : MonoBehaviour
 		m_player.NewStageInit();
 		m_player.Spawn(m_boardManager, new Vector3Int(0, 0));
 
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.NewStageLoaded);
+
 		UpdateGameState(GameState.PlayerTurn);
 	}
 

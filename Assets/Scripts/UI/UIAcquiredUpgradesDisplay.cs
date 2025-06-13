@@ -7,7 +7,8 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 
 	void OnEnable()
 	{
-		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.GameStarted, HandleGameStarted);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.GameStarted, OnGameStarted);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.NewStageLoaded, OnNewStageLoaded);
 
 		// PlayerController가 존재하면 이벤트 구독
 		if (StageManager.Instance != null && StageManager.Instance.m_player != null)
@@ -20,7 +21,8 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 	{
 		if (CustomEventManager.Instance != null)
 		{
-			CustomEventManager.Instance.Unsubscribe(CustomEventManager.CustomGameEvent.GameStarted, HandleGameStarted);
+			CustomEventManager.Instance.Unsubscribe(CustomEventManager.CustomGameEvent.GameStarted, OnGameStarted);
+			CustomEventManager.Instance.Unsubscribe(CustomEventManager.CustomGameEvent.NewStageLoaded, OnNewStageLoaded);
 		}
 		// 씬 전환 또는 파괴 시 이벤트 구독 해제
 		if (StageManager.Instance != null && StageManager.Instance.m_player != null)
@@ -35,12 +37,24 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 		newIconObj.GetComponent<UIAcquiredIcon>().Setup(a_newUpgrade);
 	}
 
-	private void HandleGameStarted(object a_payload)
+	private void OnGameStarted(object a_payload)
 	{
 		// 아이콘 목록을 깨끗하게 비움
 		foreach (Transform child in m_iconsParent)
 		{
 			Destroy(child.gameObject);
+		}
+	}
+
+	void OnNewStageLoaded(object _)
+	{
+		// 플레이어 데이터를 확인하고 소지 중인 업그레이드 아이콘 추가
+		if (StageManager.Instance.m_player)
+		{
+			foreach (var upgrade in StageManager.Instance.m_player.ActiveUpgrades)
+			{
+				AddIcon(upgrade);
+			}
 		}
 	}
 }

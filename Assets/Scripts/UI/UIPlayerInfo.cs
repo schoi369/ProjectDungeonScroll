@@ -23,6 +23,8 @@ public class UIPlayerInfo : MonoBehaviour
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, OnCurrentHPChanged);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerLevelChanged, OnLevelChanged);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerExpChanged, OnExpChanged);
+
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.NewStageLoaded, OnNewStageLoaded);
 	}
 
 	private void OnDisable()
@@ -55,20 +57,56 @@ public class UIPlayerInfo : MonoBehaviour
 		}
 	}
 
-	// --- 경험치 관련 핸들러 ---
-	private void OnLevelChanged(object a_level)
+	void UpdateHpBarManual(int a_currentHP, int a_maxHP)
 	{
-		m_levelText.text = $"Lv. {(int)a_level}";
+		m_currentHP = a_currentHP;
+		m_maxHP = a_maxHP;
+		UpdateHpBar();
 	}
 
-	private void OnExpChanged(object a_expData)
+	// --- 경험치 관련 핸들러 ---
+	void UpdateExpBar((int, int) a_expData)
 	{
-		var (currentExp, expToNext) = ((int, int))a_expData;
+		(int currentExp, int expToNext) = a_expData;
 		m_expText.text = $"{currentExp} / {expToNext}";
 
 		if (expToNext > 0)
 		{
 			m_expBarFillImage.fillAmount = (float)currentExp / expToNext;
 		}
+	}
+
+	void UpdateLevelText(int a_level)
+	{
+		m_levelText.text = $"Lv. {a_level}";
+	}
+
+	private void OnLevelChanged(object a_level)
+	{
+		UpdateLevelText((int)a_level);
+	}
+
+	private void OnExpChanged(object a_expData)
+	{
+		UpdateExpBar(((int, int))a_expData);
+	}
+
+	/// <summary>
+	/// 새 스테이지 씬이 로드되었을 때, 플레이어 데이터를 보고 UI를 갱신함.
+	/// </summary>
+	/// <param name="_"></param>
+	void OnNewStageLoaded(object _)
+	{
+		var player = StageManager.Instance.m_player;
+
+		UpdateLevelText(player.Level);
+
+		int currentHP = player.CurrentHP;
+		int maxHP = player.m_maxHP;
+		UpdateHpBarManual(currentHP, maxHP);
+
+		int currentExp = player.CurrentExp;
+		int expToLevelUp = player.m_expToLevelUp;
+		UpdateExpBar((currentExp, expToLevelUp));
 	}
 }
