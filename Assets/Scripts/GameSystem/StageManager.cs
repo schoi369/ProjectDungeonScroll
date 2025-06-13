@@ -96,14 +96,13 @@ public class StageManager : MonoBehaviour
 		}
 		SetFloorCount(FloorCount);
 
-
 		m_boardManager.Clean();
 		m_boardManager.Init();
 
-		m_player.NewStageInit();
+		m_player.NewStageInit(a_fromDeath);
 		m_player.Spawn(m_boardManager);
 
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.NewStageLoaded);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.NewStageLoaded, a_fromDeath);
 
 		UpdateGameState(GameState.PlayerTurn);
 	}

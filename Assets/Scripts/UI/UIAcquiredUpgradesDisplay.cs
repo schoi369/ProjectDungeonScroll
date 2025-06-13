@@ -46,14 +46,23 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 		}
 	}
 
-	void OnNewStageLoaded(object _)
+	void OnNewStageLoaded(object a_fromDeath)
 	{
-		// 플레이어 데이터를 확인하고 소지 중인 업그레이드 아이콘 추가
-		if (StageManager.Instance.m_player)
+		bool fromDeath = (bool)a_fromDeath;
+
+		if (fromDeath)
 		{
-			foreach (var upgrade in StageManager.Instance.m_player.ActiveUpgrades)
+
+		}
+		else
+		{
+			// 플레이어 데이터를 확인하고 소지 중인 업그레이드 아이콘 추가
+			if (StageManager.Instance.m_player)
 			{
-				AddIcon(upgrade);
+				foreach (var upgrade in StageManager.Instance.m_player.ActiveUpgrades)
+				{
+					AddIcon(upgrade);
+				}
 			}
 		}
 	}

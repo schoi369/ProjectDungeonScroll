@@ -118,11 +118,34 @@ public class PlayerController : MonoBehaviour
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
 	}
 
-	public void NewStageInit()
+	public void NewStageInit(bool a_fromDeath)
 	{
 		//
 		IsMoving = false;
 		IsGameOver = false;
+
+		if (a_fromDeath)
+		{
+			CurrentHP = m_maxHP;
+			Level = 1;
+			CurrentExp = 0;
+
+			// 업그레이드 초기화
+			// 모든 업그레이드의 구독 해제
+			for (int i = m_activeUpgrades.Count - 1; i >= 0; i--)
+			{
+				m_activeUpgrades[i].Remove(this.gameObject);
+			}
+			m_activeUpgrades.Clear(); // 업그레이드 리스트 비우기
+
+			PeacefulTurns = 0;
+
+			// 테스트용 업그레이드 적용
+			foreach (var upgrade in m_testUpgrades)
+			{
+				AddUpgrade(upgrade);
+			}
+		}
 	}
 
 	/// <summary>
