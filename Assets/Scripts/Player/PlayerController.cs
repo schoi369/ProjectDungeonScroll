@@ -8,27 +8,19 @@ public class PlayerController : MonoBehaviour
 {
 	public static PlayerController Instance;
 
-	//
-
 	public AttackAreaSO m_attackAreaSetting;
 
 	BoardManager m_board;
 	Vector3Int m_tilemapPos;
 	public Vector3Int TilemapPos => m_tilemapPos;
-
-	public float m_moveSpeed = 5f;
+	public bool IsGameOver { get; set; } = false;
 
 	public int m_maxHP = 5;
 	public int CurrentHP { get; private set; }
 
-
+	public float m_moveSpeed = 5f;
 	bool IsMoving { get; set; }
 	Vector3 MoveTarget { get; set; }
-
-	public int m_maxFoodAmount = 100;
-	int CurrentFoodAmount { get; set; }
-
-	public bool IsGameOver { get; set; } = false;
 
 	// Level Related
 	public int Level { get; set; }
@@ -41,10 +33,8 @@ public class PlayerController : MonoBehaviour
 	// Upgrades
 	private List<UpgradeSO> m_activeUpgrades = new();
 	public List<UpgradeSO> ActiveUpgrades => m_activeUpgrades;
-	public event Action<CellObject, BoardManager.Direction> OnAttackLanded;
-
 	public event Action<UpgradeSO> OnUpgradeAdded;
-
+	public event Action<CellObject, BoardManager.Direction> OnAttackLanded; // 일부 Upgrade 적용을 위해 사용하는 멤버 변수.
 	public List<UpgradeSO> m_testUpgrades = new();
 	public int PeacefulTurns { get; set; } = 0;
 
@@ -138,10 +128,10 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Board(Stage) related
 	/// </summary>
-	public void Spawn(BoardManager a_boardManager, Vector3Int a_tilemapPos)
+	public void Spawn(BoardManager a_boardManager)
 	{
 		m_board = a_boardManager;
-		MoveTo(a_tilemapPos, instant: true);
+		MoveTo(m_board.PlayerSpawnPosition, instant: true);
 	}
 
 	public void MoveTo(Vector3Int a_newTilemapPos, bool instant = false)

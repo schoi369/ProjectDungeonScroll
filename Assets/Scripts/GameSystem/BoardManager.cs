@@ -46,15 +46,19 @@ public class BoardManager : MonoBehaviour
 
 	public Tilemap m_groundTilemap;
 	public Tilemap m_cellObjectsTilemap;
+	public Tilemap m_gridMarkersTilemap;
 
 	[Header("Tiles")]
 	public LogicalTile[] m_floorTiles;
 	public LogicalTile[] m_wallTiles;
 
+	public Vector3Int PlayerSpawnPosition { get; private set; }
+
 	public void Init()
 	{
 		CreateLogicalMap();
 		InitializeCellObjectsInMap();
+		InitializeGridMarkersOnMap();
 	}
 
 	/// <summary>
@@ -97,6 +101,21 @@ public class BoardManager : MonoBehaviour
 
 			CellData thatCell = GetCellData(tilemapPos);
 			thatCell.ContainedObject = cellObject;
+		}
+	}
+
+	void InitializeGridMarkersOnMap()
+	{
+		GridMarker[] gridMarkers = m_gridMarkersTilemap.transform.GetComponentsInChildren<GridMarker>();
+		foreach (var marker in gridMarkers)
+		{
+			Vector3Int tilemapPos = m_gridMarkersTilemap.WorldToCell(marker.transform.position);
+			marker.Init(tilemapPos);
+
+			if (marker is GridMarkerPlayerSpawn spawnMarker)
+			{
+				PlayerSpawnPosition = spawnMarker.TilemapPos;
+			}
 		}
 	}
 

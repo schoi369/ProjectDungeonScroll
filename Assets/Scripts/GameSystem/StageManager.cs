@@ -74,7 +74,7 @@ public class StageManager : MonoBehaviour
 
 		m_player.Init(); // Only at StartNewGame, not at NewLevel().
 
-		m_player.Spawn(m_boardManager, new Vector3Int(0, 0)); // Player Start Pos. Need Refactoring, directly set in multiple places.
+		m_player.Spawn(m_boardManager);
 
 		UpdateGameState(GameState.PlayerTurn);
 	}
@@ -101,7 +101,7 @@ public class StageManager : MonoBehaviour
 		m_boardManager.Init();
 
 		m_player.NewStageInit();
-		m_player.Spawn(m_boardManager, new Vector3Int(0, 0));
+		m_player.Spawn(m_boardManager);
 
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.NewStageLoaded);
 
