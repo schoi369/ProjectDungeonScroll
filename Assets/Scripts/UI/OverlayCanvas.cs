@@ -24,8 +24,6 @@ public class OverlayCanvas : MonoBehaviour
 	public UIUpgradeSelectionPanel m_upgradeSelectionPanel;
 	public UIUpgradeIconTooltipPanel m_tooltipPanel;
 
-	public Image m_fadeImage;
-
 	public void ShowHideGameOverPanel(bool a_show)
 	{
 		m_gameOverPanel.gameObject.SetActive(a_show);
@@ -51,10 +49,5 @@ public class OverlayCanvas : MonoBehaviour
 	public void HideTooltip()
 	{
 		m_tooltipPanel.HideTooltip();
-	}
-
-	public void Fade(bool a_turnBlack)
-	{
-		m_fadeImage.color = a_turnBlack ? new Color(0f, 0f, 0f, 1f) : new Color(0f, 0f, 0f, 0f);
 	}
 }
