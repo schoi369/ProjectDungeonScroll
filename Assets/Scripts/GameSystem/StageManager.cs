@@ -272,6 +272,7 @@ public class StageManager : MonoBehaviour
 	{
 		// TODO: 여기에 화면을 어둡게 하는 페이드 아웃 효과를 넣으면 좋습니다.
 		Debug.Log($"Loading scene: {a_sceneName}...");
+		OverlayCanvas.Instance.Fade(true);
 
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(a_sceneName);
 
@@ -285,5 +286,7 @@ public class StageManager : MonoBehaviour
 		// TODO: 여기에 화면을 다시 밝게 하는 페이드 인 효과를 넣으면 좋습니다.
 		Debug.Log("Scene loaded.");
 		NewStage(a_fromDeath);
+
+		OverlayCanvas.Instance.Fade(false);
 	}
 }

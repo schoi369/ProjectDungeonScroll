@@ -1188,7 +1188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1403,6 +1403,7 @@ MonoBehaviour:
   m_gameOverPanel: {fileID: 3570033859381038157}
   m_upgradeSelectionPanel: {fileID: 1934837605287400930}
   m_tooltipPanel: {fileID: 9060642417665034946}
+  m_fadeImage: {fileID: 4244453993962684105}
 --- !u!1 &6330764601611258421
 GameObject:
   m_ObjectHideFlags: 0
