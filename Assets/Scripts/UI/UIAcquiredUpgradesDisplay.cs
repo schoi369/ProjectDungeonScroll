@@ -10,11 +10,7 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.GameStarted, OnGameStarted);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.NewStageLoaded, OnNewStageLoaded);
 
-		// PlayerController가 존재하면 이벤트 구독
-		if (StageManager.Instance != null && StageManager.Instance.m_player != null)
-		{
-			StageManager.Instance.m_player.OnUpgradeAdded += AddIcon;
-		}
+		GameManager.Instance.CurrentPlayerData.OnUpgradeAdded += AddIcon;
 	}
 
 	void OnDisable()
@@ -24,11 +20,8 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 			CustomEventManager.Instance.Unsubscribe(CustomEventManager.CustomGameEvent.GameStarted, OnGameStarted);
 			CustomEventManager.Instance.Unsubscribe(CustomEventManager.CustomGameEvent.NewStageLoaded, OnNewStageLoaded);
 		}
-		// 씬 전환 또는 파괴 시 이벤트 구독 해제
-		if (StageManager.Instance != null && StageManager.Instance.m_player != null)
-		{
-			StageManager.Instance.m_player.OnUpgradeAdded -= AddIcon;
-		}
+
+		GameManager.Instance.CurrentPlayerData.OnUpgradeAdded -= AddIcon;
 	}
 
 	private void AddIcon(UpgradeSO a_newUpgrade)

@@ -97,16 +97,16 @@ public class UIPlayerInfo : MonoBehaviour
 	/// <param name="_"></param>
 	void OnNewStageLoaded(object _)
 	{
-		var player = StageManager.Instance.m_player;
+		var playerData = GameManager.Instance.CurrentPlayerData;
 
-		UpdateLevelText(player.Level);
+		UpdateLevelText(playerData.m_level);
 
-		int currentHP = player.CurrentHP;
-		int maxHP = player.m_maxHP;
+		int currentHP = playerData.m_currentHP;
+		int maxHP = playerData.m_maxHP;
 		UpdateHpBarManual(currentHP, maxHP);
 
-		int currentExp = player.CurrentExp;
-		int expToLevelUp = player.m_expToLevelUp;
+		int currentExp = playerData.m_currentExp;
+		int expToLevelUp = playerData.m_expToNextLevel;
 		UpdateExpBar((currentExp, expToLevelUp));
 	}
 }

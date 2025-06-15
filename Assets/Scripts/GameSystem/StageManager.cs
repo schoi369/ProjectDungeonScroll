@@ -39,26 +39,19 @@ public class StageManager : MonoBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			DontDestroyOnLoad(gameObject);
 		}
 		else
 		{
 			Destroy(gameObject);
 		}
-
-		m_player = FindFirstObjectByType<PlayerController>();
-		m_boardManager = FindFirstObjectByType<BoardManager>();
 	}
 
-	void Start()
+	public void Start()
 	{
-		StartNewGame();
+		StartStage();
 	}
 
-	/// <summary>
-	/// MEMO: 여기서 하는 것들 중 NewLevel()에서도 해야 하는 것들 있는 것 기억하기.
-	/// </summary>
-	public void StartNewGame()
+	public void StartStage()
 	{
 		m_turnCounterForCollapse = 0;
 		m_nextCollapseColumnIndex = 0;
@@ -72,37 +65,8 @@ public class StageManager : MonoBehaviour
 		m_boardManager.Clean();
 		m_boardManager.Init();
 
-		m_player.Init(); // Only at StartNewGame, not at NewLevel().
-
+		m_player.Init();
 		m_player.Spawn(m_boardManager);
-
-		UpdateGameState(GameState.PlayerTurn);
-	}
-
-	void NewStage(bool a_fromDeath)
-	{
-		m_boardManager = FindFirstObjectByType<BoardManager>();
-
-		m_turnCounterForCollapse = 0;
-		m_nextCollapseColumnIndex = 0;
-
-		if (a_fromDeath)
-		{
-			FloorCount = 1;
-		}
-		else
-		{
-			FloorCount++;
-		}
-		SetFloorCount(FloorCount);
-
-		m_boardManager.Clean();
-		m_boardManager.Init();
-
-		m_player.NewStageInit(a_fromDeath);
-		m_player.Spawn(m_boardManager);
-
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.NewStageLoaded, a_fromDeath);
 
 		UpdateGameState(GameState.PlayerTurn);
 	}
@@ -255,41 +219,5 @@ public class StageManager : MonoBehaviour
 		{
 			UpdateGameState(GameState.WorldTurn);
 		}
-	}
-
-	public void LoadTestStage001()
-	{
-		StartCoroutine(LoadSceneRoutine("TestStage_001", true));
-	}
-
-	public void LoadNewScene(string a_sceneName)
-	{
-		StartCoroutine(LoadSceneRoutine(a_sceneName));
-	}
-
-	private IEnumerator LoadSceneRoutine(string a_sceneName, bool a_fromDeath = false)
-	{
-		// TODO: 여기에 화면을 어둡게 하는 페이드 아웃 효과를 넣으면 좋습니다.
-		Debug.Log($"Loading scene: {a_sceneName}...");
-		UICarryOnCanvas.Instance.Fade(true);
-
-		yield return new WaitForSeconds(0.5f); // 페이드 아웃 효과를 위한 대기 시간
-
-		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(a_sceneName);
-
-		// 씬 로딩이 완료될 때까지 대기
-		while (!asyncLoad.isDone)
-		{
-			// TODO: 여기에 로딩 진행률(asyncLoad.progress)을 표시하는 UI를 업데이트할 수 있습니다.
-			yield return null;
-		}
-
-		// TODO: 여기에 화면을 다시 밝게 하는 페이드 인 효과를 넣으면 좋습니다.
-		Debug.Log("Scene loaded.");
-		NewStage(a_fromDeath);
-
-		yield return new WaitForSeconds(0.5f);
-
-		UICarryOnCanvas.Instance.Fade(false);
 	}
 }

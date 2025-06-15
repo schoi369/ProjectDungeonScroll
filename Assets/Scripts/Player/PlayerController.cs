@@ -6,36 +6,29 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-	public static PlayerController Instance;
+	public static PlayerController Instance; // In-Scene Singleton
 
-	public AttackAreaSO m_attackAreaSetting;
+	PlayerDataSO CurrentPlayerData { get; set; }
 
+	// Board, Position
 	BoardManager m_board;
 	Vector3Int m_tilemapPos;
 	public Vector3Int TilemapPos => m_tilemapPos;
+
+	// Stage stat
 	public bool IsGameOver { get; set; } = false;
-
-	public int m_maxHP = 5;
-	public int CurrentHP { get; private set; }
-
 	public float m_moveSpeed = 5f;
 	bool IsMoving { get; set; }
 	Vector3 MoveTarget { get; set; }
 
 	// Level Related
-	public int Level { get; set; }
-	public int CurrentExp { get; private set; }
-	public int m_expToLevelUp = 30; // 차후 ScriptableObject 등으로 전체적 레벨업 세팅 가능하게 변화할지도.
-
 	int m_pendingLevelUps = 0;
 	public int PendingLevelUps => m_pendingLevelUps;
 
 	// Upgrades
-	private List<UpgradeSO> m_activeUpgrades = new();
-	public List<UpgradeSO> ActiveUpgrades => m_activeUpgrades;
-	public event Action<UpgradeSO> OnUpgradeAdded;
+	public List<UpgradeSO> ActiveUpgrades => CurrentPlayerData.m_acquiredUpgrades;
+
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded; // 일부 Upgrade 적용을 위해 사용하는 멤버 변수.
-	public List<UpgradeSO> m_testUpgrades = new();
 	public int PeacefulTurns { get; set; } = 0;
 
 	[Header("Visuals")]
@@ -49,7 +42,6 @@ public class PlayerController : MonoBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			DontDestroyOnLoad(gameObject);
 		}
 		else
 		{
@@ -76,76 +68,30 @@ public class PlayerController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Initialize
+	/// Stage 시작 때의 Init
 	/// </summary>
 	public void Init()
 	{
-		// 업그레이드 초기화
-		// 모든 업그레이드의 구독 해제
-		for (int i = m_activeUpgrades.Count - 1; i >= 0; i--)
-		{
-			m_activeUpgrades[i].Remove(this.gameObject);
-		}
-		m_activeUpgrades.Clear(); // 업그레이드 리스트 비우기
+		CurrentPlayerData = GameManager.Instance.CurrentPlayerData;
 
 		//
 		IsMoving = false;
 		IsGameOver = false;
-
-		CurrentHP = m_maxHP;
 
 		// 비주얼
 		m_originalScale = transform.localScale;
 
 		// 레벨, 경험치 관련 초기화
-		Level = 1;
-		CurrentExp = 0;
 		m_pendingLevelUps = 0;
 
 		// 업그레이드 관련 변수 초기화
 		PeacefulTurns = 0;
 
-		// 테스트용 업그레이드 적용
-		foreach (var upgrade in m_testUpgrades)
-		{
-			AddUpgrade(upgrade);
-		}
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, CurrentPlayerData.m_maxHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentPlayerData.m_currentHP);
 
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, m_maxHP);
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
-
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, Level);
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
-	}
-
-	public void NewStageInit(bool a_fromDeath)
-	{
-		//
-		IsMoving = false;
-		IsGameOver = false;
-
-		if (a_fromDeath)
-		{
-			CurrentHP = m_maxHP;
-			Level = 1;
-			CurrentExp = 0;
-
-			// 업그레이드 초기화
-			// 모든 업그레이드의 구독 해제
-			for (int i = m_activeUpgrades.Count - 1; i >= 0; i--)
-			{
-				m_activeUpgrades[i].Remove(this.gameObject);
-			}
-			m_activeUpgrades.Clear(); // 업그레이드 리스트 비우기
-
-			PeacefulTurns = 0;
-
-			// 테스트용 업그레이드 적용
-			foreach (var upgrade in m_testUpgrades)
-			{
-				AddUpgrade(upgrade);
-			}
-		}
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, CurrentPlayerData.m_level);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentPlayerData.m_currentExp, CurrentPlayerData.m_expToNextLevel));
 	}
 
 	/// <summary>
@@ -189,10 +135,11 @@ public class PlayerController : MonoBehaviour
 
 		PeacefulTurns = 0;
 
-		CurrentHP -= a_damage;
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+		CurrentPlayerData.m_currentHP -= a_damage;
 
-		if (CurrentHP <= 0)
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentPlayerData.m_currentHP);
+
+		if (CurrentPlayerData.m_currentHP <= 0)
 		{
 			GameOver();
 		}
@@ -200,16 +147,16 @@ public class PlayerController : MonoBehaviour
 
 	public void Heal(int a_heal)
 	{
-		CurrentHP = Mathf.Min(CurrentHP + a_heal, m_maxHP);
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentHP);
+		CurrentPlayerData.m_currentHP = Mathf.Min(CurrentPlayerData.m_currentHP + a_heal, CurrentPlayerData.m_maxHP);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentPlayerData.m_currentHP);
 	}
 
 	public void GainExp(int a_amount)
 	{
-		CurrentExp += a_amount;
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
+		CurrentPlayerData.m_currentExp += a_amount;
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentPlayerData.m_currentExp, CurrentPlayerData.m_expToNextLevel));
 
-		while (CurrentExp >= m_expToLevelUp)
+		while (CurrentPlayerData.m_currentExp >= CurrentPlayerData.m_expToNextLevel)
 		{
 			LevelUp();
 		}
@@ -217,15 +164,15 @@ public class PlayerController : MonoBehaviour
 
 	void LevelUp()
 	{
-		Level++;
-		CurrentExp -= m_expToLevelUp; // 넘긴 경험치 남기기.
+		CurrentPlayerData.m_level++;
+		CurrentPlayerData.m_currentExp -= CurrentPlayerData.m_expToNextLevel; // 넘긴 경험치 남기기.
 
 		//m_expToLevelUp = (int) (m_expToLevelUp * 1.5f); // 필요 경험치 증가 예시.
 
 		m_pendingLevelUps++; // 레벨업 처리 예약 +1
 
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, Level);
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentExp, m_expToLevelUp));
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, CurrentPlayerData.m_level);
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentPlayerData.m_currentExp, CurrentPlayerData.m_expToNextLevel));
 	}
 
 	public void ConsumePendingLevelUp()
@@ -264,7 +211,7 @@ public class PlayerController : MonoBehaviour
 	{
 		// Check the direction if there are anything that the player would attack.
 		bool attackedSomething = false;
-		var tilemapPosList = m_board.GetAttackAreaCellPositions(m_attackAreaSetting, m_tilemapPos, a_direction);
+		var tilemapPosList = m_board.GetAttackAreaCellPositions(CurrentPlayerData.m_attackAreaSetting, m_tilemapPos, a_direction);
 		foreach (var targetTilemapPos in tilemapPosList)
 		{
 			var data = m_board.GetCellData(targetTilemapPos);
@@ -319,24 +266,6 @@ public class PlayerController : MonoBehaviour
 
 		// 행동이 끝나면(이동, 공격, 혹은 아무것도 못함) 턴을 종료
 		StageManager.Instance.EndPlayerTurn();
-	}
-
-	/// <summary>
-	/// 새로운 업그레이드를 획득하고 적용합니다.
-	/// </summary>
-	public void AddUpgrade(UpgradeSO a_upgrade)
-	{
-		if (m_activeUpgrades.Contains(a_upgrade))
-		{
-			return; // 중복 획득 방지
-		}
-
-		m_activeUpgrades.Add(a_upgrade);
-		a_upgrade.Apply(this.gameObject);
-
-		Debug.Log($"업그레이드 획득: {a_upgrade.upgradeName}");
-
-		OnUpgradeAdded?.Invoke(a_upgrade);
 	}
 
 	IEnumerator HitEffectCoroutine()
@@ -416,7 +345,7 @@ public class PlayerController : MonoBehaviour
 		if (IsGameOver)
 		{
 			// TODO: 나중에는 랜덤한 첫 스테이지를 불러오기
-			StageManager.Instance.LoadTestStage001();
+			GameManager.Instance.LoadTestStage001();
 		}
 	}
 	#endregion

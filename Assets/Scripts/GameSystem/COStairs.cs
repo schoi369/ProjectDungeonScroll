@@ -17,6 +17,6 @@ public class COStairs : CellObject
 		//GameManager.Instance.NewLevel();
 
 		// TODO: 랜덤으로 스테이지(Scene)을 로드하기.
-		StageManager.Instance.LoadNewScene(m_sceneName);
+		GameManager.Instance.LoadNewScene(m_sceneName);
 	}
 }
