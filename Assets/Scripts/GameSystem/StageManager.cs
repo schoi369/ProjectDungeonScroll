@@ -185,7 +185,7 @@ public class StageManager : MonoBehaviour
 	{
 		UpdateGameState(GameState.UpgradeSelection);
 
-		var playerUpgrades = m_player.ActiveUpgrades;
+		var playerUpgrades = GameManager.Instance.CurrentPlayerData.m_acquiredUpgrades;
 		var availableUpgrades = m_upgradeDatabase.m_allUpgrades.
 			Where(upgrade => !playerUpgrades.Contains(upgrade)).ToList();
 

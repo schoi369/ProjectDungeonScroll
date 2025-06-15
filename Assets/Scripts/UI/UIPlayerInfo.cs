@@ -55,13 +55,6 @@ public class UIPlayerInfo : MonoBehaviour
 		}
 	}
 
-	void UpdateHpBarManual(int a_currentHP, int a_maxHP)
-	{
-		m_currentHP = a_currentHP;
-		m_maxHP = a_maxHP;
-		UpdateHpBar();
-	}
-
 	// --- 경험치 관련 핸들러 ---
 	void UpdateExpBar((int, int) a_expData)
 	{

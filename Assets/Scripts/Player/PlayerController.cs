@@ -26,8 +26,6 @@ public class PlayerController : MonoBehaviour
 	public int PendingLevelUps => m_pendingLevelUps;
 
 	// Upgrades
-	public List<UpgradeSO> ActiveUpgrades => CurrentPlayerData.m_acquiredUpgrades;
-
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded; // 일부 Upgrade 적용을 위해 사용하는 멤버 변수.
 	public int PeacefulTurns { get; set; } = 0;
 
@@ -103,7 +101,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Board(Stage) related
+	/// 플레이어를 보드의 시작 위치로 이동시키는 메소드.
 	/// </summary>
 	public void Spawn(BoardManager a_boardManager)
 	{
@@ -352,8 +350,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (IsGameOver)
 		{
-			// TODO: 나중에는 랜덤한 첫 스테이지를 불러오기
-			GameManager.Instance.LoadTestStage001();
+			GameManager.Instance.RestartRun();
 		}
 	}
 	#endregion

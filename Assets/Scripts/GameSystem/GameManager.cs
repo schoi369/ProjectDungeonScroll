@@ -41,8 +41,13 @@ public class GameManager : MonoBehaviour
 		CurrentPlayerData.InitializeForNewRun();
 	}
 
+	public void RestartRun()
+	{
+		CurrentPlayerData.InitializeForNewRun();
+		LoadTestStage001(); // TODO: 나중에는 랜덤한 첫 스테이지를 불러오기
+	}
 
-	public void LoadTestStage001()
+	void LoadTestStage001()
 	{
 		StartCoroutine(LoadSceneRoutine("TestStage_001"));
 	}
