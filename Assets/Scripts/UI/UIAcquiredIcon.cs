@@ -9,6 +9,7 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	public TextMeshProUGUI m_counterText;
 
 	private UpgradeSO m_representedUpgrade;
+	public UpgradeSO RepresentedUpgrade => m_representedUpgrade;
 
 
 	public void Setup(UpgradeSO a_upgradeData)

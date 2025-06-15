@@ -23,8 +23,6 @@ public class UIPlayerInfo : MonoBehaviour
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, OnCurrentHPChanged);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerLevelChanged, OnLevelChanged);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerExpChanged, OnExpChanged);
-
-		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.NewStageLoaded, OnNewStageLoaded);
 	}
 
 	private void OnDisable()
@@ -89,24 +87,5 @@ public class UIPlayerInfo : MonoBehaviour
 	private void OnExpChanged(object a_expData)
 	{
 		UpdateExpBar(((int, int))a_expData);
-	}
-
-	/// <summary>
-	/// 새 스테이지 씬이 로드되었을 때, 플레이어 데이터를 보고 UI를 갱신함.
-	/// </summary>
-	/// <param name="_"></param>
-	void OnNewStageLoaded(object _)
-	{
-		var playerData = GameManager.Instance.CurrentPlayerData;
-
-		UpdateLevelText(playerData.m_level);
-
-		int currentHP = playerData.m_currentHP;
-		int maxHP = playerData.m_maxHP;
-		UpdateHpBarManual(currentHP, maxHP);
-
-		int currentExp = playerData.m_currentExp;
-		int expToLevelUp = playerData.m_expToNextLevel;
-		UpdateExpBar((currentExp, expToLevelUp));
 	}
 }

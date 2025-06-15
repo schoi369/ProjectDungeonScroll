@@ -23,6 +23,7 @@ public class OverlayCanvas : MonoBehaviour
 	public UIGameOverPanel m_gameOverPanel;
 	public UIUpgradeSelectionPanel m_upgradeSelectionPanel;
 	public UIUpgradeIconTooltipPanel m_tooltipPanel;
+	public UIAcquiredUpgradesDisplay m_upgradesDisplay;
 
 	public void ShowHideGameOverPanel(bool a_show)
 	{
@@ -38,6 +39,17 @@ public class OverlayCanvas : MonoBehaviour
 	public void HideUpgradeSelection()
 	{
 		m_upgradeSelectionPanel.Hide();
+	}
+
+	//
+	public void AddUpgradeIcon(UpgradeSO a_upgradeData)
+	{
+		m_upgradesDisplay.AddIcon(a_upgradeData);
+	}
+
+	public void CleanUpgradeIcons()
+	{
+		m_upgradesDisplay.CleanIcons();
 	}
 
 	// Icon Tooltip

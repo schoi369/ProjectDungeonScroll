@@ -87,11 +87,19 @@ public class PlayerController : MonoBehaviour
 		// 업그레이드 관련 변수 초기화
 		PeacefulTurns = 0;
 
+		// 사실상 HUD의 Refresh
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, CurrentPlayerData.m_maxHP);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentPlayerData.m_currentHP);
 
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerLevelChanged, CurrentPlayerData.m_level);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerExpChanged, (CurrentPlayerData.m_currentExp, CurrentPlayerData.m_expToNextLevel));
+
+		// 존재하는 업그레이드 적용
+		foreach (var upgrade in CurrentPlayerData.m_acquiredUpgrades)
+		{
+			upgrade.Apply(gameObject);
+			OverlayCanvas.Instance.AddUpgradeIcon(upgrade);
+		}
 	}
 
 	/// <summary>

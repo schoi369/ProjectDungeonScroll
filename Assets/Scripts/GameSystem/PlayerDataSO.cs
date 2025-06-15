@@ -21,7 +21,6 @@ public class PlayerDataSO : ScriptableObject
 
 	[Header("업그레이드")]
 	public List<UpgradeSO> m_acquiredUpgrades = new List<UpgradeSO>();
-	public event Action<UpgradeSO> OnUpgradeAdded;
 	public List<UpgradeSO> m_testUpgrades = new(); // Debug
 
 
@@ -46,12 +45,11 @@ public class PlayerDataSO : ScriptableObject
 		{
 			return; // 중복 획득 방지
 		}
-
 		m_acquiredUpgrades.Add(a_upgrade);
+
 		a_upgrade.Apply(StageManager.Instance.m_player.gameObject);
+		OverlayCanvas.Instance.AddUpgradeIcon(a_upgrade);
 
 		Debug.Log($"업그레이드 획득: {a_upgrade.upgradeName}");
-
-		OnUpgradeAdded?.Invoke(a_upgrade);
 	}
 }

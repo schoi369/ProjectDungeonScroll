@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_gameOverPanel: {fileID: 3570033859381038157}
   m_upgradeSelectionPanel: {fileID: 1934837605287400930}
   m_tooltipPanel: {fileID: 9060642417665034946}
-  m_transitionBoxImage: {fileID: 0}
+  m_upgradesDisplay: {fileID: 6265867849389339333}
 --- !u!1 &6330764601611258421
 GameObject:
   m_ObjectHideFlags: 0
