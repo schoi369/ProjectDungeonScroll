@@ -141,7 +141,7 @@ public class PlayerController : MonoBehaviour
 
 		PeacefulTurns = 0;
 
-		CurrentPlayerData.m_currentHP -= a_damage;
+		CurrentPlayerData.m_currentHP = Mathf.Max(CurrentPlayerData.m_currentHP - a_damage, 0); // HP가 0 미만으로 내려가지 않도록 보장
 
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentPlayerData.m_currentHP);
 

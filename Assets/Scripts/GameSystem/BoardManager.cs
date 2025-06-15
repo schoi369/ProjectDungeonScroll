@@ -220,14 +220,6 @@ public class BoardManager : MonoBehaviour
 
 	// ============================================================================
 
-	public void Clean()
-	{
-		if (m_cellDataMap == null)
-		{
-			return;
-		}
-	}
-
 	public List<Vector3Int> GetAttackAreaCellPositions(AttackAreaSO a_area, Vector3Int a_center, Direction a_direction)
 	{
 		List<Vector3Int> result = new();

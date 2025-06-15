@@ -60,9 +60,6 @@ public class StageManager : MonoBehaviour
 
 		OverlayCanvas.Instance.ShowHideGameOverPanel(false);
 
-		SetFloorCount(1);
-
-		m_boardManager.Clean();
 		m_boardManager.Init();
 
 		m_player.Init();
@@ -73,10 +70,6 @@ public class StageManager : MonoBehaviour
 
 	public bool IsPlayerAt(Vector3Int a_tilemapPos)
 	{
-		if (m_player == null)
-		{
-			return false;
-		}
 		return m_player.TilemapPos == a_tilemapPos;
 	}
 
@@ -136,12 +129,6 @@ public class StageManager : MonoBehaviour
 				UpdateGameState(GameState.WorldTurn);
 			}
 		}
-	}
-
-	void SetFloorCount(int a_newCount)
-	{
-		FloorCount = a_newCount;
-		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.FloorChanged, FloorCount);
 	}
 
 	public void RegisterEnemy(EnemyBase enemy)

@@ -24,9 +24,6 @@ public class GameManager : MonoBehaviour
 		{
 			Instance = this;
 			DontDestroyOnLoad(gameObject);
-
-			// 게임 시작 시 데이터 초기화
-			InitializeGame();
 		}
 		else
 		{
@@ -34,20 +31,30 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
+	private void Start()
+	{
+		// 게임 시작 시 데이터 초기화
+		InitializeGame();
+	}
+
 	private void InitializeGame()
 	{
 		// 원본 ScriptableObject를 Instantiate하여 런타임용 복제본을 만듭니다.
 		// 이렇게 하면 플레이 중에 데이터가 변경되어도 원본 에셋에는 영향을 주지 않습니다.
 		CurrentPlayerData = Instantiate(m_playerDataAtStart);
-		CurrentPlayerData.InitializeForNewRun();
 
-		SetFloorCount(1);
+		CurrentPlayerData.InitializeForNewRun();
+		FloorCount = 1;
+
+		RefreshFloorCountVisual();
 	}
 
 	//
 	public void RestartRun()
 	{
 		CurrentPlayerData.InitializeForNewRun();
+		FloorCount = 1;
+
 		LoadTestStage001(); // TODO: 나중에는 랜덤한 첫 스테이지를 불러오기
 	}
 
@@ -75,6 +82,7 @@ public class GameManager : MonoBehaviour
 
 		// TODO: 여기에 화면을 다시 밝게 하는 페이드 인 효과를 넣으면 좋습니다.
 		Debug.Log("Scene loaded.");
+		RefreshFloorCountVisual();
 
 		yield return new WaitForSeconds(0.5f);
 
@@ -84,39 +92,12 @@ public class GameManager : MonoBehaviour
 	//
 	public void LoadNextStage(string a_sceneName)
 	{
-		StartCoroutine(LoadNextStageCoroutine(a_sceneName));
+		FloorCount++;
+		StartCoroutine(LoadSceneRoutine(a_sceneName));
 	}
 
-	private IEnumerator LoadNextStageCoroutine(string a_sceneName)
+	void RefreshFloorCountVisual()
 	{
-		// TODO: 여기에 화면을 어둡게 하는 페이드 아웃 효과를 넣으면 좋습니다.
-		Debug.Log($"Loading scene: {a_sceneName}...");
-		UICarryOnCanvas.Instance.Fade(true);
-
-		yield return new WaitForSeconds(0.5f); // 페이드 아웃 효과를 위한 대기 시간
-
-		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(a_sceneName);
-
-		// 씬 로딩이 완료될 때까지 대기
-		while (!asyncLoad.isDone)
-		{
-			// TODO: 여기에 로딩 진행률(asyncLoad.progress)을 표시하는 UI를 업데이트할 수 있습니다.
-			yield return null;
-		}
-
-		// TODO: 여기에 화면을 다시 밝게 하는 페이드 인 효과를 넣으면 좋습니다.
-		Debug.Log("Scene loaded.");
-		SetFloorCount(FloorCount + 1);
-
-		yield return new WaitForSeconds(0.5f);
-
-		UICarryOnCanvas.Instance.Fade(false);
-
-	}
-
-	void SetFloorCount(int a_newCount)
-	{
-		FloorCount = a_newCount;
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.FloorChanged, FloorCount);
 	}
 }
