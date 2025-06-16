@@ -25,7 +25,7 @@ public class PlayerDataSO : ScriptableObject
 
 
 	[Header("기타")]
-	public AttackAreaSO m_attackAreaSetting;
+	public List<AttackAreaSO> m_memberAttackAreas;
 
 	/// <summary>
 	/// 새 게임을 시작할 때 데이터를 초기 상태로 리셋합니다.

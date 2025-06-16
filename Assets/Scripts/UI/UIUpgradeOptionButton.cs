@@ -10,6 +10,9 @@ public class UIUpgradeOptionButton : MonoBehaviour
 
 	private UpgradeSO m_representedUpgrade;
 
+	[SerializeField] UIMemberThemeSO m_memberTheme;
+	[SerializeField] Image m_memberColorBoarder;
+
 	/// <summary>
 	/// 이 버튼이 어떤 업그레이드를 표시할지 설정하고 UI를 업데이트합니다.
 	/// </summary>
@@ -19,6 +22,8 @@ public class UIUpgradeOptionButton : MonoBehaviour
 
 		m_nameText.text = m_representedUpgrade.upgradeName;
 		m_descriptionText.text = m_representedUpgrade.description;
+
+		m_memberColorBoarder.color = m_memberTheme.GetMemberColor(m_representedUpgrade.m_idolMember);
 	}
 
 	/// <summary>

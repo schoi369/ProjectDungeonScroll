@@ -215,25 +215,45 @@ public class PlayerController : MonoBehaviour
 
 	private void ProcessPlayerAction(BoardManager.Direction a_direction)
 	{
-		// Check the direction if there are anything that the player would attack.
+		// 1. 통합된 공격 범위와 실제 공격 성공 여부를 추적할 변수
+		HashSet<Vector3Int> uniqueAttackTiles = new HashSet<Vector3Int>();
 		bool attackedSomething = false;
-		var tilemapPosList = m_board.GetAttackAreaCellPositions(CurrentPlayerData.m_attackAreaSetting, m_tilemapPos, a_direction);
-		foreach (var targetTilemapPos in tilemapPosList)
+
+		// 2. 모든 멤버의 공격 범위를 순회하며 통합 (PlayerDataSO에 새로 추가한 m_memberAttackAreas 리스트 사용)
+		foreach (var memberAttackArea in CurrentPlayerData.m_memberAttackAreas)
+		{
+			if (memberAttackArea != null)
+			{
+				var tilemapPosList = m_board.GetAttackAreaCellPositions(memberAttackArea, m_tilemapPos, a_direction);
+				uniqueAttackTiles.UnionWith(tilemapPosList);
+			}
+		}
+
+		// 3. 통합된 공격 범위에 있는 적들을 공격
+		foreach (var targetTilemapPos in uniqueAttackTiles)
 		{
 			var data = m_board.GetCellData(targetTilemapPos);
 			if (data.ContainedObject && data.ContainedObject.m_canBeAttacked)
 			{
-				attackedSomething = true;
-				PeacefulTurns = 0;
+				if (!attackedSomething)
+				{
+					// 첫 공격이 성공하는 순간, 이동 로직을 막기 위해 플래그를 true로 설정
+					attackedSomething = true;
+					PeacefulTurns = 0;
+				}
 
-				Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
-				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
+				// MEMO: 공격 닿는 위치에서만 이펙트 재생하고 싶을 경우 여기로 아래의 이펙트 코드를 이동
 
 				data.ContainedObject.GetAttacked(1);
 				OnAttackLanded?.Invoke(data.ContainedObject, a_direction);
 			}
+
+			// 공격 이펙트를 공격 닿는 위치와 안 닿는 위치 모두에서 재생.
+			Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
+			VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 		}
 
+		// 4. 만약 어떤 적도 공격하지 않았다면, 해당 방향으로 이동 시도
 		if (!attackedSomething)
 		{
 			// 공격하지 않았을 경우 이동.
@@ -300,10 +320,19 @@ public class PlayerController : MonoBehaviour
 		m_hitScaleEffectCoroutine = null;
 	}
 
+	// Debug
 	[InspectorButton]
 	void DebugDie()
 	{
 		TakeDamage(100);
+	}
+
+	[InspectorButton]
+	void DebugLevelUp()
+	{
+		int expLeft = CurrentPlayerData.m_expToNextLevel - CurrentPlayerData.m_currentExp;
+
+		GainExp(expLeft);
 	}
 
 	//----------------------------------------------------------------

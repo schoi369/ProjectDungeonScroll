@@ -9,10 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83affa62301b9084d914faacf55fd6aa, type: 3}
-  m_Name: Static Discharge Upgrade
+  m_Script: {fileID: 11500000, guid: ebb646e6c99cdfd4e84cf3912cafae15, type: 3}
+  m_Name: SerenityUpgrade
   m_EditorClassIdentifier: 
-  upgradeName: Static Discharge
-  description: Stun nearby enemies (3x3)
+  m_idolMember: 3
+  upgradeName: Serenity
+  description: Heal 1 HP without attacking/getting attacked for 3 turns.
   icon: {fileID: 21300000, guid: 22df355e68278594f9eb4255469e6191, type: 3}
-  m_stunRate: 1
+  m_counterType: 1
+  m_turnsRequired: 3
+  m_healAmount: 1

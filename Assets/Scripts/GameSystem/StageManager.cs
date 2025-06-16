@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using Unity.Mathematics;
 
 public class StageManager : MonoBehaviour
 {
@@ -176,11 +177,8 @@ public class StageManager : MonoBehaviour
 		var availableUpgrades = m_upgradeDatabase.m_allUpgrades.
 			Where(upgrade => !playerUpgrades.Contains(upgrade)).ToList();
 
-		// 제공 가능한 업그레이드들을 무작위로 섞음
-		var shuffledUpgrades = availableUpgrades.OrderBy(x => UnityEngine.Random.value).ToList();
-
 		// 최대 3개를 선택 (가능한 업그레이드가 3개 미만이면 그만큼만 선택)
-		var options = shuffledUpgrades.Take(3).ToList();
+		var options = GetLevelUpUpgradeOptions();
 
 		if (options.Count > 0)
 		{
@@ -206,5 +204,55 @@ public class StageManager : MonoBehaviour
 		{
 			UpdateGameState(GameState.WorldTurn);
 		}
+	}
+
+	/// <summary>
+	/// 레벨업 시 제공할 업그레이드 선택지를 생성합니다. (단순화된 규칙 적용)
+	/// </summary>
+	/// <returns>플레이어에게 보여줄 업그레이드 SO 리스트 (최대 3개)</returns>
+	public List<UpgradeSO> GetLevelUpUpgradeOptions()
+	{
+		var acquiredUpgrades = GameManager.Instance.CurrentPlayerData.m_acquiredUpgrades;
+		List<UpgradeSO> availableUpgrades = m_upgradeDatabase.m_allUpgrades.Except(acquiredUpgrades).ToList();
+
+		// --- 최종 선택지를 담을 리스트와, 뽑을 멤버 목록 정의 ---
+		// TODO: 지금은 직접 멤버를 지정하지만, 나중엔 누구누구 있는지 참조해서.
+		List<UpgradeSO> finalOptions = new List<UpgradeSO>();
+		var membersToPickFrom = new List<EIdolMember> { EIdolMember.Sakura, EIdolMember.Kazuha, EIdolMember.Yunjin };
+
+		// --- 각 멤버 순서대로 추첨 ---
+		foreach (var member in membersToPickFrom)
+		{
+			// 뽑을 업그레이드가 더이상 없으면 즉시 종료
+			if (availableUpgrades.Count == 0)
+			{
+				break;
+			}
+
+			// 해당 멤버의 전용 업그레이드 중, 아직 선택 가능한 것들만 추림
+			List<UpgradeSO> specificMemberPool = availableUpgrades.Where(u => u.m_idolMember == member).ToList();
+
+			UpgradeSO pickedUpgrade = null;
+
+			// 규칙 1: 전용 풀에 뽑을 것이 있으면 거기서 뽑기
+			if (specificMemberPool.Count > 0)
+			{
+				int randomIndex = UnityEngine.Random.Range(0, specificMemberPool.Count);
+				pickedUpgrade = specificMemberPool[randomIndex];
+			}
+			// 규칙 2: 전용 풀이 비었다면, 남은 전체 풀에서 대신 뽑기
+			else
+			{
+				int randomIndex = UnityEngine.Random.Range(0, availableUpgrades.Count);
+				pickedUpgrade = availableUpgrades[randomIndex];
+			}
+
+			// 뽑은 업그레이드를 최종 목록에 추가하고, 전체 가능 목록에서는 제거 (중복 방지)
+			finalOptions.Add(pickedUpgrade);
+			availableUpgrades.Remove(pickedUpgrade);
+		}
+
+		// 규칙 3: 위의 과정을 거쳐 만들어진 최종 목록을 반환 (0~3개의 아이템을 가질 수 있음)
+		return finalOptions;
 	}
 }

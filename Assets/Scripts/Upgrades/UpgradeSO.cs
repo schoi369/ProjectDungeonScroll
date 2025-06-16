@@ -1,10 +1,18 @@
 using UnityEngine;
 
+public enum EIdolMember
+{
+	Common,
+	Sakura,
+	Kazuha,
+	Yunjin,
+}
+
 // 이 클래스는 업그레이드의 데이터와 적용/제거 로직의 틀을 제공합니다.
 // abstract 키워드로 인해 이 스크립트 자체는 에셋으로 생성할 수 없습니다.
 public abstract class UpgradeSO : ScriptableObject
 {
-	[Header("공통 정보")]
+	public EIdolMember m_idolMember = EIdolMember.Common;
 	public string upgradeName;
 	[TextArea]
 	public string description;
