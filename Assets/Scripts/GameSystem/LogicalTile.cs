@@ -22,7 +22,7 @@ public class TileProperty
 	public Vector3Int TilemapPos { get; private set; }
 	public LogicalTile TileInfo { get; private set; }
 
-	public virtual bool IsWalkable => true;
+	public virtual bool IsWalkable { get; private set; } = true;
 
 	TilePhysicalState m_physicalState;
 
@@ -41,6 +41,14 @@ public class TileProperty
 		m_physicalState = a_newState;
 
 		StageManager.Instance.m_boardManager.SetTileByPhysicalState(TilemapPos, TileInfo.m_tileType, m_physicalState);
+		if (m_physicalState == TilePhysicalState.Destroyed)
+		{
+			IsWalkable = false; // 파괴된 타일은 더 이상 지나갈 수 없음
+		}
+		else
+		{
+			IsWalkable = true; // 기본 상태나 경고 상태는 지나갈 수 있음
+		}
 	}
 }
 
