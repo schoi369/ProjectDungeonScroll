@@ -196,4 +196,6 @@ MonoBehaviour:
   m_stunIcon: {fileID: 353998072931934827}
   m_hitScaleMultiplier: 1.2
   m_hitScaleEffectDuration: 0.1
-  m_attackArea: {fileID: 11400000, guid: 79e79236864a08c46b0d966de25c15e0, type: 2}
+  m_explosionArea: {fileID: 11400000, guid: 79e79236864a08c46b0d966de25c15e0, type: 2}
+  m_initialCountdown: 3
+  m_explosionDamage: 5
