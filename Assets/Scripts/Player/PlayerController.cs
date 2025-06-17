@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded; // 일부 Upgrade 적용을 위해 사용하는 멤버 변수.
 	public event Action OnDamagedByEnemy; // 플레이어가 적에게 공격받았을 때 발생하는 이벤트. (업그레이드 효과 적용을 위해 사용)
 
+	//
+	private readonly HashSet<CellObject> m_hitTargetsThisAction = new();
+
 	[Header("Visuals")]
 	public float m_hitScaleMultiplier = 1.2f;
 	public float m_hitEffectDuration = 0.1f;
@@ -245,13 +248,15 @@ public class PlayerController : MonoBehaviour
 
 	private void ProcessPlayerAction(BoardManager.Direction a_direction)
 	{
+		m_hitTargetsThisAction.Clear();
+
 		m_facingDirection = a_direction;
 
-		// 1. 통합된 공격 범위와 실제 공격 성공 여부를 추적할 변수
+		// 통합된 공격 범위와 실제 공격 성공 여부를 추적할 변수
 		HashSet<Vector3Int> uniqueAttackTiles = new HashSet<Vector3Int>();
 		bool attackedSomething = false;
 
-		// 2. 모든 멤버의 공격 범위를 순회하며 통합 (PlayerDataSO에 새로 추가한 m_memberAttackAreas 리스트 사용)
+		// 모든 멤버의 공격 범위를 순회하며 통합
 		foreach (var memberAttackArea in CurrentPlayerData.m_memberAttackAreas)
 		{
 			if (memberAttackArea != null)
@@ -261,31 +266,32 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 
-		// 3. 통합된 공격 범위에 있는 적들을 공격
+		// 통합된 공격 범위에 있는 적들을 공격
 		foreach (var targetTilemapPos in uniqueAttackTiles)
 		{
 			var data = m_board.GetCellData(targetTilemapPos);
 			if (data.ContainedObject && data.ContainedObject.m_canBeAttacked)
 			{
-				if (!attackedSomething)
+				if (!m_hitTargetsThisAction.Contains(data.ContainedObject))
 				{
-					// 첫 공격이 성공하는 순간, 이동 로직을 막기 위해 플래그를 true로 설정
+					// 공격이 성공하는 순간, 이동 로직을 막기 위해 플래그를 true로 설정
 					attackedSomething = true;
+
+					Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
+					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
+
+					data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower);
+
+					m_hitTargetsThisAction.Add(data.ContainedObject);
+
+					OnAttackLanded?.Invoke(data.ContainedObject, a_direction);
+
+					UpdateAttackTelegraph();
 				}
-
-				// MEMO: 공격 닿는 위치에서만 이펙트 재생하고 싶을 경우 여기로 아래의 이펙트 코드를 이동
-				Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
-				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
-
-				data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower);
-				OnAttackLanded?.Invoke(data.ContainedObject, a_direction);
-
-				UpdateAttackTelegraph();
 			}
-
 		}
 
-		// 4. 만약 어떤 적도 공격하지 않았다면, 해당 방향으로 이동 시도
+		// 만약 어떤 적도 공격하지 않았다면, 해당 방향으로 이동 시도
 		if (!attackedSomething)
 		{
 			// 공격하지 않았을 경우 이동.
@@ -309,11 +315,7 @@ public class PlayerController : MonoBehaviour
 			BoardManager.CellData cellData = m_board.GetCellData(newCellTargetPos);
 			if (cellData != null && cellData.Passable)
 			{
-				if (cellData.ContainedObject == null)
-				{
-					MoveTo(newCellTargetPos);
-				}
-				else if (cellData.ContainedObject.PlayerWantsToEnter())
+				if (cellData.ContainedObject == null || cellData.ContainedObject.PlayerWantsToEnter())
 				{
 					MoveTo(newCellTargetPos);
 				}
