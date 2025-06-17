@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Pool; // ◀◀◀ Unity의 Pooling API를 사용하기 위해 추가
+using UnityEngine.Pool;
 
 public class PlayerTelegraphManager : MonoBehaviour
 {

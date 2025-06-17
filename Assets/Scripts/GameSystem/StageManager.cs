@@ -153,6 +153,8 @@ public class StageManager : MonoBehaviour
 	{
 		// 월드 턴 동안 플레이어 조작 방지 (필요 시 UI 피드백 추가)
 
+		EnemyTelegraphManager.Instance.ClearTelegraphs();
+
 		var enemiesToProcess = new List<EnemyBase>(m_enemies);
 		foreach (var enemy in enemiesToProcess)
 		{
@@ -162,6 +164,8 @@ public class StageManager : MonoBehaviour
 				yield return new WaitForSeconds(0.1f); // 적들의 행동을 순차적으로 보여주기 위한 딜레이
 			}
 		}
+
+		EnemyTelegraphManager.Instance.DisplayTelegraphs();
 
 		// 모든 적의 행동이 끝나면 플레이어 턴으로 전환
 		if (CurrentState != GameState.GameOver) // 플레이어가 적의 턴에 죽었을 수 있으므로 체크
