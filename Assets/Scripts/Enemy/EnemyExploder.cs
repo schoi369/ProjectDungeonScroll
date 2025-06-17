@@ -1,66 +1,65 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyExploder : EnemyBase
 {
-	public AttackAreaSO m_attackArea;
+	[Header("Exploder Settings")]
+	[SerializeField]
+	private AttackAreaSO m_explosionArea;
+	[SerializeField]
+	private int m_initialCountdown = 3;
+	[SerializeField]
+	private int m_explosionDamage = 5;
 
-	int Counter { get; set; } = 0;
+	private int m_currentCountdown;
 
-	//List<GroundTile> m_warnedTiles = new();
+	// EnemyBase의 Init을 오버라이드하여 Exploder에 필요한 초기화를 추가합니다.
+	public override void Init(Vector3Int a_tilemapPos)
+	{
+		base.Init(a_tilemapPos);
 
+		m_currentCountdown = m_initialCountdown;
+
+		// 여기에 카운트다운 숫자를 표시할 UI를 업데이트하는 코드를 넣을 수 있습니다.
+		// 예: EnemyHPUIManager.Instance.UpdateExtraInfo(transform, m_currentCountdown.ToString());
+	}
 
 	protected override void PerformTurnLogic()
 	{
-		var board = StageManager.Instance.m_boardManager;
-		var tilemapPosList = board.GetAttackAreaCellPositions(m_attackArea, m_TilemapPos, BoardManager.Direction.LEFT); // 방향은 현재 무관
+		m_currentCountdown--;
+		//Debug.Log($"{gameObject.name} countdown: {m_currentCountdown}");
 
-		Counter++;
-		int remainder = Counter % 3;
-		switch (remainder)
+		if (m_currentCountdown <= 0)
 		{
-			case 0:
-				// 대기
-				break;
-			case 1: // 폭발 예고
-				ClearTelegraphs();
-				foreach (var targetTilemapPos in tilemapPosList)
-				{
-					var data = board.GetCellData(targetTilemapPos);
-					//if (data != null && data.m_groundTile != null)
-					//{
-					//	data.m_groundTile.AddAttackWarning();
-					//	m_warnedTiles.Add(data.m_groundTile);
-					//}
-				}
-				break;
-			case 2: // 폭발
-				ClearTelegraphs();
-				foreach (var targetTilemapPos in tilemapPosList)
-				{
-					Vector3 cellWorldPos = board.TilemapPosToWorldPos(targetTilemapPos);
-					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.red);
-
-					if (StageManager.Instance.IsPlayerAt(targetTilemapPos))
-					{
-						StageManager.Instance.m_player.TakeDamage(1, true);
-					}
-				}
-				break;
+			Explode();
+		}
+		else if (m_currentCountdown == 1)
+		{
+			TelegraphExplosion();
 		}
 	}
 
-	protected override void ClearTelegraphs()
+	private void TelegraphExplosion()
 	{
-		//foreach (var tile in m_warnedTiles)
-		//{
-		//	if (tile != null) // 타일이 이미 파괴되었을 경우 대비
-		//	{
-		//		tile.RemoveAttackWarning();
-		//	}
-		//}
-		//m_warnedTiles.Clear(); // 리스트 비우기
+		List<Vector3Int> explosionTiles = StageManager.Instance.m_boardManager.GetAttackAreaCellPositions(m_explosionArea, TilemapPos, BoardManager.Direction.RIGHT);
+		EnemyTelegraphManager.Instance.RegisterTelegraph(explosionTiles);
 	}
 
+	// 실제 폭발 로직
+	private void Explode()
+	{
+		List<Vector3Int> explosionTiles = StageManager.Instance.m_boardManager.GetAttackAreaCellPositions(m_explosionArea, TilemapPos, BoardManager.Direction.RIGHT);
+
+		foreach (var tilePos in explosionTiles)
+		{
+			VFXManager.Instance.PlaySlashEffect(StageManager.Instance.m_boardManager.TilemapPosToWorldPos(tilePos), Color.red);
+
+			if (StageManager.Instance.IsPlayerAt(tilePos))
+			{
+				StageManager.Instance.m_player.TakeDamage(m_explosionDamage, true);
+			}
+		}
+
+		m_currentCountdown = m_initialCountdown; // 폭발 후 카운트 초기화
+	}
 }
