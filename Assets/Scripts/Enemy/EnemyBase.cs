@@ -107,9 +107,10 @@ public abstract class EnemyBase : CellObject
 			StageManager.Instance.m_player.GainExp(m_expValue);
 		}
 
-		ClearTelegraphs();
+		ClearTelegraphs(); // TODO: 오브젝트에서 타일맵 기반으로 넘어왔으니 텔레그래핑 방식 변경해야 함.
 
 		StageManager.Instance.UnregisterEnemy(this);
+		StageManager.Instance.KickEnemyDefeatedEvent(this);
 
 		EnemyHPUIManager.Instance.RemoveHealthUI(transform);
 

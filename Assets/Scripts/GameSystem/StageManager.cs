@@ -34,6 +34,7 @@ public class StageManager : MonoBehaviour
 	private List<EnemyBase> m_enemies = new List<EnemyBase>();
 
 	public event Action OnPlayerTurnEnded;
+	public event Action<EnemyBase> OnEnemyDefeated;
 
 	void Awake()
 	{
@@ -254,5 +255,10 @@ public class StageManager : MonoBehaviour
 
 		// 규칙 3: 위의 과정을 거쳐 만들어진 최종 목록을 반환 (0~3개의 아이템을 가질 수 있음)
 		return finalOptions;
+	}
+
+	public void KickEnemyDefeatedEvent(EnemyBase a_enemy)
+	{
+		OnEnemyDefeated?.Invoke(a_enemy);
 	}
 }
