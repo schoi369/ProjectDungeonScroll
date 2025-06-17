@@ -21,7 +21,8 @@ public abstract class UpgradeSO : ScriptableObject
 	public enum CounterType
 	{
 		None,
-		PeacefulTurns // '평온' 스택
+		PeacefulTurns, // '평온' 스택
+		RiskyDashTurns, // '위험한 질주' 스택
 	}
 
 	public CounterType m_counterType = CounterType.None;

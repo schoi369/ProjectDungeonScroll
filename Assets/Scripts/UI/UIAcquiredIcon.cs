@@ -47,14 +47,7 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 		if (m_representedUpgrade == null || m_representedUpgrade.m_counterType == UpgradeSO.CounterType.None) return;
 
 		// 어떤 카운터 타입인지에 따라 적절한 값을 가져와 표시
-		switch (m_representedUpgrade.m_counterType)
-		{
-			case UpgradeSO.CounterType.PeacefulTurns:
-				int currentPeacefulTurns = StageManager.Instance.m_player.PeacefulTurns;
-				m_counterText.text = currentPeacefulTurns.ToString();
-				break;
-				// 추후 다른 카운터 타입이 추가될 수 있음
-		}
+		m_counterText.text = StageManager.Instance.m_player.GetCounterValueForUpgrade(m_representedUpgrade);
 	}
 
 

@@ -13,6 +13,7 @@ public class PlayerDataSO : ScriptableObject
 	[Header("플레이어 기본 스탯")]
 	public int m_maxHP = 5;
 	public int m_currentHP;
+	public int m_attackPower = 1;
 
 	[Header("레벨 및 경험치")]
 	public int m_level;

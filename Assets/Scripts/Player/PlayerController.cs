@@ -7,8 +7,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
 	public static PlayerController Instance; // In-Scene Singleton
-
-	PlayerDataSO CurrentPlayerData { get; set; }
+	public PlayerDataSO CurrentPlayerData { get; private set; }
 
 	// Board, Position
 	BoardManager m_board;
@@ -125,7 +124,7 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	public void TakeDamage(int a_damage)
+	public void TakeDamage(int a_damage, bool a_fromEnemy)
 	{
 		if (IsGameOver)
 		{
@@ -139,7 +138,10 @@ public class PlayerController : MonoBehaviour
 		transform.localScale = m_originalScale;
 		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
 
-		PeacefulTurns = 0;
+		if (a_fromEnemy)
+		{
+			PeacefulTurns = 0;
+		}
 
 		CurrentPlayerData.m_currentHP = Mathf.Max(CurrentPlayerData.m_currentHP - a_damage, 0); // HP가 0 미만으로 내려가지 않도록 보장
 
@@ -244,7 +246,7 @@ public class PlayerController : MonoBehaviour
 
 				// MEMO: 공격 닿는 위치에서만 이펙트 재생하고 싶을 경우 여기로 아래의 이펙트 코드를 이동
 
-				data.ContainedObject.GetAttacked(1);
+				data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower);
 				OnAttackLanded?.Invoke(data.ContainedObject, a_direction);
 			}
 
@@ -320,11 +322,39 @@ public class PlayerController : MonoBehaviour
 		m_hitScaleEffectCoroutine = null;
 	}
 
+	/// <summary>
+	/// 특정 업그레이드의 현재 카운터 값을 UI에 표시하기 위해 문자열로 반환합니다.
+	/// </summary>
+	public string GetCounterValueForUpgrade(UpgradeSO a_upgrade)
+	{
+		if (a_upgrade.m_counterType == UpgradeSO.CounterType.None)
+		{
+			return "";
+		}
+
+		switch (a_upgrade.m_counterType)
+		{
+			case UpgradeSO.CounterType.PeacefulTurns:
+				return PeacefulTurns.ToString();
+
+			case UpgradeSO.CounterType.RiskyDashTurns:
+				var riskyDashEffect = GetComponent<UpgradeRiskyDash>();
+				if (riskyDashEffect != null)
+				{
+					return riskyDashEffect.CurrentTurnCount.ToString();
+				}
+				return "?"; // 효과 컴포넌트를 못찾은 경우
+			default:
+				return "";
+		}
+	}
+
+
 	// Debug
 	[InspectorButton]
 	void DebugDie()
 	{
-		TakeDamage(100);
+		TakeDamage(100, true);
 	}
 
 	[InspectorButton]
