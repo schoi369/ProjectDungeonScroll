@@ -29,7 +29,7 @@ public class EnemyWalker : EnemyBase
 			{
 				// 공격 실행
 				VFXManager.Instance.PlaySlashEffect(player.transform.position, Color.red);
-				player.TakeDamage(1);
+				player.TakeDamage(1, true);
 			}
 			// 플레이어가 피했든, 공격했든 '공격 준비' 상태는 해제
 			StopChargeVisuals();

@@ -44,7 +44,7 @@ public class EnemyExploder : EnemyBase
 
 					if (StageManager.Instance.IsPlayerAt(targetTilemapPos))
 					{
-						StageManager.Instance.m_player.TakeDamage(1);
+						StageManager.Instance.m_player.TakeDamage(1, true);
 					}
 				}
 				break;
