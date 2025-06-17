@@ -1,15 +1,7 @@
 using UnityEngine;
 
-public class UpgradeFirstAid : MonoBehaviour
+public class UpgradeFirstAid : UpgradeEffectBase<FirstAidUpgradeSO>
 {
-	public FirstAidUpgradeSO SourceSO { get; set; }
-	private PlayerController m_player;
-
-	private void Awake()
-	{
-		m_player = GetComponent<PlayerController>();
-	}
-
 	private void OnEnable()
 	{
 		// StageManager의 '적 처치' 이벤트를 구독합니다.

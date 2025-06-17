@@ -1,17 +1,9 @@
 using UnityEngine;
 
-public class UpgradeSerenity : MonoBehaviour
+public class UpgradeSerenity : UpgradeEffectBase<SerenityUpgradeSO>
 {
-	public SerenityUpgradeSO SourceSO { get; set; }
-
-	private PlayerController m_player;
 	private int m_peacefulTurnCounter = 0;
 	public int CurrentTurnCount => m_peacefulTurnCounter;
-
-	private void Awake()
-	{
-		m_player = GetComponent<PlayerController>();
-	}
 
 	private void OnEnable()
 	{
@@ -61,5 +53,4 @@ public class UpgradeSerenity : MonoBehaviour
 	{
 		m_peacefulTurnCounter = 0;
 	}
-
 }

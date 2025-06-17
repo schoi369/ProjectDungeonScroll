@@ -1,20 +1,10 @@
 using UnityEngine;
 
-public class UpgradeRiskyDash : MonoBehaviour
+public class UpgradeRiskyDash : UpgradeEffectBase<RiskyDashUpgradeSO>
 {
-	public RiskyDashUpgradeSO SourceSO { get; set; }
-
 	// --- 내부 상태 변수 ---
-	private PlayerController m_player;
 	private int m_turnCounter = 0;
-
-	// UI 표시를 위한 프로퍼티
 	public int CurrentTurnCount => m_turnCounter;
-
-	private void Awake()
-	{
-		m_player = GetComponent<PlayerController>();
-	}
 
 	private void OnEnable()
 	{
@@ -27,12 +17,6 @@ public class UpgradeRiskyDash : MonoBehaviour
 		if (StageManager.Instance != null)
 		{
 			StageManager.Instance.OnPlayerTurnEnded -= OnPlayerTurnEnd;
-		}
-
-		if (m_player != null)
-		{
-			m_player.CurrentPlayerData.m_attackPower -= SourceSO.m_attackPowerGain;
-			Debug.Log($"'위험한 질주' 효과 제거. 공격력 {SourceSO.m_attackPowerGain} 감소.");
 		}
 	}
 
