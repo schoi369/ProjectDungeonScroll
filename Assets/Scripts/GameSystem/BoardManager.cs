@@ -239,6 +239,7 @@ public class BoardManager : MonoBehaviour
 							offsetX = y - AttackAreaSO.Center;
 							offsetY = x - AttackAreaSO.Center;
 							break;
+						case Direction.NONE:
 						case Direction.RIGHT:
 							offsetX = x - AttackAreaSO.Center;
 							offsetY = y - AttackAreaSO.Center;
