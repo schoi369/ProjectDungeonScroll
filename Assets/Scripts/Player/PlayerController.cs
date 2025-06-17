@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +14,7 @@ public class PlayerController : MonoBehaviour
 	BoardManager m_board;
 	Vector3Int m_tilemapPos;
 	public Vector3Int TilemapPos => m_tilemapPos;
+	BoardManager.Direction m_facingDirection = BoardManager.Direction.RIGHT; // 기본 방향을 오른쪽으로 설정
 
 	// Stage stat
 	public bool IsGameOver { get; set; } = false;
@@ -107,12 +109,15 @@ public class PlayerController : MonoBehaviour
 
 	public void MoveTo(Vector3Int a_newTilemapPos, bool instant = false)
 	{
+		PlayerTelegraphManager.Instance.HideAllVisuals();
+
 		m_tilemapPos = a_newTilemapPos;
 
 		if (instant)
 		{
 			IsMoving = false;
 			transform.position = m_board.TilemapPosToWorldPos(m_tilemapPos);
+			UpdateAttackTelegraph();
 		}
 		else
 		{
@@ -203,6 +208,8 @@ public class PlayerController : MonoBehaviour
 			if (transform.position == MoveTarget)
 			{
 				IsMoving = false;
+				UpdateAttackTelegraph();
+
 				var cellData = m_board.GetCellData(m_tilemapPos);
 				if (cellData.ContainedObject != null)
 				{
@@ -212,8 +219,34 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// 현재 위치에서 모든 방향에 대한 공격 범위를 계산하고 텔레그래핑을 업데이트합니다.
+	/// </summary>
+	private void UpdateAttackTelegraph()
+	{
+		if (m_board == null || CurrentPlayerData == null) return;
+
+		HashSet<Vector3Int> uniqueAttackTiles = new HashSet<Vector3Int>();
+
+		// 모든 방향에 대해
+		foreach (var attackAreaSO in CurrentPlayerData.m_memberAttackAreas)
+		{
+			var tiles = m_board.GetAttackAreaCellPositions(attackAreaSO, m_tilemapPos, m_facingDirection);
+			uniqueAttackTiles.UnionWith(tiles);
+		}
+
+		// 플레이어 자신의 위치는 텔레그래핑에서 제외
+		uniqueAttackTiles.Remove(m_tilemapPos);
+
+		// 매니저에게 최종 타일 목록을 전달하여 표시 요청
+		PlayerTelegraphManager.Instance.ShowVisuals(uniqueAttackTiles.ToList());
+	}
+
+
 	private void ProcessPlayerAction(BoardManager.Direction a_direction)
 	{
+		m_facingDirection = a_direction;
+
 		// 1. 통합된 공격 범위와 실제 공격 성공 여부를 추적할 변수
 		HashSet<Vector3Int> uniqueAttackTiles = new HashSet<Vector3Int>();
 		bool attackedSomething = false;
@@ -241,14 +274,15 @@ public class PlayerController : MonoBehaviour
 				}
 
 				// MEMO: 공격 닿는 위치에서만 이펙트 재생하고 싶을 경우 여기로 아래의 이펙트 코드를 이동
+				Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
+				VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
 				data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower);
 				OnAttackLanded?.Invoke(data.ContainedObject, a_direction);
+
+				UpdateAttackTelegraph();
 			}
 
-			// 공격 이펙트를 공격 닿는 위치와 안 닿는 위치 모두에서 재생.
-			Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
-			VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 		}
 
 		// 4. 만약 어떤 적도 공격하지 않았다면, 해당 방향으로 이동 시도
