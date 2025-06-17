@@ -2,10 +2,7 @@ using UnityEngine;
 
 public class UpgradeRiskyDash : MonoBehaviour
 {
-	// --- 효과 설정값 ---
-	public int m_requiredTurns = 3;
-	public int m_hpCost = 3;
-	public int m_attackPowerGain = 1;
+	public RiskyDashUpgradeSO SourceSO { get; set; }
 
 	// --- 내부 상태 변수 ---
 	private PlayerController m_player;
@@ -21,9 +18,6 @@ public class UpgradeRiskyDash : MonoBehaviour
 
 	private void OnEnable()
 	{
-		m_player.CurrentPlayerData.m_attackPower += m_attackPowerGain;
-		Debug.Log($"'위험한 질주' 획득! 공격력 {m_attackPowerGain} 증가.");
-
 		StageManager.Instance.OnPlayerTurnEnded += OnPlayerTurnEnd;
 	}
 
@@ -37,8 +31,23 @@ public class UpgradeRiskyDash : MonoBehaviour
 
 		if (m_player != null)
 		{
-			m_player.CurrentPlayerData.m_attackPower -= m_attackPowerGain;
-			Debug.Log($"'위험한 질주' 효과 제거. 공격력 {m_attackPowerGain} 감소.");
+			m_player.CurrentPlayerData.m_attackPower -= SourceSO.m_attackPowerGain;
+			Debug.Log($"'위험한 질주' 효과 제거. 공격력 {SourceSO.m_attackPowerGain} 감소.");
+		}
+	}
+
+	private void Start()
+	{
+		m_player.CurrentPlayerData.m_attackPower += SourceSO.m_attackPowerGain;
+		Debug.Log($"'위험한 질주' 획득! 공격력 {SourceSO.m_attackPowerGain} 증가.");
+	}
+
+	private void OnDestroy()
+	{
+		if (m_player != null)
+		{
+			m_player.CurrentPlayerData.m_attackPower -= SourceSO.m_attackPowerGain;
+			Debug.Log($"'위험한 질주' 효과 제거. 공격력 {SourceSO.m_attackPowerGain} 감소.");
 		}
 	}
 
@@ -46,12 +55,10 @@ public class UpgradeRiskyDash : MonoBehaviour
 	{
 		m_turnCounter++;
 
-		if (m_turnCounter >= m_requiredTurns)
+		if (m_turnCounter >= SourceSO.m_turnsRequired)
 		{
 			Debug.Log("'위험한 질주' HP 감소 효과 발동!");
-
-			m_player.TakeDamage(m_hpCost, false);
-
+			m_player.TakeDamage(SourceSO.m_hpCost, false);
 			m_turnCounter = 0;
 		}
 	}

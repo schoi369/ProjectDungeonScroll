@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
 
 	// Upgrades
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded; // 일부 Upgrade 적용을 위해 사용하는 멤버 변수.
-	public int PeacefulTurns { get; set; } = 0;
+	public event Action OnDamagedByEnemy; // 플레이어가 적에게 공격받았을 때 발생하는 이벤트. (업그레이드 효과 적용을 위해 사용)
 
 	[Header("Visuals")]
 	public float m_hitScaleMultiplier = 1.2f;
@@ -81,9 +81,6 @@ public class PlayerController : MonoBehaviour
 		// 레벨, 경험치 관련 초기화
 		m_pendingLevelUps = 0;
 
-		// 업그레이드 관련 변수 초기화
-		PeacefulTurns = 0;
-
 		// 사실상 HUD의 Refresh
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerMaxHPChanged, CurrentPlayerData.m_maxHP);
 		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerCurrentHPChanged, CurrentPlayerData.m_currentHP);
@@ -131,17 +128,17 @@ public class PlayerController : MonoBehaviour
 			return;
 		}
 
+		if (a_fromEnemy)
+		{
+			OnDamagedByEnemy?.Invoke();
+		}
+
 		if (m_hitScaleEffectCoroutine != null)
 		{
 			StopCoroutine(m_hitScaleEffectCoroutine);
 		}
 		transform.localScale = m_originalScale;
 		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
-
-		if (a_fromEnemy)
-		{
-			PeacefulTurns = 0;
-		}
 
 		CurrentPlayerData.m_currentHP = Mathf.Max(CurrentPlayerData.m_currentHP - a_damage, 0); // HP가 0 미만으로 내려가지 않도록 보장
 
@@ -241,7 +238,6 @@ public class PlayerController : MonoBehaviour
 				{
 					// 첫 공격이 성공하는 순간, 이동 로직을 막기 위해 플래그를 true로 설정
 					attackedSomething = true;
-					PeacefulTurns = 0;
 				}
 
 				// MEMO: 공격 닿는 위치에서만 이펙트 재생하고 싶을 경우 여기로 아래의 이펙트 코드를 이동
@@ -288,8 +284,6 @@ public class PlayerController : MonoBehaviour
 					MoveTo(newCellTargetPos);
 				}
 			}
-
-			PeacefulTurns++;
 		}
 
 		// 행동이 끝나면(이동, 공격, 혹은 아무것도 못함) 턴을 종료
@@ -335,8 +329,12 @@ public class PlayerController : MonoBehaviour
 		switch (a_upgrade.m_counterType)
 		{
 			case UpgradeSO.CounterType.PeacefulTurns:
-				return PeacefulTurns.ToString();
-
+				var serenityEffect = GetComponent<UpgradeSerenity>();
+				if (serenityEffect != null)
+				{
+					return serenityEffect.CurrentTurnCount.ToString();
+				}
+				return "?";
 			case UpgradeSO.CounterType.RiskyDashTurns:
 				var riskyDashEffect = GetComponent<UpgradeRiskyDash>();
 				if (riskyDashEffect != null)

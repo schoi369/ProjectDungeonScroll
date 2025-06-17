@@ -1,34 +1,34 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Serenity Upgrade", menuName = "Upgrades/Serenity")]
+[CreateAssetMenu(fileName = "SerenityUpgrade", menuName = "Upgrades/Serenity")]
 public class SerenityUpgradeSO : UpgradeSO
 {
 	public int m_turnsRequired = 3;
 	public int m_healAmount = 1;
 
+	private readonly System.Type m_effectComponentType = typeof(UpgradeSerenity);
+
 	public override void Apply(GameObject playerObject)
 	{
-		StageManager.Instance.OnPlayerTurnEnded += CheckSerenity;
+		// 컴포넌트가 이미 있는지 확인하고, 없다면 추가합니다.
+		UpgradeSerenity effect = playerObject.GetComponent<UpgradeSerenity>();
+		if (effect == null)
+		{
+			effect = playerObject.AddComponent<UpgradeSerenity>();
+			// ★핵심: 생성된 컴포넌트에게 "너의 데이터는 나야" 라고 알려줍니다.
+			effect.SourceSO = this;
+		}
 	}
 
 	public override void Remove(GameObject playerObject)
 	{
-		if (StageManager.Instance != null)
+		if (playerObject != null)
 		{
-			StageManager.Instance.OnPlayerTurnEnded -= CheckSerenity;
-		}
-	}
-
-	private void CheckSerenity()
-	{
-		var player = StageManager.Instance.m_player;
-
-		if (player == null || player.IsGameOver) return;
-
-		if (player.PeacefulTurns >= m_turnsRequired)
-		{
-			player.Heal(m_healAmount);
-			player.PeacefulTurns = 0; // 회복 후 카운터 리셋
+			Component componentToRemove = playerObject.GetComponent(m_effectComponentType);
+			if (componentToRemove != null)
+			{
+				Destroy(componentToRemove);
+			}
 		}
 	}
 }
