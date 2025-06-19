@@ -41,9 +41,10 @@ public class UpgradeRiskyDash : UpgradeEffectBase<RiskyDashUpgradeSO>
 
 		if (m_turnCounter >= SourceSO.m_turnsRequired)
 		{
-			Debug.Log("'위험한 질주' HP 감소 효과 발동!");
 			m_player.TakeDamage(SourceSO.m_hpCost, false);
 			m_turnCounter = 0;
+
+			CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.UpgradeEffectTriggered, SourceSO);
 		}
 	}
 }

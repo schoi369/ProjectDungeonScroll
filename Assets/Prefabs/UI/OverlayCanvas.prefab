@@ -1453,7 +1453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6264d6f675dbdc4f8e123f98dc2a8ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_iconPrefab: {fileID: 9172055383196125790, guid: d7200bb1634540c4da430e2886946a5b, type: 3}
+  m_iconPrefab: {fileID: 8302342663675421207, guid: d7200bb1634540c4da430e2886946a5b, type: 3}
   m_iconsParent: {fileID: 8806128528113709101}
 --- !u!114 &4269197196984960169
 MonoBehaviour:

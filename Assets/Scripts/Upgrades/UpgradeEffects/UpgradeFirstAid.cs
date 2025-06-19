@@ -21,8 +21,8 @@ public class UpgradeFirstAid : UpgradeEffectBase<FirstAidUpgradeSO>
 	{
 		if (m_player != null && SourceSO != null)
 		{
-			Debug.Log($"'응급 치료' 효과 발동! HP {SourceSO.m_healAmount} 회복.");
 			m_player.Heal(SourceSO.m_healAmount);
+			CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.UpgradeEffectTriggered, SourceSO);
 		}
 	}
 }

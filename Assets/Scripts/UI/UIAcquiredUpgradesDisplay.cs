@@ -1,14 +1,19 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class UIAcquiredUpgradesDisplay : MonoBehaviour
 {
-	public GameObject m_iconPrefab; // UIAcquiredIcon 프리팹을 연결
+	public UIAcquiredIcon m_iconPrefab; // UIAcquiredIcon 프리팹을 연결
 	public Transform m_iconsParent; // 아이콘들이 생성될 부모 Transform
+
+	private readonly Dictionary<UpgradeSO, UIAcquiredIcon> m_spawnedIcons = new();
+
 
 	private void OnEnable()
 	{
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerUpgradeAdded, OnUpgradeAdded);
 		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.PlayerUpgradeRemoved, OnUpgradeRemoved);
+		CustomEventManager.Instance.Subscribe(CustomEventManager.CustomGameEvent.UpgradeEffectTriggered, OnUpgradeEffectTriggered);
 	}
 
 	private void OnDisable()
@@ -43,24 +48,37 @@ public class UIAcquiredUpgradesDisplay : MonoBehaviour
 		}
 	}
 
+	void OnUpgradeEffectTriggered(object a_object)
+	{
+		HighlightIcon(a_object as UpgradeSO);
+	}
+
 	void AddIcon(UpgradeSO a_newUpgrade)
 	{
-		GameObject newIconObj = Instantiate(m_iconPrefab, m_iconsParent);
-		newIconObj.GetComponent<UIAcquiredIcon>().Setup(a_newUpgrade);
+		UIAcquiredIcon icon = Instantiate(m_iconPrefab, m_iconsParent);
+		icon.Setup(a_newUpgrade);
+		m_spawnedIcons.Add(a_newUpgrade, icon); // 딕셔너리에 추가
 	}
 
 	void RemoveIcon(UpgradeSO a_upgrade)
 	{
-		UIAcquiredIcon[] icons = m_iconsParent.GetComponentsInChildren<UIAcquiredIcon>();
-		foreach (var icon in icons)
+		if (m_spawnedIcons.TryGetValue(a_upgrade, out UIAcquiredIcon icon))
 		{
-			if (icon.RepresentedUpgrade.name == a_upgrade.name)
-			{
-				Destroy(icon.gameObject);
-				return; // 첫 번째로 찾은 아이콘만 제거
-			}
+			m_spawnedIcons.Remove(a_upgrade);
+
+			// iconScript가 null이 아닐 때만 gameObject에 접근하도록 안전장치 추가
+			if (icon != null) Destroy(icon.gameObject);
 		}
-		Debug.LogWarning($"업그레이드 아이콘을 찾을 수 없습니다: {a_upgrade.upgradeName}");
+	}
+
+	void HighlightIcon(UpgradeSO a_upgrade)
+	{
+		if (a_upgrade == null) return;
+
+		if (m_spawnedIcons.TryGetValue(a_upgrade, out UIAcquiredIcon iconScript))
+		{
+			iconScript.PlayHighlightEffect();
+		}
 	}
 
 	public void CleanIcons()

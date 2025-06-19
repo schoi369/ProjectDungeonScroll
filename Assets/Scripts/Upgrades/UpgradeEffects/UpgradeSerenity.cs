@@ -40,6 +40,8 @@ public class UpgradeSerenity : UpgradeEffectBase<SerenityUpgradeSO>
 		{
 			m_player.Heal(SourceSO.m_healAmount);
 			m_peacefulTurnCounter = 0;
+
+			CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.UpgradeEffectTriggered, SourceSO);
 		}
 	}
 

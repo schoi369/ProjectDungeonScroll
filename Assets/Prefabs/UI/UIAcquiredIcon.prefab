@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 7867198096113372861}
   - component: {fileID: 7795872201180170853}
   - component: {fileID: 8302342663675421207}
+  - component: {fileID: 7701881500972471674}
   m_Layer: 5
   m_Name: UIAcquiredIcon
   m_TagString: Untagged
@@ -165,7 +166,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3726183329133688651}
   m_Father: {fileID: 0}
@@ -227,3 +228,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Image: {fileID: 7795872201180170853}
   m_counterText: {fileID: 4267513350326234187}
+  m_animator: {fileID: 7701881500972471674}
+--- !u!95 &7701881500972471674
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9172055383196125790}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9e01059676f2c104a9e7c86c02bf8f6b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

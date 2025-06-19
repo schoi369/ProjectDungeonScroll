@@ -7,6 +7,7 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
 	public Image m_Image;
 	public TextMeshProUGUI m_counterText;
+	[SerializeField] Animator m_animator;
 
 	private UpgradeSO m_representedUpgrade;
 	public UpgradeSO RepresentedUpgrade => m_representedUpgrade;
@@ -62,5 +63,13 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	public void OnPointerExit(PointerEventData a_eventData)
 	{
 		OverlayCanvas.Instance.HideTooltip();
+	}
+
+	public void PlayHighlightEffect()
+	{
+		if (m_animator != null)
+		{
+			m_animator.SetTrigger("Highlight");
+		}
 	}
 }
