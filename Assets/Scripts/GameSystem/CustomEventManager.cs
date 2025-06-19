@@ -19,6 +19,8 @@ public class CustomEventManager : MonoBehaviour
 		PlayerCurrentHPChanged = 101,
 		PlayerLevelChanged = 102,
 		PlayerExpChanged = 103,
+		PlayerUpgradeAdded = 104,
+		PlayerUpgradeRemoved = 105,
 	}
 
 	static CustomEventManager _instance = null;

@@ -58,8 +58,20 @@ public class PlayerDataSO : ScriptableObject
 		m_acquiredUpgrades.Add(a_upgrade);
 
 		a_upgrade.Apply(StageManager.Instance.m_player.gameObject);
-		OverlayCanvas.Instance.AddUpgradeIcon(a_upgrade);
-
 		Debug.Log($"업그레이드 획득: {a_upgrade.upgradeName}");
+	}
+
+	public void RemoveUpgrade(UpgradeSO a_upgrade)
+	{
+		if (m_acquiredUpgrades.Contains(a_upgrade))
+		{
+			m_acquiredUpgrades.Remove(a_upgrade);
+			a_upgrade.Remove(StageManager.Instance.m_player.gameObject);
+			Debug.Log($"업그레이드 제거: {a_upgrade.upgradeName}");
+		}
+		else
+		{
+			Debug.LogWarning($"업그레이드 '{a_upgrade.upgradeName}'이(가) 현재 획득한 업그레이드 목록에 없습니다.");
+		}
 	}
 }

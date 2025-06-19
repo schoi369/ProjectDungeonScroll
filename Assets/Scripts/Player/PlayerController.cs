@@ -97,7 +97,6 @@ public class PlayerController : MonoBehaviour
 		foreach (var upgrade in CurrentPlayerData.m_acquiredUpgrades)
 		{
 			upgrade.Apply(gameObject);
-			OverlayCanvas.Instance.AddUpgradeIcon(upgrade);
 		}
 	}
 

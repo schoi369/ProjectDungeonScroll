@@ -5,6 +5,8 @@ public class ShockwaveUpgradeSO : UpgradeSO
 {
 	public override void Apply(GameObject playerObject)
 	{
+		base.Apply(playerObject);
+
 		PlayerController player = playerObject.GetComponent<PlayerController>();
 		if (player != null)
 		{
@@ -15,8 +17,9 @@ public class ShockwaveUpgradeSO : UpgradeSO
 
 	public override void Remove(GameObject playerObject)
 	{
-		PlayerController player = playerObject.GetComponent<PlayerController>();
-		if (player != null)
+		base.Remove(playerObject);
+
+		if (playerObject.TryGetComponent<PlayerController>(out var player))
 		{
 			// 업그레이드가 제거될 때 이벤트 구독을 반드시 해지하여 메모리 누수 방지
 			player.OnAttackLanded -= Knockback;

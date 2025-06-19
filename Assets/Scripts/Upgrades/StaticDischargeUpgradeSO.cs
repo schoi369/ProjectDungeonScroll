@@ -8,11 +8,15 @@ public class StaticDischargeUpgradeSO : UpgradeSO
 
 	public override void Apply(GameObject playerObject)
 	{
+		base.Apply(playerObject);
+
 		StageManager.Instance.OnPlayerTurnEnded += StunNearbyEnemies;
 	}
 
 	public override void Remove(GameObject playerObject)
 	{
+		base.Remove(playerObject);
+		
 		if (StageManager.Instance != null)
 		{
 			StageManager.Instance.OnPlayerTurnEnded -= StunNearbyEnemies;

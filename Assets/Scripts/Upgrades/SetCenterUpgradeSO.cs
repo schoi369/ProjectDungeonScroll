@@ -11,35 +11,36 @@ public class SetCenterUpgradeSO : UpgradeSO
 	// 업그레이드를 적용하는 로직
 	public override void Apply(GameObject playerObject)
 	{
-		var player = playerObject.GetComponent<PlayerController>();
-		if (player == null) return;
+		base.Apply(playerObject);
+
+		if (!playerObject.TryGetComponent<PlayerController>(out var player)) return;
 
 		var playerData = player.CurrentPlayerData;
 
-		// --- 1. 기존에 적용되어 있던 다른 '센터 지정' 업그레이드를 찾아서 제거합니다. ---
+		// --- 기존에 적용되어 있던 다른 '센터 지정' 업그레이드를 찾아서 제거합니다. ---
 		// 현재 획득한 업그레이드 목록에서, SetCenterUpgradeSO 타입이면서 지금 적용하려는 것과 다른 것을 찾습니다.
 		UpgradeSO oldCenterUpgrade = playerData.m_acquiredUpgrades
-			.FirstOrDefault(upgrade => upgrade is SetCenterUpgradeSO && upgrade != this);
+									 .FirstOrDefault(upgrade => upgrade is SetCenterUpgradeSO && upgrade != this);
 
 		if (oldCenterUpgrade != null)
 		{
 			Debug.Log($"기존 센터 업그레이드 '{oldCenterUpgrade.name}'을(를) 제거합니다.");
-			// PlayerData의 업그레이드 목록에서 직접 제거합니다.
-			playerData.m_acquiredUpgrades.Remove(oldCenterUpgrade);
+			playerData.RemoveUpgrade(oldCenterUpgrade);
 		}
 
-		// --- 2. 현재 센터를 이 업그레이드가 지정하는 멤버로 변경합니다. ---
+		// --- 현재 센터를 이 업그레이드가 지정하는 멤버로 변경합니다. ---
 		playerData.m_currentCenter = m_memberToSetAsCenter;
 		Debug.Log($"새로운 센터를 '{m_memberToSetAsCenter}'(으)로 설정합니다.");
 
-		// --- 3. (권장) 플레이어의 텔레그래핑을 즉시 업데이트하여 변경된 공격 범위를 보여줍니다. ---
-		//    이 기능을 사용하려면 PlayerController의 UpdateAttackTelegraph()를 public으로 변경해야 합니다.
+		// --- 플레이어의 텔레그래핑을 즉시 업데이트하여 변경된 공격 범위를 보여줍니다. ---
 		player.UpdateAttackTelegraph();
 	}
 
 	// 업그레이드를 제거하는 로직
 	public override void Remove(GameObject playerObject)
 	{
+		base.Remove(playerObject);
+
 		var player = playerObject.GetComponent<PlayerController>();
 		if (player == null) return;
 
