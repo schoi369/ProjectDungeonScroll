@@ -225,24 +225,14 @@ public class PlayerController : MonoBehaviour
 	/// <summary>
 	/// 현재 위치에서 모든 방향에 대한 공격 범위를 계산하고 텔레그래핑을 업데이트합니다.
 	/// </summary>
-	private void UpdateAttackTelegraph()
+	public void UpdateAttackTelegraph()
 	{
 		if (m_board == null || CurrentPlayerData == null) return;
 
-		HashSet<Vector3Int> uniqueAttackTiles = new HashSet<Vector3Int>();
+		AttackAreaSO currentAttackSO = GetCurrentAttackArea();
+		var tilemapPosList = m_board.GetAttackAreaCellPositions(currentAttackSO, m_tilemapPos, m_facingDirection);
 
-		// 모든 방향에 대해
-		foreach (var attackAreaSO in CurrentPlayerData.m_memberAttackAreas)
-		{
-			var tiles = m_board.GetAttackAreaCellPositions(attackAreaSO, m_tilemapPos, m_facingDirection);
-			uniqueAttackTiles.UnionWith(tiles);
-		}
-
-		// 플레이어 자신의 위치는 텔레그래핑에서 제외
-		uniqueAttackTiles.Remove(m_tilemapPos);
-
-		// 매니저에게 최종 타일 목록을 전달하여 표시 요청
-		PlayerTelegraphManager.Instance.ShowVisuals(uniqueAttackTiles.ToList());
+		PlayerTelegraphManager.Instance.ShowVisuals(tilemapPosList);
 	}
 
 
@@ -252,24 +242,13 @@ public class PlayerController : MonoBehaviour
 
 		m_facingDirection = a_direction;
 
-		// 통합된 공격 범위와 실제 공격 성공 여부를 추적할 변수
-		HashSet<Vector3Int> uniqueAttackTiles = new HashSet<Vector3Int>();
 		bool attackedSomething = false;
 
-		// 모든 멤버의 공격 범위를 순회하며 통합
-		foreach (var memberAttackArea in CurrentPlayerData.m_memberAttackAreas)
+		AttackAreaSO currentArea = GetCurrentAttackArea();
+		var tilemapPosList = m_board.GetAttackAreaCellPositions(currentArea, m_tilemapPos, a_direction);
+		foreach (var pos in tilemapPosList)
 		{
-			if (memberAttackArea != null)
-			{
-				var tilemapPosList = m_board.GetAttackAreaCellPositions(memberAttackArea, m_tilemapPos, a_direction);
-				uniqueAttackTiles.UnionWith(tilemapPosList);
-			}
-		}
-
-		// 통합된 공격 범위에 있는 적들을 공격
-		foreach (var targetTilemapPos in uniqueAttackTiles)
-		{
-			var data = m_board.GetCellData(targetTilemapPos);
+			var data = m_board.GetCellData(pos);
 			if (data.ContainedObject && data.ContainedObject.m_canBeAttacked)
 			{
 				if (!m_hitTargetsThisAction.Contains(data.ContainedObject))
@@ -277,7 +256,7 @@ public class PlayerController : MonoBehaviour
 					// 공격이 성공하는 순간, 이동 로직을 막기 위해 플래그를 true로 설정
 					attackedSomething = true;
 
-					Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(targetTilemapPos);
+					Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(pos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
 					data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower);
@@ -380,6 +359,37 @@ public class PlayerController : MonoBehaviour
 				return "?"; // 효과 컴포넌트를 못찾은 경우
 			default:
 				return "";
+		}
+	}
+
+	/// <summary>
+	/// 현재 '센터' 상태에 맞는 AttackAreaSO를 반환합니다.
+	/// </summary>
+	/// <returns>현재 사용해야 할 AttackAreaSO</returns>
+	private AttackAreaSO GetCurrentAttackArea()
+	{
+		if (CurrentPlayerData == null) return null;
+
+		// 1. 현재 센터가 기본 상태('Common')인지 확인합니다.
+		if (CurrentPlayerData.m_currentCenter == EIdolMember.Common)
+		{
+			return CurrentPlayerData.m_defaultAttackArea;
+		}
+
+		// 2. 특정 멤버가 센터인 경우, 리스트에서 해당 멤버의 데이터를 찾습니다.
+		// LINQ의 FirstOrDefault를 사용하여 m_centerMember가 일치하는 첫 번째 항목을 찾습니다.
+		var centerData = CurrentPlayerData.m_centerAttackAreas
+			.FirstOrDefault(data => data.m_centerMember == CurrentPlayerData.m_currentCenter);
+
+		// 3. 일치하는 데이터를 찾았다면 그 AttackArea를, 못찾았다면 안전하게 기본 AttackArea를 반환합니다.
+		if (centerData != null)
+		{
+			return centerData.m_attackArea;
+		}
+		else
+		{
+			Debug.LogWarning($"센터 '{CurrentPlayerData.m_currentCenter}'에 대한 공격 범위가 PlayerDataSO에 지정되지 않았습니다. 기본 공격 범위를 사용합니다.");
+			return CurrentPlayerData.m_defaultAttackArea;
 		}
 	}
 
