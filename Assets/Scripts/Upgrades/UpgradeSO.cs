@@ -4,8 +4,8 @@ public enum EIdolMember
 {
 	Common,
 	Sakura,
-	Kazuha,
 	Yunjin,
+	Kazuha,
 }
 
 // 이 클래스는 업그레이드의 데이터와 적용/제거 로직의 틀을 제공합니다.

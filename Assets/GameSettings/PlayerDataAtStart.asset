@@ -24,3 +24,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 314ed14190deecd4d943097b498a253b, type: 2}
   - {fileID: 11400000, guid: 0ab0491616ed11f4999c64d0ec3f16f6, type: 2}
   - {fileID: 11400000, guid: bef1e2202f98fa64f93b6a29c4359ba3, type: 2}
+  m_currentCenter: 0
+  m_defaultAttackArea: {fileID: 11400000, guid: bb59b7f625ec69246bec23d614e3f3f3, type: 2}
+  m_centerAttackAreas:
+  - m_centerMember: 1
+    m_attackArea: {fileID: 11400000, guid: 314ed14190deecd4d943097b498a253b, type: 2}
+  - m_centerMember: 2
+    m_attackArea: {fileID: 11400000, guid: bef1e2202f98fa64f93b6a29c4359ba3, type: 2}
+  - m_centerMember: 3
+    m_attackArea: {fileID: 11400000, guid: 0ab0491616ed11f4999c64d0ec3f16f6, type: 2}

@@ -223,7 +223,7 @@ public class StageManager : MonoBehaviour
 		// --- 최종 선택지를 담을 리스트와, 뽑을 멤버 목록 정의 ---
 		// TODO: 지금은 직접 멤버를 지정하지만, 나중엔 누구누구 있는지 참조해서.
 		List<UpgradeSO> finalOptions = new List<UpgradeSO>();
-		var membersToPickFrom = new List<EIdolMember> { EIdolMember.Sakura, EIdolMember.Kazuha, EIdolMember.Yunjin };
+		var membersToPickFrom = new List<EIdolMember> { EIdolMember.Sakura, EIdolMember.Yunjin, EIdolMember.Kazuha };
 
 		// --- 각 멤버 순서대로 추첨 ---
 		foreach (var member in membersToPickFrom)

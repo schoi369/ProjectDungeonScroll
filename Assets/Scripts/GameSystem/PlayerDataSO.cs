@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[System.Serializable]
+public class CenterAttackData
+{
+	public EIdolMember m_centerMember;
+	public AttackAreaSO m_attackArea;
+}
+
 /// <summary>
 /// 플레이어의 영속적인 데이터를 담는 ScriptableObject.
 /// 한 번의 게임 플레이(a run) 동안 유지됩니다.
@@ -24,9 +31,11 @@ public class PlayerDataSO : ScriptableObject
 	public List<UpgradeSO> m_acquiredUpgrades = new List<UpgradeSO>();
 	public List<UpgradeSO> m_testUpgrades = new(); // Debug
 
-
-	[Header("기타")]
+	[Header("전투")]
 	public List<AttackAreaSO> m_memberAttackAreas;
+	public EIdolMember m_currentCenter = EIdolMember.Common;
+	public AttackAreaSO m_defaultAttackArea;
+	public List<CenterAttackData> m_centerAttackAreas;
 
 	/// <summary>
 	/// 새 게임을 시작할 때 데이터를 초기 상태로 리셋합니다.
