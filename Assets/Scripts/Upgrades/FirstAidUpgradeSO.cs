@@ -10,20 +10,18 @@ public class FirstAidUpgradeSO : UpgradeSO
 
 	public override void Apply(GameObject playerObject)
 	{
-		base.Apply(playerObject);
-
 		UpgradeFirstAid effect = playerObject.GetComponent<UpgradeFirstAid>();
 		if (effect == null)
 		{
 			effect = playerObject.AddComponent<UpgradeFirstAid>();
 			effect.SourceSO = this;
 		}
+	
+		base.Apply(playerObject);
 	}
 
 	public override void Remove(GameObject playerObject)
 	{
-		base.Remove(playerObject);
-
 		if (playerObject != null)
 		{
 			Component componentToRemove = playerObject.GetComponent(m_effectComponentType);
@@ -32,5 +30,7 @@ public class FirstAidUpgradeSO : UpgradeSO
 				Destroy(componentToRemove);
 			}
 		}
+
+		base.Remove(playerObject);
 	}
 }

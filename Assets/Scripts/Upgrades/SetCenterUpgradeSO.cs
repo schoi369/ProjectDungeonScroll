@@ -11,8 +11,6 @@ public class SetCenterUpgradeSO : UpgradeSO
 	// 업그레이드를 적용하는 로직
 	public override void Apply(GameObject playerObject)
 	{
-		base.Apply(playerObject);
-
 		if (!playerObject.TryGetComponent<PlayerController>(out var player)) return;
 
 		var playerData = player.CurrentPlayerData;
@@ -34,13 +32,13 @@ public class SetCenterUpgradeSO : UpgradeSO
 
 		// --- 플레이어의 텔레그래핑을 즉시 업데이트하여 변경된 공격 범위를 보여줍니다. ---
 		player.UpdateAttackTelegraph();
+
+		base.Apply(playerObject);
 	}
 
 	// 업그레이드를 제거하는 로직
 	public override void Remove(GameObject playerObject)
 	{
-		base.Remove(playerObject);
-
 		var player = playerObject.GetComponent<PlayerController>();
 		if (player == null) return;
 
@@ -56,5 +54,7 @@ public class SetCenterUpgradeSO : UpgradeSO
 			// 텔레그래핑 업데이트
 			player.UpdateAttackTelegraph();
 		}
+
+		base.Remove(playerObject);
 	}
 }

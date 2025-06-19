@@ -342,6 +342,7 @@ public class PlayerController : MonoBehaviour
 
 		switch (a_upgrade.m_counterType)
 		{
+#if OLD_UPGRADE
 			case UpgradeSO.CounterType.PeacefulTurns:
 				var serenityEffect = GetComponent<UpgradeSerenity>();
 				if (serenityEffect != null)
@@ -349,6 +350,7 @@ public class PlayerController : MonoBehaviour
 					return serenityEffect.CurrentTurnCount.ToString();
 				}
 				return "?";
+#endif
 			case UpgradeSO.CounterType.RiskyDashTurns:
 				var riskyDashEffect = GetComponent<UpgradeRiskyDash>();
 				if (riskyDashEffect != null)

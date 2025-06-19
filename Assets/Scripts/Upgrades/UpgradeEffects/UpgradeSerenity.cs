@@ -1,5 +1,6 @@
 using UnityEngine;
 
+#if OLD_UPGRADE
 public class UpgradeSerenity : UpgradeEffectBase<SerenityUpgradeSO>
 {
 	private int m_peacefulTurnCounter = 0;
@@ -56,3 +57,4 @@ public class UpgradeSerenity : UpgradeEffectBase<SerenityUpgradeSO>
 		m_peacefulTurnCounter = 0;
 	}
 }
+#endif

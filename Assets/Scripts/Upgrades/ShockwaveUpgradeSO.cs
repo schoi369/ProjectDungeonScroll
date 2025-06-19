@@ -5,25 +5,25 @@ public class ShockwaveUpgradeSO : UpgradeSO
 {
 	public override void Apply(GameObject playerObject)
 	{
-		base.Apply(playerObject);
-
 		PlayerController player = playerObject.GetComponent<PlayerController>();
 		if (player != null)
 		{
 			// PlayerController가 공격 성공 시 발생시키는 이벤트에 'Knockback' 메서드를 구독
 			player.OnAttackLanded += Knockback;
 		}
+
+		base.Apply(playerObject);
 	}
 
 	public override void Remove(GameObject playerObject)
 	{
-		base.Remove(playerObject);
-
 		if (playerObject.TryGetComponent<PlayerController>(out var player))
 		{
 			// 업그레이드가 제거될 때 이벤트 구독을 반드시 해지하여 메모리 누수 방지
 			player.OnAttackLanded -= Knockback;
 		}
+
+		base.Remove(playerObject);
 	}
 
 	private void Knockback(CellObject targetEnemy, BoardManager.Direction a_direction)

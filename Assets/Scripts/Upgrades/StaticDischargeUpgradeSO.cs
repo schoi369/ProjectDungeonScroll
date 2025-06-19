@@ -1,5 +1,6 @@
 using UnityEngine;
 
+#if OLD_UPGRADE
 [CreateAssetMenu(fileName = "Static Discharge Upgrade", menuName = "Upgrades/Static Discharge")]
 public class StaticDischargeUpgradeSO : UpgradeSO
 {
@@ -53,3 +54,4 @@ public class StaticDischargeUpgradeSO : UpgradeSO
 		}
 	}
 }
+#endif
