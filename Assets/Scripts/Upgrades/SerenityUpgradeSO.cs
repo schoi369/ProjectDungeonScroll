@@ -10,6 +10,8 @@ public class SerenityUpgradeSO : UpgradeSO
 
 	public override void Apply(GameObject playerObject)
 	{
+		base.Apply(playerObject);
+
 		// 컴포넌트가 이미 있는지 확인하고, 없다면 추가합니다.
 		UpgradeSerenity effect = playerObject.GetComponent<UpgradeSerenity>();
 		if (effect == null)
@@ -22,6 +24,8 @@ public class SerenityUpgradeSO : UpgradeSO
 
 	public override void Remove(GameObject playerObject)
 	{
+		base.Remove(playerObject);
+
 		if (playerObject != null)
 		{
 			Component componentToRemove = playerObject.GetComponent(m_effectComponentType);

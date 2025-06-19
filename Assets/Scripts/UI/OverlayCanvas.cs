@@ -41,17 +41,6 @@ public class OverlayCanvas : MonoBehaviour
 		m_upgradeSelectionPanel.Hide();
 	}
 
-	//
-	public void AddUpgradeIcon(UpgradeSO a_upgradeData)
-	{
-		m_upgradesDisplay.AddIcon(a_upgradeData);
-	}
-
-	public void CleanUpgradeIcons()
-	{
-		m_upgradesDisplay.CleanIcons();
-	}
-
 	// Icon Tooltip
 	public void ShowTooltip(UpgradeSO a_upgradeData)
 	{

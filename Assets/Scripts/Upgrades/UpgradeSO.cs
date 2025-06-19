@@ -4,8 +4,8 @@ public enum EIdolMember
 {
 	Common,
 	Sakura,
-	Kazuha,
 	Yunjin,
+	Kazuha,
 }
 
 // 이 클래스는 업그레이드의 데이터와 적용/제거 로직의 틀을 제공합니다.
@@ -31,11 +31,17 @@ public abstract class UpgradeSO : ScriptableObject
 	/// 업그레이드가 플레이어에게 적용될 때 호출될 함수
 	/// </summary>
 	/// <param name="playerObject">업그레이드를 적용받을 플레이어 게임오브젝트</param>
-	public abstract void Apply(GameObject playerObject);
+	public virtual void Apply(GameObject playerObject)
+	{
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerUpgradeAdded, this);
+	}
 
 	/// <summary>
 	/// 업그레이드가 플레이어에게서 제거될 때 호출될 함수
 	/// </summary>
 	/// <param name="playerObject">업그레이드를 제거할 플레이어 게임오브젝트</param>
-	public abstract void Remove(GameObject playerObject);
+	public virtual void Remove(GameObject playerObject)
+	{
+		CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.PlayerUpgradeRemoved, this);
+	}
 }
