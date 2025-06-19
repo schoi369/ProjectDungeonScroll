@@ -34,6 +34,7 @@ public class StageManager : MonoBehaviour
 	private List<EnemyBase> m_enemies = new List<EnemyBase>();
 
 	public event Action OnPlayerTurnEnded;
+	public event Action OnPlayerTurnEndedUI;
 	public event Action<EnemyBase> OnEnemyDefeated;
 
 	void Awake()
@@ -106,6 +107,7 @@ public class StageManager : MonoBehaviour
 		if (CurrentState == GameState.PlayerTurn)
 		{
 			OnPlayerTurnEnded?.Invoke();
+			OnPlayerTurnEndedUI?.Invoke();
 
 			m_turnCounterForCollapse++;
 

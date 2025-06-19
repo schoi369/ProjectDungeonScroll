@@ -32,14 +32,14 @@ public class UIAcquiredIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	void OnEnable()
 	{
-		StageManager.Instance.OnPlayerTurnEnded += UpdateCounterText;
+		StageManager.Instance.OnPlayerTurnEndedUI += UpdateCounterText;
 	}
 
 	void OnDisable()
 	{
 		if (StageManager.Instance != null)
 		{
-			StageManager.Instance.OnPlayerTurnEnded -= UpdateCounterText;
+			StageManager.Instance.OnPlayerTurnEndedUI -= UpdateCounterText;
 		}
 	}
 
