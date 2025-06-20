@@ -258,7 +258,7 @@ public class PlayerController : MonoBehaviour
 					Vector3 cellWorldPos = m_board.TilemapPosToWorldPos(pos);
 					VFXManager.Instance.PlaySlashEffect(cellWorldPos, Color.cyan);
 
-					data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower);
+					data.ContainedObject.GetAttacked(CurrentPlayerData.m_attackPower + CurrentPlayerData.m_extraAttackPower);
 
 					m_hitTargetsThisAction.Add(data.ContainedObject);
 

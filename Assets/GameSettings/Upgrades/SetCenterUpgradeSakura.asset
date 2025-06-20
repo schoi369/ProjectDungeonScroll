@@ -21,3 +21,4 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 22df355e68278594f9eb4255469e6191, type: 3}
   m_counterType: 0
   m_memberToSetAsCenter: 1
+  m_centerAttackPower: 5

@@ -22,7 +22,7 @@ public class UpgradeRiskyDash : UpgradeEffectBase<RiskyDashUpgradeSO>
 
 	private void Start()
 	{
-		m_player.CurrentPlayerData.m_attackPower += SourceSO.m_attackPowerGain;
+		m_player.CurrentPlayerData.m_extraAttackPower += SourceSO.m_attackPowerGain;
 		Debug.Log($"'위험한 질주' 획득! 공격력 {SourceSO.m_attackPowerGain} 증가.");
 	}
 
@@ -30,7 +30,7 @@ public class UpgradeRiskyDash : UpgradeEffectBase<RiskyDashUpgradeSO>
 	{
 		if (m_player != null)
 		{
-			m_player.CurrentPlayerData.m_attackPower -= SourceSO.m_attackPowerGain;
+			m_player.CurrentPlayerData.m_extraAttackPower -= SourceSO.m_attackPowerGain;
 			Debug.Log($"'위험한 질주' 효과 제거. 공격력 {SourceSO.m_attackPowerGain} 감소.");
 		}
 	}

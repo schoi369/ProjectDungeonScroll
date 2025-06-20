@@ -21,6 +21,7 @@ public class PlayerDataSO : ScriptableObject
 	public int m_maxHP = 5;
 	public int m_currentHP;
 	public int m_attackPower = 1;
+	public int m_extraAttackPower = 0;
 
 	[Header("레벨 및 경험치")]
 	public int m_level;
