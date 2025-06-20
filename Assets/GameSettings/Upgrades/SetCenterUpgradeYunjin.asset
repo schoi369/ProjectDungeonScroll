@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SetCenterUpgradeYunjin
   m_EditorClassIdentifier: 
   m_idolMember: 2
+  m_category: 3
   upgradeName: 'Center: Yunjin'
   description: 'Set Yunjin as Center.
 

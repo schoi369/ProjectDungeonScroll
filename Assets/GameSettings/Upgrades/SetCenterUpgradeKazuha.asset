@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SetCenterUpgradeKazuha
   m_EditorClassIdentifier: 
   m_idolMember: 3
+  m_category: 3
   upgradeName: 'Center: Kazuha'
   description: 'Set Kazuha as Center.
 

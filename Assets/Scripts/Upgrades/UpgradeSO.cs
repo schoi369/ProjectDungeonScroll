@@ -8,12 +8,29 @@ public enum EIdolMember
 	Kazuha,
 }
 
+public enum UpgradeCategory
+{
+	None,               // 카테고리 없음 (중복 제한을 받지 않음)
+	Movement,           // 이동
+	OnAttackHit,        // 공격 성공
+	MainWeaponConfig,   // 메인 무기 설정 (센터 지정 등)
+	OnDamaged,          // 피격
+	OnKill,             // 적 처치
+	OnTurnEnd,          // 턴 종료
+	AdjacentEnvironment,// 인접 환경
+	Passive,             // 패시브
+}
+
 // 이 클래스는 업그레이드의 데이터와 적용/제거 로직의 틀을 제공합니다.
 // abstract 키워드로 인해 이 스크립트 자체는 에셋으로 생성할 수 없습니다.
 public abstract class UpgradeSO : ScriptableObject
 {
+	[Header("멤버")]
 	public EIdolMember m_idolMember = EIdolMember.Common;
+	[Header("카테고리")]
+	public UpgradeCategory m_category = UpgradeCategory.None;
 	public string upgradeName;
+	[Header("기타")]
 	[TextArea]
 	public string description;
 	public Sprite icon;

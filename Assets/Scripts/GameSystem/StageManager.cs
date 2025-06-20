@@ -219,47 +219,57 @@ public class StageManager : MonoBehaviour
 	/// <returns>플레이어에게 보여줄 업그레이드 SO 리스트 (최대 3개)</returns>
 	public List<UpgradeSO> GetLevelUpUpgradeOptions()
 	{
-		var acquiredUpgrades = GameManager.Instance.CurrentPlayerData.m_acquiredUpgrades;
-		List<UpgradeSO> availableUpgrades = m_upgradeDatabase.m_allUpgrades.Except(acquiredUpgrades).ToList();
+		var playerData = PlayerController.Instance.CurrentPlayerData;
 
-		// --- 최종 선택지를 담을 리스트와, 뽑을 멤버 목록 정의 ---
-		// TODO: 지금은 직접 멤버를 지정하지만, 나중엔 누구누구 있는지 참조해서.
+		// 아직 획득하지 않은, 선택 가능한 모든 업그레이드 목록
+		List<UpgradeSO> availableUpgrades = m_upgradeDatabase.m_allUpgrades.Except(playerData.m_acquiredUpgrades).ToList();
+
+		// 플레이어가 이미 획득한 업그레이드의 카테고리 목록 (중복 제외, None 제외)
+		HashSet<UpgradeCategory> acquiredCategories = new HashSet<UpgradeCategory>(
+			playerData.m_acquiredUpgrades
+				.Select(u => u.m_category)
+				.Where(c => c != UpgradeCategory.None)
+		);
+
+		// --- 2. 1차 후보 선정 (새로운 카테고리의 업그레이드 우선) ---
+		List<UpgradeSO> primaryPool = availableUpgrades
+			.Where(u => !acquiredCategories.Contains(u.m_category) || u.m_category == UpgradeCategory.None)
+			.ToList();
+
+		// --- 3. 최종 선택 및 예외 처리 ---
 		List<UpgradeSO> finalOptions = new List<UpgradeSO>();
-		var membersToPickFrom = new List<EIdolMember> { EIdolMember.Sakura, EIdolMember.Yunjin, EIdolMember.Kazuha };
 
-		// --- 각 멤버 순서대로 추첨 ---
-		foreach (var member in membersToPickFrom)
+		// 리스트를 무작위로 섞는 로컬 함수 (Fisher-Yates Shuffle)
+		void Shuffle(List<UpgradeSO> list)
 		{
-			// 뽑을 업그레이드가 더이상 없으면 즉시 종료
-			if (availableUpgrades.Count == 0)
+			for (int i = list.Count - 1; i > 0; i--)
 			{
-				break;
+				int j = UnityEngine.Random.Range(0, i + 1);
+				(list[i], list[j]) = (list[j], list[i]); // C# 7.0 이상 Tuple 스왑 기능
 			}
-
-			// 해당 멤버의 전용 업그레이드 중, 아직 선택 가능한 것들만 추림
-			List<UpgradeSO> specificMemberPool = availableUpgrades.Where(u => u.m_idolMember == member).ToList();
-
-			UpgradeSO pickedUpgrade = null;
-
-			// 규칙 1: 전용 풀에 뽑을 것이 있으면 거기서 뽑기
-			if (specificMemberPool.Count > 0)
-			{
-				int randomIndex = UnityEngine.Random.Range(0, specificMemberPool.Count);
-				pickedUpgrade = specificMemberPool[randomIndex];
-			}
-			// 규칙 2: 전용 풀이 비었다면, 남은 전체 풀에서 대신 뽑기
-			else
-			{
-				int randomIndex = UnityEngine.Random.Range(0, availableUpgrades.Count);
-				pickedUpgrade = availableUpgrades[randomIndex];
-			}
-
-			// 뽑은 업그레이드를 최종 목록에 추가하고, 전체 가능 목록에서는 제거 (중복 방지)
-			finalOptions.Add(pickedUpgrade);
-			availableUpgrades.Remove(pickedUpgrade);
 		}
 
-		// 규칙 3: 위의 과정을 거쳐 만들어진 최종 목록을 반환 (0~3개의 아이템을 가질 수 있음)
+		Shuffle(primaryPool);
+
+		// 1차 후보군에서 최대 3개까지 선택지에 추가
+		int countToTakeFromPrimary = Mathf.Min(primaryPool.Count, 3);
+		finalOptions.AddRange(primaryPool.GetRange(0, countToTakeFromPrimary));
+
+		// 만약 3개가 채워지지 않았다면, 예외 규칙을 발동하여 나머지 후보군에서 마저 채웁니다.
+		if (finalOptions.Count < 3)
+		{
+			// 2차 후보군: 1차 후보군에 들지 못했던 나머지 업그레이드들 (이미 획득한 카테고리 소속)
+			List<UpgradeSO> secondaryPool = availableUpgrades.Except(primaryPool).ToList();
+			Shuffle(secondaryPool);
+
+			int needed = 3 - finalOptions.Count;
+			int countToTakeFromSecondary = Mathf.Min(secondaryPool.Count, needed);
+			if (countToTakeFromSecondary > 0)
+			{
+				finalOptions.AddRange(secondaryPool.GetRange(0, countToTakeFromSecondary));
+			}
+		}
+
 		return finalOptions;
 	}
 

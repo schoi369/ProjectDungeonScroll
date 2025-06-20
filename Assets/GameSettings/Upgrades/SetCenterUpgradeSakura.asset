@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SetCenterUpgradeSakura
   m_EditorClassIdentifier: 
   m_idolMember: 1
+  m_category: 3
   upgradeName: 'Center: Sakura'
   description: 'Set Sakura as Center.
 

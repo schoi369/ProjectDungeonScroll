@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: RiskyDashUpgrade
   m_EditorClassIdentifier: 
   m_idolMember: 1
+  m_category: 1
   upgradeName: Risky Dash
   description: 'Attack +1.
 

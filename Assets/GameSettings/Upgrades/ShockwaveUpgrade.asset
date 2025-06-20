@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ShockwaveUpgrade
   m_EditorClassIdentifier: 
   m_idolMember: 1
+  m_category: 2
   upgradeName: Shockwave
   description: Pushes away 1 block.
   icon: {fileID: 21300000, guid: 22df355e68278594f9eb4255469e6191, type: 3}
