@@ -60,7 +60,7 @@ public abstract class EnemyBase : CellObject
 		m_hitScaleEffectCoroutine = StartCoroutine(HitEffectCoroutine());
 
 		CurrentHP -= a_damage;
-		EnemyHPUIManager.Instance.UpdateHealth(transform, CurrentHP);
+		EnemyHPUIManager.Instance.UpdateHealth(transform, CurrentHP, m_maxHP);
 		if (CurrentHP <= 0)
 		{
 			Die();

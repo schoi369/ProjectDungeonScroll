@@ -42,17 +42,17 @@ public class EnemyHPUIManager : MonoBehaviour
 		GameObject newUIObj = Instantiate(m_healthUIPrefab, m_canvasTransform);
 		var healthUI = newUIObj.GetComponent<EnemyHPUIContainer>();
 
-		healthUI.Setup(a_maxHP);
-		healthUI.UpdateDisplay(a_maxHP);
+		healthUI.Setup();
+		healthUI.UpdateDisplay(a_maxHP, a_maxHP);
 
 		m_healthUIDictionary.Add(a_target, healthUI);
 	}
 
-	public void UpdateHealth(Transform a_target, int a_currentHP)
+	public void UpdateHealth(Transform a_target, int a_currentHP, int a_maxHP)
 	{
 		if (a_target != null && m_healthUIDictionary.TryGetValue(a_target, out EnemyHPUIContainer healthUI))
 		{
-			healthUI.UpdateDisplay(a_currentHP);
+			healthUI.UpdateDisplay(a_currentHP, a_maxHP);
 		}
 	}
 
