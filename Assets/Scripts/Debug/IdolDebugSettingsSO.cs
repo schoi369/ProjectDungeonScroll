@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/*
+ * git update-index --assume-unchanged "Assets/Resources/IdolDebugSettings.asset"로 변경 추적 안 되게 해 둠.
+ * git update-index --no-assume-unchanged "Assets/Resources/IdolDebugSettings.asset" 로 복구 가능.
+ */
 // 에디터의 Create > ScriptableObjects > Idol Debug Settings 메뉴를 통해 에셋을 생성할 수 있습니다.
 [CreateAssetMenu(fileName = "IdolDebugSettings", menuName = "ScriptableObjects/Idol Debug Settings")]
 public class IdolDebugSettingsSO : ScriptableObject
