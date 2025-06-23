@@ -361,6 +361,13 @@ public class PlayerController : MonoBehaviour
 					return riskyDashEffect.CurrentTurnCount.ToString();
 				}
 				return "?"; // 효과 컴포넌트를 못찾은 경우
+			case UpgradeSO.CounterType.SteadyGrowth:
+				var steadyGrowthEffect = GetComponent<UpgradeSteadyGrowth>();
+				if (steadyGrowthEffect != null)
+				{
+					return steadyGrowthEffect.PeacefulMoveCounter.ToString();
+				}
+				return "?"; // 효과 컴포넌트를 못찾은 경우
 			default:
 				return "";
 		}

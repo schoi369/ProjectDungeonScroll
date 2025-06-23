@@ -4,6 +4,7 @@ using static Unity.VisualScripting.Member;
 public class UpgradeSteadyGrowth : UpgradeEffectBase<SteadyGrowthUpgradeSO>
 {
 	private int m_peacefulMoveCounter = 0;
+	public int PeacefulMoveCounter => m_peacefulMoveCounter;
 	// 이 업그레이드를 통해 이번 스테이지에서 얻은 총 추가 공격력을 기록합니다.
 	private int m_totalBonusFromThisStage = 0;
 
