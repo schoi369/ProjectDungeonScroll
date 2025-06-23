@@ -54,7 +54,7 @@ public class UpgradeSteadyGrowth : UpgradeEffectBase<SteadyGrowthUpgradeSO>
 
 			m_peacefulMoveCounter = 0; // 카운터 초기화 후 다시 시작
 
-			Debug.Log($"'꾸준한 성장' 효과 발동! 추가 공격력 +{bonus}");
+			Debug.Log($"'꾸준한 성장' 효과 발동! 공격력 +{bonus}.");
 			CustomEventManager.Instance.KickEvent(CustomEventManager.CustomGameEvent.UpgradeEffectTriggered, SourceSO);
 		}
 	}
