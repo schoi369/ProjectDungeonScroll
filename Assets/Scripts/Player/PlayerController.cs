@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
 	// Upgrades
 	public event Action<CellObject, BoardManager.Direction> OnAttackLanded; // 일부 Upgrade 적용을 위해 사용하는 멤버 변수.
 	public event Action OnDamagedByEnemy; // 플레이어가 적에게 공격받았을 때 발생하는 이벤트. (업그레이드 효과 적용을 위해 사용)
+	public event Action OnPeacefulMove; // 플레이어가 평화롭게 이동했을 때 발생하는 이벤트. (업그레이드 효과 적용을 위해 사용)
 
 	//
 	private readonly HashSet<CellObject> m_hitTargetsThisAction = new();
@@ -296,6 +297,8 @@ public class PlayerController : MonoBehaviour
 				if (cellData.ContainedObject == null || cellData.ContainedObject.PlayerWantsToEnter())
 				{
 					MoveTo(newCellTargetPos);
+
+					OnPeacefulMove?.Invoke();
 				}
 			}
 		}
@@ -356,6 +359,13 @@ public class PlayerController : MonoBehaviour
 				if (riskyDashEffect != null)
 				{
 					return riskyDashEffect.CurrentTurnCount.ToString();
+				}
+				return "?"; // 효과 컴포넌트를 못찾은 경우
+			case UpgradeSO.CounterType.SteadyGrowth:
+				var steadyGrowthEffect = GetComponent<UpgradeSteadyGrowth>();
+				if (steadyGrowthEffect != null)
+				{
+					return steadyGrowthEffect.PeacefulMoveCounter.ToString();
 				}
 				return "?"; // 효과 컴포넌트를 못찾은 경우
 			default:
